@@ -24,7 +24,7 @@ node {
 			sh "cov-analyze --dir ${IDIR} --strip-path ${WORKSPACE} --all --enable-callgraph-metrics --webapp-security"
 		}
 		stage('commit') {
-			sh "cov-commit-defects --dir ${IDIR} --host ${COVERITY_HOST} --stream ${STREAM} --description ${BUILD_TAG} --target Linux_x86_64 --version ${GIT_COMMIT}'
+			sh "cov-commit-defects --dir ${IDIR} --host ${COVERITY_HOST} --stream ${STREAM} --description ${BUILD_TAG} --target Linux_x86_64 --version ${GIT_COMMIT}"
 		}
 	}
 	stage('results') {

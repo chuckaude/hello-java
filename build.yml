@@ -1,0 +1,13 @@
+name: $(Date:yyyyMMdd).$(Rev:.r)
+jobs:
+- job: Build
+  pool:
+    name: private-linux
+  workspace:
+    clean: all
+  steps:
+  - task: Maven@3
+    inputs:
+      mavenPomFile: 'pom.xml'
+      goals: '-B clean package -DskipTests'
+      publishJUnitResults: false

@@ -1,0 +1,31 @@
+name: $(Date:yyyyMMdd).$(Rev:.r)
+variables:
+  cov.authkey: 'c:/tools/coverity/analysis/commit-authkey'
+  cov.bin: 'c:/tools/coverity/analysis/2019.03/bin'
+  cov.host: 'localhost'
+  cov.idir: '$(Build.SourcesDirectory)/idir'
+  cov.stream: 'hello-java'
+
+jobs:
+- job: Coverity
+  pool:
+    name: private-windows
+  workspace:
+    clean: all
+  steps:
+  - task: CmdLine@2
+    displayName: cov-build
+    inputs:
+      script: '$(cov.bin)/cov-build --dir $(cov.idir) --fs-capture-search $(Build.SourcesDirectory) mvn -B clean package -DskipTests'
+  - task: CmdLine@2
+    displayName: cov-import-scm
+    inputs:
+      script: '$(cov.bin)/cov-import-scm --dir $(cov.idir) --scm git'
+  - task: CmdLine@2
+    displayName: cov-analyze
+    inputs:
+      script: '$(cov.bin)/cov-analyze --dir $(cov.idir) --strip-path $(Build.SourcesDirectory) --all --enable-callgraph-metrics --webapp-security'
+  - task: CmdLine@2
+    displayName: cov-commit-defects
+    inputs:
+      script: '$(cov.bin)/cov-commit-defects --dir $(cov.idir) --host $(cov.host) --auth-key-file $(cov.authkey) --stream $(cov.stream) --description $(Build.BuildURI) --target Windows_x86_64 --version $(Build.SourceVersion)'

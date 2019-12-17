@@ -1,7 +1,7 @@
 name: $(Date:yyyyMMdd).$(Rev:.r)
 variables:
   cov.authkey: 'c:/tools/coverity/analysis/commit-authkey'
-  cov.bin: 'c:/tools/coverity/analysis/2019.03/bin'
+  cov.bin: 'c:/tools/coverity/analysis/2019.09/bin'
   cov.host: 'localhost'
   cov.idir: '$(Build.SourcesDirectory)/idir'
   cov.stream: 'hello-java'
@@ -16,7 +16,7 @@ jobs:
   - task: CmdLine@2
     displayName: cov-build
     inputs:
-      script: '$(cov.bin)/cov-build --dir $(cov.idir) --fs-capture-search $(Build.SourcesDirectory) mvn -B clean package -DskipTests'
+      script: '$(cov.bin)/cov-build --dir $(cov.idir) --fs-capture-search $(Build.SourcesDirectory) mvn clean package -DskipTests'
   - task: CmdLine@2
     displayName: cov-import-scm
     inputs:

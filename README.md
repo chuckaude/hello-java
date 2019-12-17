@@ -8,9 +8,9 @@ Build on CLI
 - gradle clean assemble (build.gradle)
 
 Build with CI
+- ado-build.yml - normal build (Maven) on Azure DevOps
+- ado-coverity.yml - Coverity BAC (Maven) on Azure DevOps
 - Jenkinsfile.coverity - Coverity BAC (Maven) on Jenkins
 - Jenkinsfile.polaris - Polaris (Maven) on Jenkins
-- build.yml - normal build (Maven) on Azure DevOps
-- coverity.yml - Coverity BAC (Maven) on Azure DevOps
 - polaris.yml - Polaris project configuration (Gradle)
 - .gitlab-ci.yml - GitLab CI pipeline (Gradle)

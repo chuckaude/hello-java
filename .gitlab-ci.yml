@@ -1,0 +1,29 @@
+stages:
+  - build
+  - test
+  - polaris
+
+variables:
+  MAVEN_CLI_OPTS: "--batch-mode"
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+
+cache:
+  paths:
+    - .m2/repository/
+    - target/
+
+build:
+  stage: build
+  image: registry.gitlab.com/chuckaude/hello-java/devbox
+  script: mvn $MAVEN_CLI_OPTS compile
+
+test:
+  stage: test
+  image: registry.gitlab.com/chuckaude/hello-java/devbox
+  script: mvn $MAVEN_CLI_OPTS test
+
+polaris:
+  stage: polaris
+  image: registry.gitlab.com/chuckaude/hello-java/polaris-sipse
+  script:
+    - polaris analyze -w

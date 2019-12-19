@@ -1,6 +1,6 @@
 name: $(Date:yyyyMMdd).$(Rev:.r)
 variables:
-  polaris: 'c:/Tools/polaris_cli-win64-1.5.5064/bin/polaris'
+  - group: Polaris
   project: 'chuckaude-hello-java'
 
 jobs:

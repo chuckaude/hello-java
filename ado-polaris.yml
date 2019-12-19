@@ -1,0 +1,20 @@
+name: $(Date:yyyyMMdd).$(Rev:.r)
+variables:
+  polaris: 'c:/Tools/polaris_cli-win64-1.5.5064/bin/polaris'
+  project: 'chuckaude-hello-java'
+
+jobs:
+- job: Coverity
+  pool:
+    name: private-windows
+  workspace:
+    clean: all
+  steps:
+  - task: CmdLine@2
+    displayName: setup
+    inputs:
+      script: '$(polaris) setup --project-name $(project) -e shell="mvn clean" -b shell="mvn package -DskipTests"'
+  - task: CmdLine@2
+    displayName: analyze
+    inputs:
+      script: '$(polaris) analyze -w'

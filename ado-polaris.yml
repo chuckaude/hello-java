@@ -4,7 +4,7 @@ variables:
   project: 'chuckaude-hello-java'
 
 jobs:
-- job: Coverity
+- job: Polaris
   pool:
     name: private-windows
   workspace:

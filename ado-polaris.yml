@@ -1,7 +1,8 @@
 name: $(Date:yyyyMMdd).$(Rev:.r)
 variables:
   - group: Polaris
-  project: 'chuckaude-hello-java'
+  - name: project
+    value: 'chuckaude-hello-java'
 
 jobs:
 - job: Polaris

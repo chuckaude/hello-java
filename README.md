@@ -10,6 +10,7 @@ Build on CLI
 Build with CI
 - ado-build.yml - normal build (Maven) on Azure DevOps
 - ado-coverity.yml - Coverity BAC (Maven) on Azure DevOps
+- ado-polaris.yml - Polaris (Maven) on Azure DevOps
 - Jenkinsfile.coverity - Coverity BAC (Maven) on Jenkins
 - Jenkinsfile.polaris - Polaris (Maven) on Jenkins
 - polaris.yml - Polaris project configuration (Gradle)

@@ -1,7 +1,7 @@
 name: $(Date:yyyyMMdd).$(Rev:.r)
 variables:
   cov.authkey: 'c:/tools/coverity/analysis/commit-authkey'
-  cov.bin: 'c:/tools/coverity/analysis/2019.09/bin'
+  cov.bin: 'c:/tools/coverity/analysis/2019.12/bin'
   cov.host: 'localhost'
   cov.idir: '$(Build.SourcesDirectory)/idir'
   cov.stream: 'hello-java'

@@ -14,8 +14,8 @@ jobs:
   - task: CmdLine@2
     displayName: setup
     inputs:
-      script: '$(polaris_cmd) setup --project-name $(project) -e shell="mvn clean" -b shell="mvn package -DskipTests"'
+      script: '$(polaris_cli) setup --project-name $(project) -e shell="mvn clean" -b shell="mvn package -DskipTests"'
   - task: CmdLine@2
     displayName: analyze
     inputs:
-      script: '$(polaris_cmd) analyze -w'
+      script: '$(polaris_cli) analyze -w'

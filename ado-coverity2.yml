@@ -1,10 +1,10 @@
 name: $(Date:yyyyMMdd).$(Rev:.r)
 variables:
-  cov.authkey: 'c:/tools/coverity/analysis/commit-authkey'
   cov.bin: 'c:/tools/coverity/analysis/2019.12/bin'
-  cov.host: 'localhost'
-  cov.idir: '$(Build.SourcesDirectory)/idir'
+  cov.url: 'https://coverity.chuckaude.com:8443'
+  cov.authkey: 'c:/tools/coverity/analysis/commit-authkey'
   cov.stream: 'hello-java'
+  cov.idir: '$(Build.SourcesDirectory)/idir'
 
 jobs:
 - job: Coverity
@@ -19,4 +19,4 @@ jobs:
       script: |
         $(cov.bin)/cov-build --dir $(cov.idir) --fs-capture-search $(Build.SourcesDirectory) mvn -B clean package -DskipTests
         $(cov.bin)/cov-analyze --dir $(cov.idir) --strip-path $(Build.SourcesDirectory) --all --webapp-security --ticker-mode none
-        $(cov.bin)/cov-commit-defects --dir $(cov.idir) --host $(cov.host) --auth-key-file $(cov.authkey) --stream $(cov.stream) --description $(Build.BuildURI) --version $(Build.SourceVersion) --ticker-mode none
+        $(cov.bin)/cov-commit-defects --dir $(cov.idir) --url $(cov.url) --on-new-cert trust --auth-key-file $(cov.authkey) --stream $(cov.stream) --description $(Build.BuildURI) --version $(Build.SourceVersion) --ticker-mode none

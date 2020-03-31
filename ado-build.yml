@@ -9,5 +9,5 @@ jobs:
   - task: Maven@3
     inputs:
       mavenPomFile: 'pom.xml'
-      goals: 'package'
+      goals: 'package -DskipTests'
       publishJUnitResults: false

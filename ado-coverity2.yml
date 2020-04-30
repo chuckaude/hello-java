@@ -1,6 +1,6 @@
 name: $(Date:yyyyMMdd).$(Rev:.r)
 variables:
-  cov.bin: 'c:/tools/coverity/analysis/2019.12/bin'
+  cov.bin: 'c:/tools/coverity/analysis/2020.03/bin'
   cov.url: 'https://coverity.chuckaude.com:8443'
   cov.authkey: 'c:/tools/coverity/analysis/commit-authkey'
   cov.stream: 'hello-java'

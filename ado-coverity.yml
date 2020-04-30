@@ -1,7 +1,7 @@
 name: $(Date:yyyyMMdd).$(Rev:.r)
 variables:
   cov.authkey: 'c:/tools/coverity/analysis/commit-authkey'
-  cov.bin: 'c:/tools/coverity/analysis/2019.12/bin'
+  cov.bin: 'c:/tools/coverity/analysis/2020.03/bin'
   cov.host: 'localhost'
   cov.idir: '$(Build.SourcesDirectory)/idir'
   cov.stream: 'hello-java'
@@ -16,7 +16,7 @@ jobs:
   - task: CmdLine@2
     displayName: cov-build
     inputs:
-      script: '$(cov.bin)/cov-build --dir $(cov.idir) --fs-capture-search $(Build.SourcesDirectory) mvn clean package -DskipTests'
+      script: '$(cov.bin)/cov-build --dir $(cov.idir) --fs-capture-search $(Build.SourcesDirectory) mvn -B clean package -DskipTests'
   - task: CmdLine@2
     displayName: cov-import-scm
     inputs:
@@ -24,8 +24,8 @@ jobs:
   - task: CmdLine@2
     displayName: cov-analyze
     inputs:
-      script: '$(cov.bin)/cov-analyze --dir $(cov.idir) --strip-path $(Build.SourcesDirectory) --all --enable-callgraph-metrics --webapp-security'
+      script: '$(cov.bin)/cov-analyze --dir $(cov.idir) --strip-path $(Build.SourcesDirectory) --ticker-mode none --all --webapp-security'
   - task: CmdLine@2
     displayName: cov-commit-defects
     inputs:
-      script: '$(cov.bin)/cov-commit-defects --dir $(cov.idir) --host $(cov.host) --auth-key-file $(cov.authkey) --stream $(cov.stream) --description $(Build.BuildURI) --target Windows_x86_64 --version $(Build.SourceVersion)'
+      script: '$(cov.bin)/cov-commit-defects --dir $(cov.idir) --host $(cov.host) --auth-key-file $(cov.authkey) --stream $(cov.stream) --ticker-mode none --description $(Build.BuildURI) --target Windows_x86_64 --version $(Build.SourceVersion)'

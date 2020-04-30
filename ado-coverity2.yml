@@ -18,5 +18,5 @@ jobs:
     inputs:
       script: |
         $(cov.bin)/cov-build --dir $(cov.idir) --fs-capture-search $(Build.SourcesDirectory) mvn -B clean package -DskipTests
-        $(cov.bin)/cov-analyze --dir $(cov.idir) --strip-path $(Build.SourcesDirectory) --all --webapp-security --ticker-mode none
-        $(cov.bin)/cov-commit-defects --dir $(cov.idir) --url $(cov.url) --on-new-cert trust --auth-key-file $(cov.authkey) --stream $(cov.stream) --description $(Build.BuildURI) --version $(Build.SourceVersion) --ticker-mode none
+        $(cov.bin)/cov-analyze --dir $(cov.idir) --strip-path $(Build.SourcesDirectory) --ticker-mode none --all --webapp-security
+        $(cov.bin)/cov-commit-defects --dir $(cov.idir) --url $(cov.url) --on-new-cert trust --auth-key-file $(cov.authkey) --stream $(cov.stream) --ticker-mode none --description $(Build.BuildURI) --version $(Build.SourceVersion)

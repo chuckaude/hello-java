@@ -25,8 +25,8 @@ jobs:
         POLARIS_ACCESS_TOKEN:  ${{ secrets.POLARIS_ACCESS_TOKEN }}
       run: |
         wget -q $POLARIS_SERVER_URL/api/tools/polaris_cli-linux64.zip
-        unzip -j polaris_cli-linux64.zip -d /usr/bin
-        polaris setup -p chuckaude-hello-java -e shell='mvn -B clean' -b shell='mvn -B compile'
-        polaris install
+        unzip -j polaris_cli-linux64.zip -d /tmp
+        /tmp/polaris setup -p chuckaude-hello-java -e shell='mvn -B clean' -b shell='mvn -B compile'
+        /tmp/polaris install
     - name: Polaris scan
-      run: polaris analyze -w
+      run: /tmp/polaris analyze -w

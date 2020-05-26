@@ -23,6 +23,6 @@ jobs:
       with:
         java-version: 1.8
     - name: Polaris setup
-      run: polaris setup -p chuckaude-hello-java -e shell='mvn -B clean' -b shell='mvn -B compile'
+      run: /opt/polaris/bin/polaris setup -p chuckaude-hello-java -e shell='mvn -B clean' -b shell='mvn -B compile'
     - name: Polaris scan
-      run: polaris analyze -w
+      run: /opt/polaris/bin/polaris analyze -w

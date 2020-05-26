@@ -1,6 +1,6 @@
-# Example workflow for Polaris on public GitHub hosted runners.
+# Example workflow for Polaris on public GitHub-hosted runners
 
-name: Polaris public runners
+name: Polaris public runner
 on:
   push:
     branches: [ master ]

@@ -20,6 +20,9 @@ jobs:
       with:
         java-version: 1.8
     - name: Polaris setup
+      env:
+        POLARIS_SERVER_URL:  https://sipse.polaris.synopsys.com/
+        POLARIS_ACCESS_TOKEN:  ${{ secrets.POLARIS_ACCESS_TOKEN }}
       run: |
         wget -q $POLARIS_SERVER_URL/api/tools/polaris_cli-linux64.zip
         unzip -j polaris_cli-linux64.zip -d /usr/bin

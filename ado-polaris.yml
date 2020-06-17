@@ -1,4 +1,3 @@
-name: $(Date:yyyyMMdd).$(Rev:.r)
 variables:
   - group: Polaris
   - name: project
@@ -7,15 +6,18 @@ variables:
 jobs:
 - job: Polaris
   pool:
-    name: private-windows
+    vmImage: vs2017-win2016
   workspace:
     clean: all
   steps:
   - task: CmdLine@2
     displayName: setup
     inputs:
-      script: '$(polaris_cli) setup --project-name $(project) -e shell="mvn -B clean" -b shell="mvn -B package -DskipTests"'
+      script: |
+        curl -fsLOS %POLARIS_SERVER_URL%/api/tools/polaris_cli-win64.zip
+        unzip -j polaris_cli-win64.zip -d .
+        polaris setup --project-name $(project) -e shell="mvn -B clean" -b shell="mvn -B package -DskipTests"
   - task: CmdLine@2
     displayName: analyze
     inputs:
-      script: '$(polaris_cli) analyze -w'
+      script: 'polaris analyze -w'

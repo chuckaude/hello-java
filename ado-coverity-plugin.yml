@@ -1,0 +1,20 @@
+variables:
+  COVERITY_TOOL_HOME: 'c:/tools/coverity/analysis/2020.06'
+
+jobs:
+- job: Coverity
+  pool:
+    name: private-windows
+  workspace:
+    clean: all
+  steps:
+  - task: synopsys-coverity.synopsys-coverity-azure-devops.coverity-task.synopsys-coverity@1
+    displayName: 'Coverity'
+    inputs:
+      coverityService: 'Coverity-http'
+      projectName: 'hello-java'
+      streamName: 'hello-java'
+      checkIssues: true
+      issueView: 'Outstanding Issues'
+      buildCommand: 'mvn -B clean package -DskipTests'
+      allowUntrusted: true

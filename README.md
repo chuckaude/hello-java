@@ -9,7 +9,8 @@ Build Commands
 
 CI Integration Examples (Maven)
 - [ado-build.yml](ado-build.yml) - normal build on Azure DevOps
-- [ado-coverity.yml](ado-coverity.yml) - Coverity on Azure DevOps
+- [ado-coverity.yml](ado-coverity.yml) - Coverity No-Plugin on Azure DevOps
+- [ado-coverity-plugin.yml](ado-coverity-plugin.yml) - Coverity Plugin on Azure DevOps
 - [ado-polaris.yml](ado-polaris.yml) - Polaris on Azure DevOps
 - [Jenkinsfile.coverity](Jenkinsfile.coverity) - Coverity on Jenkins
 - [Jenkinsfile.polaris](Jenkinsfile.polaris) - Polaris on Jenkins

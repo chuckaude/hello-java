@@ -1,10 +1,11 @@
-name: $(Date:yyyyMMdd).$(Rev:.r)
 variables:
-  cov.bin: 'c:/tools/coverity/analysis/2020.03/bin'
+  cov.bin: 'c:/tools/coverity/analysis/2020.06/bin'
   cov.url: 'https://coverity.chuckaude.com:8443'
   cov.authkey: 'c:/tools/coverity/analysis/commit-authkey'
   cov.stream: 'hello-java'
   cov.idir: '$(Build.SourcesDirectory)/idir'
+  cov.bldcmd: 'mvn -B clean package -DskipTests'
+  cov.checkers: '--all --webapp-security'
 
 jobs:
 - job: Coverity
@@ -14,9 +15,9 @@ jobs:
     clean: all
   steps:
   - task: CmdLine@2
-    displayName: coverity
+    displayName: Coverity
     inputs:
       script: |
-        $(cov.bin)/cov-build --dir $(cov.idir) --fs-capture-search $(Build.SourcesDirectory) mvn -B clean package -DskipTests
-        $(cov.bin)/cov-analyze --dir $(cov.idir) --strip-path $(Build.SourcesDirectory) --ticker-mode none --all --webapp-security
-        $(cov.bin)/cov-commit-defects --dir $(cov.idir) --url $(cov.url) --on-new-cert trust --auth-key-file $(cov.authkey) --stream $(cov.stream) --ticker-mode none --description $(Build.BuildURI) --version $(Build.SourceVersion)
+        $(cov.bin)/cov-build --dir $(cov.idir) --fs-capture-search $(Build.SourcesDirectory) $(cov.bldcmd)
+        $(cov.bin)/cov-analyze --dir $(cov.idir) --ticker-mode none --strip-path $(Build.SourcesDirectory) $(cov.checkers)
+        $(cov.bin)/cov-commit-defects --dir $(cov.idir) --ticker-mode none --url $(cov.url) --on-new-cert trust --auth-key-file $(cov.authkey) --stream $(cov.stream) --description $(Build.BuildURI) --version $(Build.SourceVersion)

@@ -18,6 +18,8 @@ jobs:
       COVERITY_STREAM: hello-java
       COV_USER: committer
       COVERITY_PASSPHRASE: ${{ secrets.COVERITY_PASSPHRASE }}
+      BLDCMD: mvn -B clean compile
+      CHECKERS: --all --webapp-security
 
     steps:
     - uses: actions/checkout@v2
@@ -28,6 +30,6 @@ jobs:
     - name: Coverity BAC
       run: |
         rm -rf idir
-        $COVBIN/cov-build --dir idir mvn -B clean compile
-        $COVBIN/cov-analyze --dir idir --ticker-mode none --strip-path $PWD --all --webapp-security
+        $COVBIN/cov-build --dir idir $BLDCMD
+        $COVBIN/cov-analyze --dir idir --ticker-mode none --strip-path $PWD $CHECKERS
         $COVBIN/cov-commit-defects --dir idir --ticker-mode none --url $COVERITY_SERVER_URL --stream $COVERITY_STREAM

@@ -27,6 +27,7 @@ jobs:
         java-version: 1.8
     - name: Coverity BAC
       run: |
+        rm -rf idir
         $COVBIN/cov-build --dir idir mvn -B clean compile
         $COVBIN/cov-analyze --dir idir --strip-path $PWD --all --webapp-security
         $COVBIN/cov-commit-defects --dir idir --url $COVERITY_URL --stream $COVERITY_STREAM

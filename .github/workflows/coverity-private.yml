@@ -1,0 +1,32 @@
+# Example workflow for Coverity on private self-hosted runners
+
+name: Coverity private runner
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  coverity:
+
+    runs-on: self-hosted
+
+    env:
+      COVBIN: /opt/coverity/analysis/2020.06/bin
+      COVERITY_SERVER_URL: https://coverity.chuckaude.com:8443/
+      COVERITY_STREAM: hello-java
+      COV_USER: committer
+      COVERITY_PASSPHRASE: ${{ secrets.COVERITY_PASSPHRASE }}
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up JDK 1.8
+      uses: actions/setup-java@v1
+      with:
+        java-version: 1.8
+    - name: Coverity BAC
+      run: |
+        $COVBIN/cov-build --dir idir mvn -B clean compile
+        $COVBIN/cov-analyze --dir idir --strip-path $PWD --all --webapp-security
+        $COVBIN/cov-commit-defects --dir idir --url $COVERITY_URL --stream $COVERITY_STREAM

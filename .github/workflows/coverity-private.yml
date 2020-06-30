@@ -29,5 +29,5 @@ jobs:
       run: |
         rm -rf idir
         $COVBIN/cov-build --dir idir mvn -B clean compile
-        $COVBIN/cov-analyze --dir idir --strip-path $PWD --all --webapp-security
-        $COVBIN/cov-commit-defects --dir idir --url $COVERITY_URL --stream $COVERITY_STREAM
+        $COVBIN/cov-analyze --dir idir --ticker-mode none --strip-path $PWD --all --webapp-security
+        $COVBIN/cov-commit-defects --dir idir --ticker-mode none --url $COVERITY_SERVER_URL --stream $COVERITY_STREAM

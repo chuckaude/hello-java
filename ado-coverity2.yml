@@ -1,6 +1,6 @@
 variables:
   cov.bin: 'c:/tools/coverity/analysis/2020.06/bin'
-  cov.url: 'https://coverity.chuckaude.com:8443'
+  cov.url: 'https://coverity.chuckaude.com:8443/'
   cov.authkey: 'c:/tools/coverity/analysis/commit-authkey'
   cov.stream: 'hello-java'
   cov.idir: '$(Build.SourcesDirectory)/idir'

@@ -15,18 +15,9 @@ jobs:
     clean: all
   steps:
   - task: CmdLine@2
-    displayName: cov-build
+    displayName: Coverity
     inputs:
-      script: '$(cov.bin)/cov-build --dir $(cov.idir) --fs-capture-search $(Build.SourcesDirectory) $(cov.bldcmd)'
-  - task: CmdLine@2
-    displayName: cov-import-scm
-    inputs:
-      script: '$(cov.bin)/cov-import-scm --dir $(cov.idir) --scm git'
-  - task: CmdLine@2
-    displayName: cov-analyze
-    inputs:
-      script: '$(cov.bin)/cov-analyze --dir $(cov.idir) --ticker-mode none --strip-path $(Build.SourcesDirectory) $(cov.checkers)'
-  - task: CmdLine@2
-    displayName: cov-commit-defects
-    inputs:
-      script: '$(cov.bin)/cov-commit-defects --dir $(cov.idir) --ticker-mode none --url $(cov.url) --on-new-cert trust --auth-key-file $(cov.authkey) --stream $(cov.stream) --description $(Build.BuildURI) --version $(Build.SourceVersion)'
+      script: |
+        $(cov.bin)/cov-build --dir $(cov.idir) --fs-capture-search $(Build.SourcesDirectory) $(cov.bldcmd)
+        $(cov.bin)/cov-analyze --dir $(cov.idir) --ticker-mode none --strip-path $(Build.SourcesDirectory) $(cov.checkers)
+        $(cov.bin)/cov-commit-defects --dir $(cov.idir) --ticker-mode none --url $(cov.url) --on-new-cert trust --auth-key-file $(cov.authkey) --stream $(cov.stream) --description $(Build.BuildURI) --version $(Build.SourceVersion)

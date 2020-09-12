@@ -4,6 +4,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
+		sh 'env | sort'
                 sh 'mvn -B compile'
             }
         }

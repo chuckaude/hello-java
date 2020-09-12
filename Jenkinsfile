@@ -4,17 +4,17 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                mvn -B compile
+                sh 'mvn -B compile'
             }
         }
         stage('Test') {
             steps {
-                mvn -B test
+                sh 'mvn -B test'
             }
         }
         stage('Deploy') {
             steps {
-                mvn -B install
+                sh 'mvn -B install'
             }
         }
     }

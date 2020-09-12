@@ -1,0 +1,17 @@
+variables:
+  - group: Polaris
+  - name: project
+    value: 'chuckaude-hello-java'
+
+jobs:
+- job: Polaris
+  pool:
+    vmImage: vs2017-win2016
+  workspace:
+    clean: all
+  steps:
+  - task: synopsys-polaris.synopsys-polaris.synopsys-polaris-task.synopsys-polaris-task@1
+    displayName: 'Synopsys Polaris '
+    inputs:
+      polarisService: 'polaris-sipse'
+      polarisCommand: 'analyze -w'

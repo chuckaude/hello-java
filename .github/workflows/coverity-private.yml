@@ -13,13 +13,13 @@ jobs:
     runs-on: self-hosted
 
     env:
-      COVBIN: /opt/coverity/analysis/2020.06/bin
+      COVBIN: /opt/coverity/analysis/current/bin
       COVERITY_SERVER_URL: https://coverity.chuckaude.com:8443/
-      COVERITY_STREAM: hello-java
+      COVERITY_STREAM: hello-java-master
       COV_USER: committer
       COVERITY_PASSPHRASE: ${{ secrets.COVERITY_PASSPHRASE }}
       BLDCMD: mvn -B clean compile
-      CHECKERS: --all --webapp-security
+      CHECKERS: --webapp-security
 
     steps:
     - uses: actions/checkout@v2
@@ -29,6 +29,7 @@ jobs:
         java-version: 1.8
     - name: Coverity BAC
       run: |
+        env | sort
         rm -rf idir
         $COVBIN/cov-build --dir idir $BLDCMD
         $COVBIN/cov-analyze --dir idir --ticker-mode none --strip-path $PWD $CHECKERS

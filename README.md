@@ -17,6 +17,8 @@ CI Integration Examples (Maven)
 - [ado-coverity.yml](ado-coverity.yml) - No-Plugin Coverity on Azure DevOps
 - [ado-coverity-plugin.yml](ado-coverity-plugin.yml) - Coverity Plugin on Azure DevOps
 - [ado-polaris.yml](ado-polaris.yml) - No-Plugin Polaris on Azure DevOps
+- [ado-polaris-plugin.yml](ado-polaris-plugin.yml) - Polaris Plugin on Azure DevOps
+- [Jenkinsfile](Jenkinsfile) - build-test-deploy on Jenkins
 - [Jenkinsfile.coverity](Jenkinsfile.coverity) - Coverity on Jenkins
 - [Jenkinsfile.polaris](Jenkinsfile.polaris) - Polaris on Jenkins
 - [polaris.yml](polaris.yml) - Polaris project configuration

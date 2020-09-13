@@ -45,7 +45,10 @@ pipeline {
 				changeRequest()
 			}
 			steps {
-				sh 'env | sort'
+				sh '''
+					env | sort
+					git --no-pager diff origin/$CHANGE_TARGET --name-only
+				'''
 				echo 'Coverity INCR scan'
 			}
 		}

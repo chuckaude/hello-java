@@ -1,16 +1,21 @@
 pipeline {
 	agent any
 
+	def CONNECT = 'http://coverity.chuckaude.com:8080/'
+	def PROJECT = 'hello-java'
+	def STREAM = "$PROJECT-$BRANCH_NAME"
+	jdk = tool name: 'openjdk-11'
+	env.JAVA_HOME = "${jdk}"
+
 	stages {
 		stage('Build') {
 			steps {
-				sh 'env | sort'
-				echo 'Building...'
+				sh 'mvn -B compile'
 			}
 		}
 		stage('Test') {
 			steps {
-				echo 'Testing...'
+				sh 'mvn -B test'
 			}
 		}
 		stage('Coverity Full Scan') {
@@ -21,7 +26,14 @@ pipeline {
 				}
 			}
 			steps {
-				echo 'Coverity FULL scan'
+				withCoverityEnvironment(coverityInstanceUrl: "$CONNECT", projectName: "$PROJECT", streamName: "$STREAM") {
+					sh '''
+						env | sort
+						cov-build --dir $IDIR --fs-capture-search $WORKSPACE mvn -B package -DskipTests
+						cov-analyze --dir $IDIR --ticker-mode none --strip-path $WORKSPACE --webapp-security
+						cov-commit-defects --dir $IDIR --ticker-mode none --url $COV_URL --stream $COV_STREAM --description $BUILD_TAG --target Linux_x86_64 --version $GIT_COMMIT
+					'''
+				}
 			}
 		}
 		stage('Coverity Incremental Scan') {
@@ -29,6 +41,7 @@ pipeline {
 				changeRequest()
 			}
 			steps {
+				sh 'env | sort'
 				echo 'Coverity INCR scan'
 			}
 		}
@@ -39,7 +52,7 @@ pipeline {
 				}
 			}
 			steps {
-				echo 'Deploying...'
+				sh 'mvn -B install'
 			}
 		}
 	}

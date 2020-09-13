@@ -1,12 +1,15 @@
 pipeline {
 	agent any
 
-	def CONNECT = 'http://coverity.chuckaude.com:8080/'
-	def PROJECT = 'hello-java'
-	def STREAM = "$PROJECT-$BRANCH_NAME"
 	jdk = tool name: 'openjdk-11'
 	env.JAVA_HOME = "${jdk}"
 
+	environment {
+		CONNECT = 'http://coverity.chuckaude.com:8080/'
+		PROJECT = 'hello-java'
+		STREAM = "$PROJECT-$BRANCH_NAME"
+	}
+	
 	stages {
 		stage('Build') {
 			steps {

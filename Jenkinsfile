@@ -1,8 +1,9 @@
 pipeline {
 	agent any
 
-	jdk = tool name: 'openjdk-11'
-	env.JAVA_HOME = "${jdk}"
+	tools {
+		jdk 'openjdk-11'
+	}
 
 	environment {
 		CONNECT = 'http://coverity.chuckaude.com:8080/'

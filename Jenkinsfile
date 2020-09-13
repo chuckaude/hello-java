@@ -46,10 +46,11 @@ pipeline {
 			steps {
 				withCoverityEnvironment(coverityInstanceUrl: "$CONNECT", projectName: "$PROJECT", streamName: "$PROJECT-$CHANGE_TARGET") {
 					sh '''
-						env | sort
 						CHANGE_SET=$(git --no-pager diff origin/$CHANGE_TARGET --name-only)
+						env | sort
 						cov-build --dir idir --fs-capture-search $WORKSPACE mvn -B clean compile
-						cov-run-desktop --dir idir --url $COV_URL --stream $COV_STREAM --ignore-uncapturable-inputs true --reference-snapshot latest --present-in-reference false --exit1-if-defects true $CHANGE_SET
+						cov-run-desktop --dir idir --url $COV_URL --stream $COV_STREAM --reference-snapshot latest --present-in-reference false \
+							--ignore-uncapturable-inputs true --exit1-if-defects true $CHANGE_SET
 					'''
 				}
 			}

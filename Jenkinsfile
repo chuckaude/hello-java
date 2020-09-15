@@ -44,7 +44,7 @@ pipeline {
 					sh '''
 						cov-build --dir idir mvn -B clean compile
 						cov-run-desktop --dir idir --url $COV_URL --stream $COV_STREAM --reference-snapshot latest --present-in-reference false \
-							--ignore-uncapturable-inputs true --set-new-defect-owner false --exit1-if-defects true \
+							--ignore-uncapturable-inputs true --exit1-if-defects true \
 							$(git --no-pager diff origin/$CHANGE_TARGET --name-only)
 					'''
 				}

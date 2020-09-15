@@ -19,7 +19,10 @@ pipeline {
 		}
 		stage('Coverity Full Scan') {
 			when {
-				expression { BRANCH_NAME ==~ /(master|stage|release)/ }
+				allOf {
+					not { changeRequest() }
+					expression { BRANCH_NAME ==~ /(master|stage|release)/ }
+				}
 			}
 			steps {
 				withCoverityEnvironment(coverityInstanceUrl: "$CONNECT", projectName: "$PROJECT", streamName: "$PROJECT-$BRANCH_NAME") {
@@ -44,8 +47,7 @@ pipeline {
 					sh '''
 						cov-build --dir idir mvn -B clean compile
 						cov-run-desktop --dir idir --url $COV_URL --stream $COV_STREAM --reference-snapshot latest --present-in-reference false \
-							--ignore-uncapturable-inputs true --set-new-defect-owner false --exit1-if-defects true \
-							$(git --no-pager diff origin/$CHANGE_TARGET --name-only)
+							--ignore-uncapturable-inputs true --exit1-if-defects true $(git --no-pager diff origin/$CHANGE_TARGET --name-only)
 					'''
 				}
 			}

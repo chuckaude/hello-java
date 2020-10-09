@@ -1,20 +1,25 @@
-variables:
-  COVERITY_TOOL_HOME: 'c:/tools/coverity/analysis/2020.06'
+pool:
+  name: 'private-windows'
 
-jobs:
-- job: Coverity
-  pool:
-    name: private-windows
-  workspace:
-    clean: all
-  steps:
-  - task: synopsys-coverity.synopsys-coverity-azure-devops.coverity-task.synopsys-coverity@1
-    displayName: 'Coverity'
-    inputs:
-      coverityService: 'Coverity-http'
-      projectName: 'hello-java'
-      streamName: 'hello-java'
-      checkIssues: true
-      issueView: 'Outstanding Issues'
-      buildCommand: 'mvn -B clean package -DskipTests'
-      allowUntrusted: true
+variables:
+  COVERITY_TOOL_HOME: 'c:/tools/coverity/analysis/2020.09'
+
+workspace:
+  clean: all
+
+steps:
+- task: synopsys-coverity.synopsys-coverity-azure-devops.coverity-task.synopsys-coverity@1
+  displayName: 'Coverity'
+  inputs:
+    coverityService: 'coverity-onprem'
+    projectName: 'hello-java'
+    streamName: 'hello-java-master'
+    checkIssues: true
+    issueView: 'Outstanding Issues'
+    issueStatus: success
+    buildCommand: 'mvn -B package -DskipTests'
+    customCommandArgs: true
+    covBuildArgs: '--fs-capture-search $(Build.SourcesDirectory)'
+    covAnalyzeArgs: '--ticker-mode none --strip-path $(Build.SourcesDirectory) --webapp-security'
+    covCommitArgs: '--ticker-mode none --description $(Build.BuildURI) --version $(Build.SourceVersion) --scm git'
+    allowUntrusted: true

@@ -2,7 +2,9 @@ pool:
   name: 'private-windows'
 
 variables:
-  COVERITY_TOOL_HOME: 'c:/tools/coverity/analysis/2020.09'
+- group: coverity-onprem
+- name: COVERITY_TOOL_HOME
+  value: $(COVERITY_TOOL_HOME_Windows_NT)
 
 workspace:
   clean: all
@@ -12,8 +14,8 @@ steps:
   displayName: 'Coverity'
   inputs:
     coverityService: 'coverity-onprem'
-    projectName: 'hello-java'
-    streamName: 'hello-java-master'
+    projectName: '$(COV_PROJECT)'
+    streamName: '$(COV_PROJECT)-$(Build.SourceBranchName)'
     checkIssues: true
     issueView: 'Outstanding Issues'
     issueStatus: success

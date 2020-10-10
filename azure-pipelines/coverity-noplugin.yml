@@ -1,0 +1,21 @@
+pool:
+  name: private-windows
+
+variables:
+- group: coverity-onprem
+- name: COVERITY_TOOL_HOME
+  value: $(COVERITY_TOOL_HOME_Windows_NT)
+
+workspace:
+  clean: all
+
+steps:
+- script: |
+    set PATH=%PATH%;%COVERITY_TOOL_HOME%/bin
+    echo on
+    cov-build --dir idir --fs-capture-search $(Build.SourcesDirectory) mvn -B package -DskipTests
+    cov-analyze --dir idir --ticker-mode none --strip-path $(Build.SourcesDirectory) --webapp-security
+    cov-commit-defects --dir idir --ticker-mode none --url $(COV_URL) --stream $(COV_PROJECT)-$(Build.SourceBranchName) --description $(Build.BuildURI) --version $(Build.SourceVersion)
+  displayName: 'Coverity'
+  env:
+    COVERITY_PASSPHRASE: $(COVERITY_PASSPHRASE)

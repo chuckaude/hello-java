@@ -4,7 +4,9 @@ pool:
 variables:
 - group: coverity-onprem
 - name: COVERITY_TOOL_HOME
-  value: $(COVERITY_TOOL_HOME_Windows_NT)
+  value: c:/tools/coverity/analysis/2020.09
+- name: COVERITY_PROJECT
+  value: hello-java
 
 workspace:
   clean: all
@@ -15,7 +17,7 @@ steps:
     echo on
     cov-build --dir idir --fs-capture-search $(Build.SourcesDirectory) mvn -B package -DskipTests
     cov-analyze --dir idir --ticker-mode none --strip-path $(Build.SourcesDirectory) --webapp-security
-    cov-commit-defects --dir idir --ticker-mode none --url $(COV_URL) --stream $(COV_PROJECT)-$(Build.SourceBranchName) --description $(Build.BuildURI) --version $(Build.SourceVersion)
-  displayName: 'Coverity'
+    cov-commit-defects --dir idir --ticker-mode none --url $(COV_URL) --stream $(COVERITY_PROJECT)-$(Build.SourceBranchName) --description $(Build.BuildURI) --version $(Build.SourceVersion) --scm git
+  displayName: 'Coverity Analysis'
   env:
     COVERITY_PASSPHRASE: $(COVERITY_PASSPHRASE)

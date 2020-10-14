@@ -1,0 +1,71 @@
+pool:
+  name: private-linux
+
+jobs:
+
+- job: Build
+
+  workspace:
+    clean: all
+
+  steps:
+
+  - task: Maven@3
+    inputs:
+      mavenPomFile: 'pom.xml'
+      goals: 'package -DskipTests'
+      publishJUnitResults: false
+
+- job: Coverity
+
+  dependsOn: Build
+
+  # Coverity enabled on Builds or Pull Requests for master, stage or release branches
+  condition: |
+    or(in(variables['Build.SourceBranchName'],'master','stage','release'),
+    in(variables['System.PullRequest.TargetBranch'],'refs/heads/master','refs/heads/stage','refs/heads/release'))
+
+  variables:
+  - group: coverity-azure
+  - name: COVERITY_TOOL_HOME
+    value: /opt/coverity/analysis/2020.09
+  - name: COVERITY_PROJECT
+    value: hello-java
+
+  workspace:
+    clean: all
+
+  steps:
+
+  # use Coverity plugin for full scans of CI Builds
+  - task: synopsys-coverity.synopsys-coverity-azure-devops.coverity-task.synopsys-coverity@1
+    inputs:
+      coverityService: 'coverity-azure'
+      projectName: '$(COVERITY_PROJECT)'
+      streamName: '$(COVERITY_PROJECT)-$(Build.SourceBranchName)'
+      checkIssues: true
+      issueView: 'Newly Detected Issues'
+      issueStatus: 'unstable'
+      buildCommand: 'mvn -B package -DskipTests'
+      customCommandArgs: true
+      covBuildArgs: '--fs-capture-search $(Build.SourcesDirectory)'
+      covAnalyzeArgs: '--ticker-mode none --strip-path $(Build.SourcesDirectory) --webapp-security'
+      covCommitArgs: '--ticker-mode none --description $(Build.BuildURI) --version $(Build.SourceVersion) --scm git'
+      allowUntrusted: true
+    condition: not(eq(variables['Build.Reason'], 'PullRequest'))
+    displayName: 'Full Scan'
+
+  # use cov-run-desktop for incremental scans of GPRs
+  - bash: |
+      REMOVE="refs/heads/"
+      export SYSTEM_PULLREQUEST_TARGETBRANCHNAME="${SYSTEM_PULLREQUEST_TARGETBRANCH//$REMOVE/}"
+      export CHANGE_SET=$(git --no-pager diff origin/$SYSTEM_PULLREQUEST_TARGETBRANCHNAME --name-only)
+      export STREAM="$(COVERITY_PROJECT)-$SYSTEM_PULLREQUEST_TARGETBRANCHNAME"
+      export PATH=$PATH:$COVERITY_TOOL_HOME/bin
+      set -x
+      cov-build --dir idir mvn -B compile
+      cov-run-desktop --dir idir --url $(COV_URL) --stream $STREAM --present-in-reference false --ignore-uncapturable-inputs true --set-new-defect-owner false --exit1-if-defects true $CHANGE_SET
+    env:
+      COVERITY_PASSPHRASE: $(COVERITY_PASSPHRASE)
+    condition: eq(variables['Build.Reason'], 'PullRequest')
+    displayName: 'Incremental Scan'

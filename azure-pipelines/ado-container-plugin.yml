@@ -1,24 +1,27 @@
 pool:
-  name: 'private-windows'
+  vmImage: ubuntu-latest
+
+container:
+  image: coverity-linux64-2020.09
+  endpoint: acr-chuckaude
 
 variables:
-- group: coverity-onprem
+- group: coverity-azure
 - name: COVERITY_TOOL_HOME
-  value: $(COVERITY_TOOL_HOME_Windows_NT)
-
-workspace:
-  clean: all
+  value: /opt/coverity/analysis/2020.09
+- name: COVERITY_PROJECT
+  value: hello-java
 
 steps:
 - task: synopsys-coverity.synopsys-coverity-azure-devops.coverity-task.synopsys-coverity@1
-  displayName: 'Coverity'
+  displayName: 'Coverity Analysis'
   inputs:
-    coverityService: 'coverity-onprem'
-    projectName: '$(COV_PROJECT)'
-    streamName: '$(COV_PROJECT)-$(Build.SourceBranchName)'
+    coverityService: 'coverity-azure'
+    projectName: '$(COVERITY_PROJECT)'
+    streamName: '$(COVERITY_PROJECT)-$(Build.SourceBranchName)'
     checkIssues: true
-    issueView: 'Outstanding Issues'
-    issueStatus: success
+    issueView: 'Newly Detected Issues'
+    issueStatus: 'unstable'
     buildCommand: 'mvn -B package -DskipTests'
     customCommandArgs: true
     covBuildArgs: '--fs-capture-search $(Build.SourcesDirectory)'

@@ -14,19 +14,18 @@ cache:
     - .m2/repository/
     - target/
 
+image: maven:3.6.3-jdk-11
+
 build:
   stage: build
-  image: maven:3.6.3-jdk-11
   script: mvn $MAVEN_CLI_OPTS compile
 
 test:
   stage: test
-  image: maven:3.6.3-jdk-11
   script: mvn $MAVEN_CLI_OPTS test
 
 deploy:
   stage: deploy
-  image: maven:3.6.3-jdk-11
   only:
     variables:
       - $CI_COMMIT_BRANCH =~ $MAIN_BRANCHES
@@ -64,7 +63,6 @@ coverity-incr:
 
 coverity-gate:
   stage: coverity
-  image: coverity
   only:
     variables:
       - $CI_COMMIT_BRANCH =~ $MAIN_BRANCHES
@@ -79,7 +77,6 @@ coverity-gate:
 # NFS mount Coverity from NFS server
 .coverity-nfs-mount:
   stage: coverity
-  image: maven:3.6.3-jdk-11
   only:
     variables:
       - $CI_COMMIT_BRANCH =~ $MAIN_BRANCHES
@@ -91,13 +88,12 @@ coverity-gate:
     - export PATH=$PATH:/mnt/tools/linux64/analysis/2020.09/bin
     - cov-build --dir idir mvn $MAVEN_CLI_OPTS clean compile
     - cov-analyze --dir idir --ticker-mode none --strip-path $CI_PROJECT_DIR --all --webapp-security
-    - cov-commit-defects --dir idir --ticker-mode none --url $COV_URL --stream $COVERITY_STREAM
+    - cov-commit-defects --dir idir --ticker-mode none --url $COV_URL --stream $COVERITY_STREAM --scm git
         --description $CI_PIPELINE_URL --target Linux_x86_64 --version $CI_COMMIT_SHORT_SHA
 
 # volume mount Coverity from docker host
 .coverity-volume-mount:
   stage: coverity
-  image: maven:3.6.3-jdk-11
   only:
     variables:
       - $CI_COMMIT_BRANCH =~ $MAIN_BRANCHES
@@ -107,13 +103,12 @@ coverity-gate:
     - export PATH=$PATH:/opt/coverity/analysis/2020.09/bin
     - cov-build --dir idir mvn $MAVEN_CLI_OPTS clean compile
     - cov-analyze --dir idir --ticker-mode none --strip-path $CI_PROJECT_DIR --all --webapp-security
-    - cov-commit-defects --dir idir --ticker-mode none --url $COV_URL --stream $COVERITY_STREAM
+    - cov-commit-defects --dir idir --ticker-mode none --url $COV_URL --stream $COVERITY_STREAM --scm git
         --description $CI_PIPELINE_URL --target Linux_x86_64 --version $CI_COMMIT_SHORT_SHA
 
 # download Coverity from server
 .coverity-server-download:
   stage: coverity
-  image: maven:3.6.3-jdk-11
   only:
     variables:
       - $CI_COMMIT_BRANCH =~ $MAIN_BRANCHES
@@ -127,13 +122,12 @@ coverity-gate:
     - cov-configure --java
     - cov-build --dir idir mvn $MAVEN_CLI_OPTS clean compile
     - cov-analyze --dir idir --ticker-mode none --strip-path $CI_PROJECT_DIR --all --webapp-security
-    - cov-commit-defects --dir idir --ticker-mode none --url $COV_URL --stream $COVERITY_STREAM
+    - cov-commit-defects --dir idir --ticker-mode none --url $COV_URL --stream $COVERITY_STREAM --scm git
         --description $CI_PIPELINE_URL --target Linux_x86_64 --version $CI_COMMIT_SHORT_SHA
 
 # use RestAPI to query for issues
 .coverity-results:
   stage: coverity
-  image: coverity
   only:
     variables:
       - $CI_COMMIT_BRANCH =~ $MAIN_BRANCHES

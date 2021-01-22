@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      POLARIS_SERVER_URL:  https://sipse.polaris.synopsys.com/
+      POLARIS_SERVER_URL:  https://sipse.polaris.synopsys.com
       POLARIS_ACCESS_TOKEN:  ${{ secrets.POLARIS_ACCESS_TOKEN }}
 
     steps:

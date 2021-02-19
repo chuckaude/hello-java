@@ -1,5 +1,3 @@
-# Example workflow for Coverity on private self-hosted runners
-
 name: Coverity private runner
 on:
   push:
@@ -14,11 +12,11 @@ jobs:
     runs-on: self-hosted
 
     env:
-      COV_URL: https://coverity.chuckaude.com:8443
-      COV_USER: committer
+      COV_URL: ${{ secrets.COV_URL }}
+      COV_USER: ${{ secrets.COV_USER }}
       COVERITY_PASSPHRASE: ${{ secrets.COVERITY_PASSPHRASE }}
-      COVERITY_PROJECT: hello-java
       COVBIN: /opt/coverity/analysis/current/bin
+      COVERITY_PROJECT: hello-java
       BLDCMD: mvn -B clean compile
       CHECKERS: --webapp-security
 
@@ -42,7 +40,7 @@ jobs:
     - name: Coverity Quality Gate
       if: ${{ github.event_name != 'pull_request' }}
       run: |
-        curl -ksS --user $COV_USER:$COVERITY_PASSPHRASE $COV_URL/api/viewContents/issues/v1/OWASP%20Web%20Top%2010?projectId=$COVERITY_PROJECT > results.json
+        curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE $COV_URL/api/viewContents/issues/v1/OWASP%20Web%20Top%2010?projectId=$COVERITY_PROJECT > results.json
         if [ $(cat results.json | jq .viewContentsV1.totalRows) -ne 0 ]; then cat results.json | jq .viewContentsV1.rows; exit 1; fi
 
     - id: changeset

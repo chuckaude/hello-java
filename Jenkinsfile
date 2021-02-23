@@ -32,8 +32,10 @@ pipeline {
 						cov-commit-defects --dir idir --ticker-mode none --url $COV_URL --stream $COV_STREAM \
 							--description $BUILD_TAG --target Linux_x86_64 --version $GIT_COMMIT
 					'''
-					count = coverityIssueCheck(viewName: 'OWASP Web Top 10', returnIssueCount: true)
-					if (count != 0) { unstable 'issues detected' }
+					script '''
+						count = coverityIssueCheck(viewName: 'OWASP Web Top 10', returnIssueCount: true)
+						if (count != 0) { unstable 'issues detected' }
+					'''
 				}
 			}
 		}

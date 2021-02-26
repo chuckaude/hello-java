@@ -28,14 +28,19 @@ jobs:
 
     - name: Coverity Download
       run: |
-        curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE $COV_URL/downloadFile.htm?fn=$CSA.tar.gz | tar -xzf -
-        curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE -o $CSA/bin/license.dat $COV_URL/downloadFile.htm?fn=license.dat
-        $CSA/bin/cov-configure --java
+        du -sk /tmp
+        ll /tmp
+        env | sort
+        du -sk
+        pwd
+        curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE $COV_URL/downloadFile.htm?fn=$CSA.tar.gz | tar -C /tmp -xzf -
+        curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE -o /tmp/$CSA/bin/license.dat $COV_URL/downloadFile.htm?fn=license.dat
+        /tmp/$CSA/bin/cov-configure --java
 
     - name: Coverity Full Scan
       if: ${{ github.event_name != 'pull_request' }}
       run: |
-        export PATH=$PATH:$CSA/bin
+        export PATH=$PATH:/tmp/$CSA/bin
         set -x
         cov-build --dir idir --fs-capture-search $GITHUB_WORKSPACE --fs-capture-search-exclude-regex $CSA $BLDCMD
         cov-analyze --dir idir --ticker-mode none --strip-path $GITHUB_WORKSPACE $CHECKERS

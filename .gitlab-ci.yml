@@ -14,7 +14,7 @@ cache:
     - .m2/repository/
     - target/
 
-image: maven:3.6.3-jdk-11
+image: maven:3-jdk-11
 
 build:
   stage: build
@@ -74,23 +74,6 @@ coverity-incr:
 
 ### below are additional, disabled examples
 
-# NFS mount Coverity from NFS server
-.coverity-nfs-mount:
-  stage: coverity
-  only:
-    variables:
-      - $CI_COMMIT_BRANCH =~ $MAIN_BRANCHES
-  variables:
-    COVERITY_STREAM: "$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
-  script:
-    - apt-get update && apt-get install -y nfs-common
-    - mount -o nolock nas:/volume1/build /mnt
-    - export PATH=$PATH:/mnt/tools/linux64/analysis/2020.12/bin
-    - cov-build --dir idir --fs-capture-search $CI_PROJECT_DIR mvn $MAVEN_CLI_OPTS clean package -DskipTests
-    - cov-analyze --dir idir --ticker-mode none --strip-path $CI_PROJECT_DIR --all --webapp-security
-    - cov-commit-defects --dir idir --ticker-mode none --url $COV_URL --stream $COVERITY_STREAM --scm git
-        --description $CI_PIPELINE_URL --target Linux_x86_64 --version $CI_COMMIT_SHORT_SHA
-
 # volume mount Coverity from docker host
 .coverity-volume-mount:
   stage: coverity
@@ -116,11 +99,11 @@ coverity-incr:
     COVERITY_STREAM: "$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
     CSA: "cov-analysis-linux64-2020.12"
   script:
-    - curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE $COV_URL/downloadFile.htm?fn=$CSA.tar.gz | tar -xzf -
-    - curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE -o $CSA/bin/license.dat $COV_URL/downloadFile.htm?fn=license.dat
-    - export PATH=$PATH:$CI_PROJECT_DIR/$CSA/bin
+    - curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE $COV_URL/downloadFile.htm?fn=$CSA.tar.gz | tar -C /tmp -xzf -
+    - curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE -o /tmp/$CSA/bin/license.dat $COV_URL/downloadFile.htm?fn=license.dat
+    - export PATH=$PATH:/tmp/$CSA/bin
     - cov-configure --java
-    - cov-build --dir idir --fs-capture-search $CI_PROJECT_DIR --fs-capture-search-exclude-regex $CSA mvn $MAVEN_CLI_OPTS clean package -DskipTests
+    - cov-build --dir idir --fs-capture-search $CI_PROJECT_DIR mvn $MAVEN_CLI_OPTS clean package -DskipTests
     - cov-analyze --dir idir --ticker-mode none --strip-path $CI_PROJECT_DIR --all --webapp-security
     - cov-commit-defects --dir idir --ticker-mode none --url $COV_URL --stream $COVERITY_STREAM --scm git
         --description $CI_PIPELINE_URL --target Linux_x86_64 --version $CI_COMMIT_SHORT_SHA

@@ -11,13 +11,10 @@ jobs:
     clean: all
   steps:
   - task: CmdLine@2
-    displayName: setup
+    displayName: Polaris
     inputs:
       script: |
         curl -fsLOS %POLARIS_SERVER_URL%/api/tools/polaris_cli-win64.zip
-        unzip -j polaris_cli-win64.zip -d .
-        polaris setup --project-name $(project) -e shell="mvn -B clean" -b shell="mvn -B package -DskipTests"
-  - task: CmdLine@2
-    displayName: analyze
-    inputs:
-      script: 'polaris analyze -w'
+        unzip -d /tmp -jo polaris_cli-win64.zip
+        /tmp/polaris setup --project-name $(project) -e shell="mvn -B clean" -b shell="mvn -B package -DskipTests"
+        /tmp/polaris analyze -w'

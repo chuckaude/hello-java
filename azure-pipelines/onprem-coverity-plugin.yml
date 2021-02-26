@@ -4,7 +4,7 @@ pool:
 variables:
 - group: coverity-onprem
 - name: COVERITY_TOOL_HOME
-  value: c:/tools/coverity/analysis/2020.09
+  value: c:/tools/coverity/analysis/2020.12
 - name: COVERITY_PROJECT
   value: hello-java
 
@@ -26,4 +26,4 @@ steps:
     covBuildArgs: '--fs-capture-search $(Build.SourcesDirectory)'
     covAnalyzeArgs: '--ticker-mode none --strip-path $(Build.SourcesDirectory) --webapp-security'
     covCommitArgs: '--ticker-mode none --description $(Build.BuildURI) --version $(Build.SourceVersion) --scm git'
-    allowUntrusted: true
+    allowUntrusted: false

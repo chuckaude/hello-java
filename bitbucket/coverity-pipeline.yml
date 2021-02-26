@@ -25,13 +25,13 @@ pipelines:
             - export COV_STREAM=$BITBUCKET_REPO_SLUG-$BITBUCKET_BRANCH
             - export BUILD_URL=$BITBUCKET_GIT_HTTP_ORIGIN/addon/pipelines/home#!/results/$BITBUCKET_BUILD_NUMBER
             - export CSA=cov-analysis-linux64-2020.12
-            - curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE $COV_URL/downloadFile.htm?fn=$CSA.tar.gz | tar -xzf -
-            - curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE -o $CSA/bin/license.dat $COV_URL/downloadFile.htm?fn=license.dat
-            - export PATH=$PATH:$CSA/bin
+            - curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE $COV_URL/downloadFile.htm?fn=$CSA.tar.gz | tar -C /tmp -xzf -
+            - curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE -o /tmp/$CSA/bin/license.dat $COV_URL/downloadFile.htm?fn=license.dat
+            - export PATH=$PATH:/tmp/$CSA/bin
             - cov-configure --java
-            - cov-build --dir idir mvn -B package -DskipTests
-            - cov-analyze --dir idir --ticker-mode none --strip-path $PWD --webapp-security
-            - cov-commit-defects --dir idir --ticker-mode none --url $COV_URL --stream $COV_STREAM --scm git --description $BUILD_URL --target linux64 --version $BITBUCKET_COMMIT
+            - cov-build --dir idir --fs-capture-search $BITBUCKET_CLONE_DIR mvn -B package -DskipTests
+            - cov-analyze --dir idir --ticker-mode none --strip-path $BITBUCKET_CLONE_DIR --webapp-security
+            - cov-commit-defects --dir idir --ticker-mode none --url $COV_URL --stream $COV_STREAM --scm git --description $BUILD_URL --target Linux_x86_64 --version $BITBUCKET_COMMIT
       - step:
           name: Coverity Quality Gate
           script:
@@ -47,12 +47,12 @@ pipelines:
             - maven
           script:
             - if [[ ! "${BITBUCKET_PR_DESTINATION_BRANCH}" =~ (master|stage|release/*) ]]; then exit; fi
-            - export CHANGE_SET=$(git --no-pager diff origin/$BITBUCKET_PR_DESTINATION_BRANCH --name-only | tr '\n' ' ')
+            - export CHANGE_SET=$(git --no-pager diff origin/$BITBUCKET_PR_DESTINATION_BRANCH --name-only)
             - export COV_STREAM=$BITBUCKET_REPO_SLUG-$BITBUCKET_PR_DESTINATION_BRANCH
             - export CSA=cov-analysis-linux64-2020.12
-            - curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE $COV_URL/downloadFile.htm?fn=$CSA.tar.gz | tar -xzf -
-            - curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE -o $CSA/bin/license.dat $COV_URL/downloadFile.htm?fn=license.dat
-            - export PATH=$PATH:$CSA/bin
+            - curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE $COV_URL/downloadFile.htm?fn=$CSA.tar.gz | tar -C /tmp -xzf -
+            - curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE -o /tmp/$CSA/bin/license.dat $COV_URL/downloadFile.htm?fn=license.dat
+            - export PATH=$PATH:/tmp/$CSA/bin
             - cov-configure --java
-            - cov-run-desktop --dir idir --url $COV_URL --stream $COV_STREAM --build mvn -B compile
+            - cov-run-desktop --dir idir --url $COV_URL --stream $COV_STREAM --build mvn -B package -DskipTests
             - cov-run-desktop --dir idir --url $COV_URL --stream $COV_STREAM --ignore-uncapturable-inputs true --present-in-reference false --exit1-if-defects true $CHANGE_SET

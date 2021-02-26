@@ -10,8 +10,8 @@ jobs:
   workspace:
     clean: all
   steps:
-  - task: synopsys-polaris.synopsys-polaris.synopsys-polaris-task.synopsys-polaris-task@1
-    displayName: 'Synopsys Polaris '
+  - task: synopsys-polaris.synopsys-polaris.synopsys-polaris-task.SynopsysPolaris@1
+    displayName: 'Synopsys Polaris'
     inputs:
       polarisService: 'polaris-sipse'
-      polarisCommand: 'analyze -w'
+      polarisCommand: '--co project.name=$(project) analyze -w -- mvn -B package -DskipTests'

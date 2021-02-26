@@ -17,6 +17,6 @@ jobs:
           name: Polaris scan
           command: |
             curl -fsLOS $POLARIS_SERVER_URL/api/tools/polaris_cli-linux64.zip
-            unzip -j polaris_cli-linux64.zip -d /tmp
+            unzip -d /tmp -jo polaris_cli-linux64.zip
             /tmp/polaris setup --project-name chuckaude-hello-java -e shell="mvn -B clean" -b shell="mvn -B package -DskipTests"
             /tmp/polaris analyze -w

@@ -17,7 +17,7 @@ jobs:
       COVERITY_PASSPHRASE: ${{ secrets.COVERITY_PASSPHRASE }}
       COVBIN: /opt/coverity/analysis/current/bin
       COVERITY_PROJECT: hello-java
-      BLDCMD: mvn -B clean compile
+      BLDCMD: mvn -B clean package -DskipTests
       CHECKERS: --webapp-security
 
     steps:
@@ -32,8 +32,8 @@ jobs:
       run: |
         export PATH=$PATH:$COVBIN
         set -x
-        cov-build --dir idir $BLDCMD
-        cov-analyze --dir idir --ticker-mode none --strip-path $PWD $CHECKERS
+        cov-build --dir idir --fs-capture-search $GITHUB_WORKSPACE $BLDCMD
+        cov-analyze --dir idir --ticker-mode none --strip-path $GITHUB_WORKSPACE $CHECKERS
         cov-commit-defects --dir idir --ticker-mode none --url $COV_URL --stream $COVERITY_PROJECT-${GITHUB_REF##*/} --scm git \
           --description $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID --target $RUNNER_OS --version $GITHUB_SHA
 
@@ -53,6 +53,6 @@ jobs:
       run: |
         export PATH=$PATH:$COVBIN
         set -x
-        cov-build --dir idir $BLDCMD
-        cov-run-desktop --dir idir --url $COV_URL --stream $COVERITY_PROJECT-$GITHUB_BASE_REF --ignore-uncapturable-inputs true \
-          --present-in-reference false --exit1-if-defects true ${{ steps.changeset.outputs.added_modified }}
+        cov-run-desktop --dir idir --url $COV_URL --stream $COVERITY_PROJECT-$GITHUB_BASE_REF --build $BLDCMD
+        cov-run-desktop --dir idir --url $COV_URL --stream $COVERITY_PROJECT-$GITHUB_BASE_REF --present-in-reference false \
+          --ignore-uncapturable-inputs true --exit1-if-defects true ${{ steps.changeset.outputs.added_modified }}

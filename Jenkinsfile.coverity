@@ -1,7 +1,7 @@
 node ('linux64') {
     def GIT_REPO = 'https://github.com/chuckaude/hello-java.git'
     def BRANCH = 'master'
-    def CONNECT = 'https://coverity.chuckaude.com:8443/'
+    def CONNECT = 'https://coverity.chuckaude.com:8443'
     def PROJECT = 'hello-java'
     def STREAM = "$PROJECT-$BRANCH"
     def IDIR = "$WORKSPACE/idir"

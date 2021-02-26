@@ -22,5 +22,5 @@ jobs:
         java-version: 11
     - name: Polaris Scan
       run: |
-        /opt/polaris/bin/polaris setup -p chuckaude-hello-java -e shell='mvn -B clean' -b shell='mvn -B compile'
+        /opt/polaris/bin/polaris setup -p chuckaude-hello-java -e shell='mvn -B clean' -b shell='mvn -B package -DskipTests'
         /opt/polaris/bin/polaris analyze -w

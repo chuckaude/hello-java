@@ -23,5 +23,5 @@ pipelines:
             - maven
           script:
             - curl -fLOsS $POLARIS_SERVER_URL/api/tools/polaris_cli-linux64.zip
-            - unzip -jo polaris_cli-linux64.zip
-            - ./polaris --co project.name=chuckaude-$BITBUCKET_REPO_SLUG analyze -w -- mvn -B package -DskipTests
+            - unzip -d /tmp -jo polaris_cli-linux64.zip
+            - /tmp/polaris --co project.name=chuckaude-$BITBUCKET_REPO_SLUG analyze -w -- mvn -B package -DskipTests

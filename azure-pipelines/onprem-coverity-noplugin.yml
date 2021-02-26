@@ -4,7 +4,7 @@ pool:
 variables:
 - group: coverity-onprem
 - name: COVERITY_TOOL_HOME
-  value: c:/tools/coverity/analysis/2020.09
+  value: c:/tools/coverity/analysis/2020.12
 - name: COVERITY_PROJECT
   value: hello-java
 

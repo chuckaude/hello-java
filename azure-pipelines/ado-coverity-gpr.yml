@@ -23,13 +23,13 @@ jobs:
     in(variables['System.PullRequest.TargetBranch'],'refs/heads/master','refs/heads/stage','refs/heads/release'))
 
   container:
-    image: coverity-linux64-2020.09
+    image: coverity-linux64-2020.12
     endpoint: acr-chuckaude
 
   variables:
   - group: coverity-azure
   - name: COVERITY_TOOL_HOME
-    value: /opt/coverity/analysis/2020.09
+    value: /opt/coverity/analysis/2020.12
   - name: COVERITY_PROJECT
     value: hello-java
 
@@ -49,7 +49,7 @@ jobs:
       covBuildArgs: '--fs-capture-search $(Build.SourcesDirectory)'
       covAnalyzeArgs: '--ticker-mode none --strip-path $(Build.SourcesDirectory) --webapp-security'
       covCommitArgs: '--ticker-mode none --description $(Build.BuildURI) --version $(Build.SourceVersion) --scm git'
-      allowUntrusted: true
+      allowUntrusted: false
     condition: not(eq(variables['Build.Reason'], 'PullRequest'))
     displayName: 'Full Scan'
 
@@ -61,8 +61,8 @@ jobs:
       export STREAM="$(COVERITY_PROJECT)-$SYSTEM_PULLREQUEST_TARGETBRANCHNAME"
       export PATH=$PATH:$COVERITY_TOOL_HOME/bin
       set -x
-      cov-build --dir idir mvn -B compile
-      cov-run-desktop --dir idir --url $(COV_URL) --stream $STREAM --present-in-reference false --ignore-uncapturable-inputs true --set-new-defect-owner false --exit1-if-defects true $CHANGE_SET
+      cov-run-desktop --dir idir --url $(COV_URL) --stream $STREAM --build mvn -B package -DskipTests
+      cov-run-desktop --dir idir --url $(COV_URL) --stream $STREAM --present-in-reference false --ignore-uncapturable-inputs true --exit1-if-defects true $CHANGE_SET
     env:
       COVERITY_PASSPHRASE: $(COVERITY_PASSPHRASE)
     condition: eq(variables['Build.Reason'], 'PullRequest')

@@ -22,6 +22,6 @@ jobs:
         java-version: 11
     - name: Polaris Scan
       run: |
-        curl -LOsS $POLARIS_SERVER_URL/api/tools/polaris_cli-linux64.zip
-        unzip -jo polaris_cli-linux64.zip
-        ./polaris --co project.name=$PROJECT analyze -w -- $BLDCMD
+        curl -fLOsS $POLARIS_SERVER_URL/api/tools/polaris_cli-linux64.zip
+        unzip -d /tmp -jo polaris_cli-linux64.zip
+        /tmp/polaris --co project.name=$PROJECT analyze -w -- $BLDCMD

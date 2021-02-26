@@ -2,13 +2,13 @@ pool:
   vmImage: ubuntu-latest
 
 container:
-  image: coverity-linux64-2020.09
+  image: coverity-linux64-2020.12
   endpoint: acr-chuckaude
 
 variables:
 - group: coverity-azure
 - name: COVERITY_TOOL_HOME
-  value: /opt/coverity/analysis/2020.09
+  value: /opt/coverity/analysis/2020.12
 - name: COVERITY_PROJECT
   value: hello-java
 
@@ -27,4 +27,4 @@ steps:
     covBuildArgs: '--fs-capture-search $(Build.SourcesDirectory)'
     covAnalyzeArgs: '--ticker-mode none --strip-path $(Build.SourcesDirectory) --webapp-security'
     covCommitArgs: '--ticker-mode none --description $(Build.BuildURI) --version $(Build.SourceVersion) --scm git'
-    allowUntrusted: true
+    allowUntrusted: false

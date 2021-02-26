@@ -28,11 +28,6 @@ jobs:
 
     - name: Coverity Download
       run: |
-        du -sk /tmp
-        ll /tmp
-        env | sort
-        du -sk
-        pwd
         curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE $COV_URL/downloadFile.htm?fn=$CSA.tar.gz | tar -C /tmp -xzf -
         curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE -o /tmp/$CSA/bin/license.dat $COV_URL/downloadFile.htm?fn=license.dat
         /tmp/$CSA/bin/cov-configure --java
@@ -61,7 +56,7 @@ jobs:
     - name: Coverity Incremental Scan
       if: ${{ github.event_name == 'pull_request' && steps.changeset.outputs.added_modified != '' }}
       run: |
-        export PATH=$PATH:$CSA/bin
+        export PATH=$PATH:/tmp/$CSA/bin
         set -x
         cov-run-desktop --dir idir --url $COV_URL --stream $COVERITY_PROJECT-$GITHUB_BASE_REF --build $BLDCMD
         cov-run-desktop --dir idir --url $COV_URL --stream $COVERITY_PROJECT-$GITHUB_BASE_REF --present-in-reference false \

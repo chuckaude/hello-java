@@ -37,7 +37,7 @@ jobs:
       run: |
         export PATH=$PATH:/tmp/$CSA/bin
         set -x
-        cov-build --dir idir --fs-capture-search $GITHUB_WORKSPACE --fs-capture-search-exclude-regex $CSA $BLDCMD
+        cov-build --dir idir --fs-capture-search $GITHUB_WORKSPACE $BLDCMD
         cov-analyze --dir idir --ticker-mode none --strip-path $GITHUB_WORKSPACE $CHECKERS
         cov-commit-defects --dir idir --ticker-mode none --url $COV_URL --stream $COVERITY_PROJECT-${GITHUB_REF##*/} --scm git \
           --description $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID --target $RUNNER_OS --version $GITHUB_SHA

@@ -18,7 +18,7 @@ pipeline {
 				COVERITY_TOOL_HOME = '/opt/coverity/analysis/2021.03'
 				COV_URL = 'https://coverity.chuckaude.com:8443'
 				COV_PROJECT = 'hello-java'
-				COV_STREAM = '$COV_PROJECT-$BRANCH_NAME'
+				COV_STREAM = "$COV_PROJECT-$BRANCH_NAME"
 			}
 			steps {
 				withCredentials([usernamePassword(credentialsId: 'coverity-committer', usernameVariable: 'COV_USER', passwordVariable: 'COVERITY_PASSPHRASE')]) {

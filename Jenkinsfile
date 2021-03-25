@@ -11,11 +11,11 @@ pipeline {
 			agent {
 				docker {
 					image 'maven:3-jdk-11'
-					args '-v $HOME/.m2:/root/.m2 -v /opt/coverity:/opt/coverity'
+					args '-v $HOME/.m2:/root/.m2 -v /opt/coverity:/opt/coverity2'
 				}
 			}
 			environment {
-				COVERITY_TOOL_HOME = '/opt/coverity/analysis/2021.03'
+				COVERITY_TOOL_HOME = '/opt/coverity2/analysis/2021.03'
 				COV_URL = 'https://coverity.chuckaude.com:8443'
 				COV_PROJECT = 'hello-java'
 				COV_STREAM = "$COV_PROJECT-$BRANCH_NAME"

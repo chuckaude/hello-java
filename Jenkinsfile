@@ -21,7 +21,7 @@ pipeline {
 				COV_STREAM = "$COV_PROJECT-$BRANCH_NAME"
 			}
 			steps {
-				withCredentials([usernamePassword(credentialsId: 'coverity-committer', usernameVariable: 'COV_USER', passwordVariable: 'COVERITY_PASSPHRASE')]) {
+				withCoverityEnvironment(coverityInstanceUrl: "$COV_URL") {
 					sh '''
 						export PATH=$PATH:$COVERITY_TOOL_HOME/bin
 						cov-build --dir idir --fs-capture-search $WORKSPACE mvn -B clean package -DskipTests

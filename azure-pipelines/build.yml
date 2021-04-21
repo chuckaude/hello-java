@@ -1,12 +1,12 @@
-jobs:
-- job: Build
-  pool:
-    vmImage: vs2017-win2016
-  workspace:
-    clean: all
-  steps:
-  - task: Maven@3
-    inputs:
-      mavenPomFile: 'pom.xml'
-      goals: 'package -DskipTests'
-      publishJUnitResults: false
+pool:
+  vmImage: ubuntu-latest
+
+workspace:
+  clean: all
+
+steps:
+- task: Maven@3
+  inputs:
+    mavenPomFile: 'pom.xml'
+    goals: 'package -DskipTests'
+    publishJUnitResults: false

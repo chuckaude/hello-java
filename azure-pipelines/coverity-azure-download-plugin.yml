@@ -1,0 +1,38 @@
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+- group: coverity-azure
+- name: COVERITY_PROJECT
+  value: $(Build.Repository.Name)
+
+steps:
+
+- script: |
+   CSA=cov-analysis-linux64-2020.12
+   set -x
+   cd $(Agent.BuildDirectory)
+   curl -fLsS --user $(COV_USER):$(COVERITY_PASSPHRASE) $(COV_URL)/downloadFile.htm?fn=$CSA.tar.gz | tar -xzf -
+   curl -fLsS --user $(COV_USER):$(COVERITY_PASSPHRASE) -o license.dat $(COV_URL)/downloadFile.htm?fn=license.dat
+   mv license.dat $CSA/bin
+   COVERITY_TOOL_HOME="$(Agent.BuildDirectory)/$CSA"
+   echo "##vso[task.setvariable variable=COVERITY_TOOL_HOME]$COVERITY_TOOL_HOME"
+   $COVERITY_TOOL_HOME/bin/cov-configure --java
+  env:
+    COVERITY_PASSPHRASE: $(COVERITY_PASSPHRASE)
+  displayName: 'Coverity Download'
+
+- task: synopsys-coverity.synopsys-coverity-azure-devops.coverity-task.synopsys-coverity@1
+  inputs:
+    coverityService: 'coverity-azure'
+    projectName: '$(COVERITY_PROJECT)'
+    streamName: '$(COVERITY_PROJECT)-$(Build.SourceBranchName)'
+    checkIssues: true
+    issueView: 'Outstanding Issues'
+    issueStatus: 'unstable'
+    buildCommand: 'mvn -B package -DskipTests'
+    customCommandArgs: true
+    covBuildArgs: '--fs-capture-search $(Build.SourcesDirectory)'
+    covAnalyzeArgs: '--ticker-mode none --strip-path $(Build.SourcesDirectory) --webapp-security'
+    covCommitArgs: '--ticker-mode none --description $(Build.BuildURI) --version $(Build.SourceVersion) --scm git'
+  displayName: 'Coverity Scan'

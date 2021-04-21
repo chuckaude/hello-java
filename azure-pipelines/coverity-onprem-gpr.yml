@@ -20,40 +20,39 @@ jobs:
 
   dependsOn: Build
 
+  workspace:
+    clean: all
+
   # Coverity enabled on Builds or Pull Requests for master, stage or release branches
   condition: |
     or(in(variables['Build.SourceBranchName'],'master','stage','release'),
     in(variables['System.PullRequest.TargetBranch'],'refs/heads/master','refs/heads/stage','refs/heads/release'))
 
   variables:
-  - group: coverity-azure
+  - group: coverity-onprem
   - name: COVERITY_TOOL_HOME
-    value: /opt/coverity/analysis/2020.12
+    value: /opt/coverity/analysis/2021.03
   - name: COVERITY_PROJECT
-    value: hello-java
-
-  workspace:
-    clean: all
+    value: $(Build.Repository.Name)
 
   steps:
 
   # use Coverity plugin for full scans of CI Builds
   - task: synopsys-coverity.synopsys-coverity-azure-devops.coverity-task.synopsys-coverity@1
     inputs:
-      coverityService: 'coverity-azure'
+      coverityService: 'coverity-onprem'
       projectName: '$(COVERITY_PROJECT)'
       streamName: '$(COVERITY_PROJECT)-$(Build.SourceBranchName)'
       checkIssues: true
-      issueView: 'Newly Detected Issues'
+      issueView: 'Outstanding Issues'
       issueStatus: 'unstable'
       buildCommand: 'mvn -B package -DskipTests'
       customCommandArgs: true
       covBuildArgs: '--fs-capture-search $(Build.SourcesDirectory)'
       covAnalyzeArgs: '--ticker-mode none --strip-path $(Build.SourcesDirectory) --webapp-security'
       covCommitArgs: '--ticker-mode none --description $(Build.BuildURI) --version $(Build.SourceVersion) --scm git'
-      allowUntrusted: false
-    condition: not(eq(variables['Build.Reason'], 'PullRequest'))
     displayName: 'Full Scan'
+    condition: not(eq(variables['Build.Reason'], 'PullRequest'))
 
   # use cov-run-desktop for incremental scans of GPRs
   - bash: |
@@ -67,5 +66,5 @@ jobs:
       cov-run-desktop --dir idir --url $(COV_URL) --stream $STREAM --present-in-reference false --ignore-uncapturable-inputs true --exit1-if-defects true $CHANGE_SET
     env:
       COVERITY_PASSPHRASE: $(COVERITY_PASSPHRASE)
-    condition: eq(variables['Build.Reason'], 'PullRequest')
     displayName: 'Incremental Scan'
+    condition: eq(variables['Build.Reason'], 'PullRequest')

@@ -20,7 +20,7 @@ jobs:
       COV_URL: ${{ secrets.COV_URL }}
       COV_USER: ${{ secrets.COV_USER }}
       COVERITY_PASSPHRASE: ${{ secrets.COVERITY_PASSPHRASE }}
-      COVERITY_PROJECT: hello-java-gha
+      COVERITY_PROJECT: hello-java
       COVHOME: /home/hugues/cov-analysis-linux64-2021.03
       BLDCMD: mvn clean compile
       CHECKERS: --all
@@ -41,7 +41,7 @@ jobs:
         $COVHOME/bin/cov-commit-defects --dir idir --ticker-mode none --url $COV_URL --stream $COVERITY_PROJECT-${GITHUB_REF##*/} --scm git \
           --description $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID --target $RUNNER_OS --version $GITHUB_SHA
         $COVHOME/bin/cov-format-errors --dir idir --json-output-v8 cov-findings-v8.json
-        $COVHOME/node/bin/node $COVHOME/SARIF/cov-format-sarif-for-github.js --inputFile cov-findings-v8.json --outputFile cov-findings-sarif.json --repoName hugues-martin/hello-java-gha --checkoutPath hugues-martin/hello-java-gha src $GITHUB_SHA
+        $COVHOME/node/bin/node $COVHOME/SARIF/cov-format-sarif-for-github.js --inputFile cov-findings-v8.json --outputFile cov-findings-sarif.json --repoName hugues-martin/hello-java --checkoutPath hugues-martin/hello-java src $GITHUB_SHA
     - name: Upload SARIF file
       uses: github/codeql-action/upload-sarif@v1
       with:

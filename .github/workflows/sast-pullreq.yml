@@ -1,0 +1,28 @@
+name: "SAST_PULLREQ"
+on: pull_request
+jobs:
+  Coverity:
+    runs-on: self-hosted
+    env:
+      COV_URL: ${{ secrets.COV_URL }}
+      COV_USER: ${{ secrets.COV_USER }}
+      COVERITY_PASSPHRASE: ${{ secrets.COVERITY_PASSPHRASE }}
+      COVERITY_PROJECT: hello-java
+      COVHOME: /home/hugues/cov-analysis-linux64-2021.03
+      BLDCMD: mvn clean compile
+      CHECKERS: --all
+ 
+    steps:
+    - id: changeset
+      name: Get Pull Request Changeset
+      uses: jitterbit/get-changed-files@v1
+      if: ${{ github.event_name == 'pull_request' }}
+ 
+    - name: Coverity Incremental Scan
+      if: ${{ github.event_name == 'pull_request' && steps.changeset.outputs.added_modified != '' }}
+      run: |
+        export PATH=$PATH:/tmp/$CSA/bin
+        set -x
+        cov-run-desktop --dir idir --url $COV_URL --stream $COVERITY_PROJECT-$GITHUB_BASE_REF --build $BLDCMD
+        cov-run-desktop --dir idir --url $COV_URL --stream $COVERITY_PROJECT-$GITHUB_BASE_REF --present-in-reference false \
+          --ignore-uncapturable-inputs true --exit1-if-defects true ${{ steps.changeset.outputs.added_modified }}    

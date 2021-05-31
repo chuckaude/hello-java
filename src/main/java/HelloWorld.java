@@ -3,6 +3,6 @@ public class HelloWorld {
         //String secret = "It's a secret to everybody.";
         //try { javax.crypto.spec.SecretKeySpec keyspec = new javax.crypto.spec.SecretKeySpec(secret.getBytes("UTF-8"), "AES"); }
         //catch (Exception e) { System.out.println("Something went wrong."); }
-        System.out.println("Hello World!");
+        System.out.println("Hello World Feature 1 !");
     }
 }

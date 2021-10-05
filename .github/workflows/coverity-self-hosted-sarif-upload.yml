@@ -1,7 +1,6 @@
-# This is a basic workflow to help you get started with Actions
 name: Coverity Self-hosted SARIF Upload
-# Controls when the action will run. 
 
+# Controls when the action will run. 
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
@@ -17,15 +16,14 @@ jobs:
   coverity_self_hosted_sarif_upload_steps:
     # The type of runner that the job will run on
     runs-on: self-hosted
-    
+
     # Environment variables
     env:
       COV_URL: ${{ secrets.COV_URL }}
       COV_USER: ${{ secrets.COV_USER }}
       COVERITY_PASSPHRASE: ${{ secrets.COVERITY_PASSPHRASE }}
       COVERITY_TOOL_HOME: /home/mhnam/sig/coverity/analysis/current
-      COVERITY_PROJECT: hello-java-coverity-demo
-      BLDCMD: mvn -B clean package -DskipTests
+      CMD_BLD: mvn -B clean package -DskipTests
       CHECKERS: --webapp-security
       IDIR: idir
 
@@ -40,10 +38,11 @@ jobs:
       run: |
           rm -rf $IDIR
           $COVERITY_TOOL_HOME/bin/cov-configure --java
-          $COVERITY_TOOL_HOME/bin/cov-build --dir $IDIR --fs-capture-search $GITHUB_WORKSPACE $BLDCMD
+          $COVERITY_TOOL_HOME/bin/cov-build --dir $IDIR --fs-capture-search $GITHUB_WORKSPACE $CMD_BLD
           $COVERITY_TOOL_HOME/bin/cov-analyze --dir $IDIR --ticker-mode none --strip-path $GITHUB_WORKSPACE $CHECKERS
           $COVERITY_TOOL_HOME/bin/cov-format-errors --json-output-v8 coverity-errors.json --dir $IDIR
           $COVERITY_TOOL_HOME/node/bin/node $COVERITY_TOOL_HOME/SARIF/cov-format-sarif-for-github.js --inputFile coverity-errors.json --outputFile coverity-errors.sarif --githubUrl $GITHUB_SERVER_URL --repoName $GITHUB_REPOSITORY --checkoutPath $GITHUB_REPOSITORY $GITHUB_WORKSPACE $GITHUB_SHA
+
     - name: Upload SARIF file
       uses: github/codeql-action/upload-sarif@v1
       with:

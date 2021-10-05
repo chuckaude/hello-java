@@ -1,4 +1,5 @@
 name: Coverity Self-hosted Runner
+
 on:
   push:
     branches: [ main ]

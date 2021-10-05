@@ -1,0 +1,51 @@
+# This is a basic workflow to help you get started with Actions
+name: Coverity Self-hosted SARIF Upload
+# Controls when the action will run. 
+
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  # Allows you to run this workflow manually from the Actions tab\
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  coverity_self_hosted_sarif_upload_steps:
+    # The type of runner that the job will run on
+    runs-on: self-hosted
+    
+    # Environment variables
+    env:
+      COV_URL: ${{ secrets.COV_URL }}
+      COV_USER: ${{ secrets.COV_USER }}
+      COVERITY_PASSPHRASE: ${{ secrets.COVERITY_PASSPHRASE }}
+      COVERITY_TOOL_HOME: /home/mhnam/sig/coverity/analysis/current
+      COVERITY_PROJECT: hello-java-coverity-demo
+      BLDCMD: mvn -B clean package -DskipTests
+      CHECKERS: --webapp-security
+      IDIR: idir
+
+    steps:
+    - uses: AutoModality/action-clean@v1    
+    - uses: actions/checkout@v2
+    - uses: actions/setup-java@v1
+      with:
+        java-version: 11
+
+    - name: Coverity Analysis & Create SARIF file
+      run: |
+          rm -rf $IDIR
+          $COVERITY_TOOL_HOME/bin/cov-configure --java
+          $COVERITY_TOOL_HOME/bin/cov-build --dir $IDIR --fs-capture-search $GITHUB_WORKSPACE $BLDCMD
+          $COVERITY_TOOL_HOME/bin/cov-analyze --dir $IDIR --ticker-mode none --strip-path $GITHUB_WORKSPACE $CHECKERS
+          $COVERITY_TOOL_HOME/bin/cov-format-errors --json-output-v8 coverity-errors.json --dir $IDIR
+          $COVERITY_TOOL_HOME/node/bin/node $COVERITY_TOOL_HOME/SARIF/cov-format-sarif-for-github.js --inputFile coverity-errors.json --outputFile coverity-errors.sarif --githubUrl $GITHUB_SERVER_URL --repoName $GITHUB_REPOSITORY --checkoutPath $GITHUB_REPOSITORY $GITHUB_WORKSPACE $GITHUB_SHA
+    - name: Upload SARIF file
+      uses: github/codeql-action/upload-sarif@v1
+      with:
+        # Path to SARIF file relative to the root of the repository
+        sarif_file: coverity-errors.sarif

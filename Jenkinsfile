@@ -1,6 +1,24 @@
 pipeline {
-	agent { node { label 'linux64' } }
+	agent any
+
+	environment {
+		CONNECT = 'http://localhost:8888'
+		PROJECT = 'hello-java'
+	}
+
+
+
 	stages {
+		stage('Build') {
+			steps {
+				sh 'mvn -B compile'
+			}
+		}
+		stage('Test') {
+			steps {
+				sh 'mvn -B test'
+			}
+		}
 		stage('Coverity Full Scan') {
 			when {
 				allOf {
@@ -8,40 +26,49 @@ pipeline {
 					expression { BRANCH_NAME ==~ /(master|stage|release)/ }
 				}
 			}
-			agent {
-				docker {
-					image 'maven:3-jdk-11'
-					args '-v $HOME/.m2:/root/.m2 -v /opt/coverity:/opt/coverity2'
+			steps {
+				withCoverityEnvironment(coverityInstanceUrl: "$CONNECT", projectName: "$PROJECT", streamName: "$PROJECT") {
+					sh '''
+						cov-build --dir idir mvn clean compile
+						cov-analyze --dir idir
+                                                cov-commit-defects --dir idir --stream hello-java --url http://localhost:8888 --user admin --password Password123
+					'''
+
 				}
 			}
-			environment {
-				COVERITY_TOOL_HOME = '/opt/coverity2/analysis/2021.03'
-				COV_URL = 'https://coverity.chuckaude.com:8443'
-				COV_PROJECT = 'hello-java'
-				COV_STREAM = "$COV_PROJECT-$BRANCH_NAME"
+		}
+		stage('Coverity Incremental Scan') {
+			when {
+				allOf {
+					changeRequest()
+					expression { CHANGE_TARGET ==~ /(master|stage|release)/ }
+				}
 			}
 			steps {
-				withCoverityEnvironment(coverityInstanceUrl: "$COV_URL") {
+				withCoverityEnvironment(coverityInstanceUrl: "$CONNECT", projectName: "$PROJECT", streamName: "$PROJECT") {
 					sh '''
-						export PATH=$PATH:$COVERITY_TOOL_HOME/bin
-						cov-build --dir idir --fs-capture-search $WORKSPACE mvn -B clean package -DskipTests
-						cov-analyze --dir idir --ticker-mode none --strip-path $WORKSPACE --webapp-security
-						cov-commit-defects --dir idir --ticker-mode none --url $COV_URL --stream $COV_STREAM \
-							--description $BUILD_TAG --target Linux_x86_64 --version $GIT_COMMIT
+						export CHANGE_SET=$(git --no-pager diff origin/$CHANGE_TARGET --name-only)
+						[ -z "$CHANGE_SET" ] && exit 0
+						cov-run-desktop --dir idir --url http://localhost:8888 --stream hello-java --build mvn -B clean package -DskipTests
+						cov-run-desktop --dir idir --url http://localhost:8888 --stream hello-java --present-in-reference false \
+							--ignore-uncapturable-inputs true --text-output issues.txt $CHANGE_SET
+						if [ -s issues.txt ]; then cat issues.txt; touch issues_found; fi
 					'''
 				}
+
 			}
-			post {
-				cleanup {
-					deleteDir()
-					cleanWs()
-				}
+		}
+		stage('Deploy') {
+			when {
+				expression { BRANCH_NAME ==~ /(master|stage|release)/ }
+			}
+			steps {
+				sh 'mvn -B install'
 			}
 		}
 	}
 	post {
-		cleanup {
-			deleteDir()
+		always {
 			cleanWs()
 		}
 	}

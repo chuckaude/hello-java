@@ -1,11 +1,11 @@
 name: Coverity Self-hosted Runner
 
 on:
-  #push:
-  #  branches: [ main ]
-  #pull_request:
-  #  branches: [ main ]
-  workflow_dispatch:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  #workflow_dispatch:
 
 jobs:
   coverity_self_hosted_runner_steps:

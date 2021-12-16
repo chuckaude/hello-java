@@ -2,9 +2,9 @@ name: Coverity Self-hosted Runner
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master, stage, 'releases/**' ]
   pull_request:
-    branches: [ main ]
+    branches: [ master, stage, 'releases/**' ]
   #workflow_dispatch:
 
 jobs:

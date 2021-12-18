@@ -1,4 +1,5 @@
 pipeline {
+
 	agent any
     
     	environment {
@@ -9,34 +10,46 @@ pipeline {
    		STREAM = "$PROJECT-$BRANCH"
    		IDIR = "$WORKSPACE/idir"
     		jdk = tool name: 'openjdk-11'
-    		env.JAVA_HOME = "${jdk}"
+    		JAVA_HOME = "${jdk}"
     	}
     
-    stage('clean') {
-        cleanWs()
-    }
-    stage('checkout') {
-        git url: "$GIT_REPO", credentialsId: 'github-chuckaude', branch: "$BRANCH"
-        GIT_COMMIT = sh(returnStdout: true, script: 'git log -n 1 --pretty=format:%H').trim()
-    }
-    withCoverityEnvironment(coverityInstanceUrl: "$CONNECT", projectName: "$PROJECT", streamName: "$STREAM") {
-        stage('build') {
-            sh "cov-build --dir $IDIR --fs-capture-search $WORKSPACE mvn -B package -DskipTests"
-        }
-        stage('analyze') {
-            sh "cov-analyze --dir $IDIR --ticker-mode none --strip-path $WORKSPACE --webapp-security"
-        }
-        stage('commit') {
-            sh "cov-commit-defects --dir $IDIR --ticker-mode none --url $COV_URL --stream $COV_STREAM --description $BUILD_TAG --target Linux_x86_64 --version $GIT_COMMIT"
-        }
-        stage('results') {
-            count = coverityIssueCheck(viewName: 'Newly Detected Issues', returnIssueCount: true)
-            if (count != 0) { unstable 'new issues detected' }
-            count = coverityIssueCheck(viewName: 'Outstanding Issues', returnIssueCount: true)
-            if (count != 0) { echo 'outstanding issues detected' }
-        }
-    }
-    stage('clean') {
-        cleanWs()
-    }
+    	stages{
+	    stage('clean') {
+		cleanWs()
+	    }
+	    
+	    stage('checkout') {
+		git url: "$GIT_REPO", credentialsId: 'github-chuckaude', branch: "$BRANCH"
+		GIT_COMMIT = sh(returnStdout: true, script: 'git log -n 1 --pretty=format:%H').trim()
+	    }
+	    
+	    stage('coverity'){
+		    withCoverityEnvironment(coverityInstanceUrl: "$CONNECT", projectName: "$PROJECT", streamName: "$STREAM") {
+			stages('build') {
+			    sh "cov-build --dir $IDIR --fs-capture-search $WORKSPACE mvn -B package -DskipTests"
+			}
+			stages('analyze') {
+			    sh "cov-analyze --dir $IDIR --ticker-mode none --strip-path $WORKSPACE --webapp-security"
+			}
+			stages('commit') {
+			    sh "cov-commit-defects --dir $IDIR --ticker-mode none --url $COV_URL --stream $COV_STREAM --description $BUILD_TAG --target Linux_x86_64 --version $GIT_COMMIT"
+			}
+			stages('results') {
+			    count = coverityIssueCheck(viewName: 'Newly Detected Issues', returnIssueCount: true)
+			    if (count != 0) { unstable 'new issues detected' }
+			    count = coverityIssueCheck(viewName: 'Outstanding Issues', returnIssueCount: true)
+			    if (count != 0) { echo 'outstanding issues detected' }
+			}
+		    }
+	    }	
+	    stage('clean') {
+		cleanWs()
+	    }
+	}
+
+	post {
+		always {
+			cleanWs()
+		}
+	}
 }

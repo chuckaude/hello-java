@@ -8,7 +8,7 @@ pipeline {
 	
 	stages {
 	
-		stage('Coverity Incremental Scan') {
+		stage('Echo Variables') {
 			steps {
 				echo "CHANGE_ID #${env.CHANGE_ID}"
 			}

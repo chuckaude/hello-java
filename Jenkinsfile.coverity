@@ -28,6 +28,7 @@ pipeline {
 				}
 			}
 		}
+		
 		stage('Coverity Incremental Scan') {
 			when {
 				allOf {

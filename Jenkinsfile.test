@@ -7,16 +7,6 @@ pipeline {
 	}
 
 	stages {
-		stage('Build') {
-			steps {
-				sh 'mvn -B compile'
-			}
-		}
-		stage('Test') {
-			steps {
-				sh 'mvn -B test'
-			}
-		}
 		stage('Coverity Full Scan') {
 			steps {
 				withCoverityEnvironment(coverityInstanceUrl: "$CONNECT", projectName: "$PROJECT", streamName: "$PROJECT-$BRANCH_NAME") {

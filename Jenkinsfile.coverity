@@ -22,7 +22,7 @@ pipeline {
 			when {
 				allOf {
 					not { changeRequest() }
-					expression { BRANCH_NAME ==~ /(master|stage|release)/ }
+					# expression { BRANCH_NAME ==~ /(master|stage|release)/ }
 				}
 			}
 			steps {
@@ -44,7 +44,7 @@ pipeline {
 			when {
 				allOf {
 					changeRequest()
-					expression { CHANGE_TARGET ==~ /(master|stage|release)/ }
+					# expression { CHANGE_TARGET ==~ /(master|stage|release)/ }
 				}
 			}
 			steps {

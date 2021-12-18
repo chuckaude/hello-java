@@ -6,10 +6,6 @@ pipeline {
 		PROJECT = 'hello-java'
 	}
 
-	tools {
-		jdk 'openjdk-11'
-	}
-
 	stages {
 		stage('Build') {
 			steps {

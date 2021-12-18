@@ -3,7 +3,7 @@ pipeline {
 
 	environment {
 		CONNECT = 'http://sal-moonhyun-vm01.dc1.lan:8080'
-		PROJECT = 'hello-java'
+		PROJECT = 'hello-java-coverity-demo'
 	}
 
 	stages {
@@ -52,7 +52,7 @@ pipeline {
 		}
 		stage('Deploy') {
 			when {
-				expression { BRANCH_NAME ==~ /(master|stage|release)/ }
+				expression { env.BRANCH_NAME ==~ /(master|stage|release)/ }
 			}
 			steps {
 				sh 'mvn -B install'

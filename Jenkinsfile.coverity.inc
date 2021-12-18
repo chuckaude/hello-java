@@ -5,10 +5,6 @@ pipeline {
 		CONNECT = 'http://sal-moonhyun-vm01.dc1.lan:8080'
 		PROJECT = 'hello-java-coverity-demo'
 	}
-
-	tools {
-		jdk 'openjdk-11'
-	}
 	
 	stages {
 		stage('Coverity Incremental Scan') {

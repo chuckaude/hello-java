@@ -1,10 +1,10 @@
 pipeline {
 	agent any
     
-    def GIT_REPO = 'https://github.com/chuckaude/hello-java.git'
+    def GIT_REPO = 'https://github.com/blesseed/hello-java.git'
     def BRANCH = 'master'
-    def CONNECT = 'https://coverity.chuckaude.com:8443'
-    def PROJECT = 'hello-java'
+    def CONNECT = 'http://sal-moonhyun-vm01.dc1.lan:8080'
+    def PROJECT = 'hello-java-coverity-demo'
     def STREAM = "$PROJECT-$BRANCH"
     def IDIR = "$WORKSPACE/idir"
     jdk = tool name: 'openjdk-11'

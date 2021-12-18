@@ -33,7 +33,7 @@ pipeline {
 			steps {
 				withCoverityEnvironment(coverityInstanceUrl: "$CONNECT", projectName: "$PROJECT", streamName: "$PROJECT-$BRANCH_NAME") {
 					script { // Coverity Quality Gate
-						count = coverityIssueCheck(viewName: 'OWASP Web Top 10', returnIssueCount: true)
+						count = coverityIssueCheck(viewName: 'OWASP Web Top 2010', returnIssueCount: true)
 						if (count != 0) { unstable 'issues detected' }
 					}
 				}

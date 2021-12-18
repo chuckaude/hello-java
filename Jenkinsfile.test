@@ -2,11 +2,21 @@ pipeline {
 	agent any
 
 	environment {
-		CONNECT = 'http://sal-moonhyun-vm01.dc1.lan:8080'
+		CONNECT = 'https://coverity.chuckaude.com:8443'
 		PROJECT = 'hello-java'
 	}
 
 	stages {
+		stage('Build') {
+			steps {
+				sh 'mvn -B compile'
+			}
+		}
+		stage('Test') {
+			steps {
+				sh 'mvn -B test'
+			}
+		}
 		stage('Coverity Full Scan') {
 			when {
 				allOf {
@@ -50,6 +60,14 @@ pipeline {
 				script { // Coverity Quality Gate
 					if (fileExists('issues_found')) { unstable 'issues detected' }
 				}
+			}
+		}
+		stage('Deploy') {
+			when {
+				expression { env.BRANCH_NAME ==~ /(master|stage|release)/ }
+			}
+			steps {
+				sh 'mvn -B install'
 			}
 		}
 	}

@@ -10,8 +10,8 @@ pipeline {
 		stage('Coverity Incremental Scan') {
 			when {
 				allOf {
-					changeRequest()
-					expression { CHANGE_TARGET ==~ /(master|stage|release)/ }
+				    expression { env.CHANGE_ID != null }
+				    expression { env.CHANGE_TARGET != null }
 				}
 			}
 			steps {

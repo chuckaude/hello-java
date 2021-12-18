@@ -1,4 +1,4 @@
-node ('linux64') {
+node ('Built-In') {
     def GIT_REPO = 'https://github.com/chuckaude/hello-java.git'
     def BRANCH = 'master'
     def CONNECT = 'https://coverity.chuckaude.com:8443'

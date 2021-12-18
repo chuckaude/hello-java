@@ -11,7 +11,7 @@ pipeline {
 
 		stage('Coverity Full Scan') {
 			when {
-				not { changeRequest() }
+				expression { env.CHANGE_ID == null }
 			}
 			steps {
 				withCoverityEnvironment(coverityInstanceUrl: "$CONNECT", projectName: "$PROJECT", streamName: "$PROJECT-$BRANCH_NAME") {
@@ -30,9 +30,14 @@ pipeline {
 		}
 		stage('Coverity Incremental Scan') {
 			when {
-				changeRequest()
+				allOf {
+				    expression { env.CHANGE_ID != null }
+				    expression { env.CHANGE_TARGET != null }
+				}
 			}
 			steps {
+				echo "Building PR #${env.CHANGE_ID}"
+				
 				withCoverityEnvironment(coverityInstanceUrl: "$CONNECT", projectName: "$PROJECT", streamName: "$PROJECT-$CHANGE_TARGET") {
 					sh '''
 						export CHANGE_SET=$(git --no-pager diff origin/$CHANGE_TARGET --name-only)

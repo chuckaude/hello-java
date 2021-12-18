@@ -2,7 +2,7 @@ pipeline {
 	agent any
 
 	environment {
-		CONNECT = 'https://coverity.chuckaude.com:8443'
+		CONNECT = 'http://sal-moonhyun-vm01.dc1.lan:8080'
 		PROJECT = 'hello-java'
 	}
 

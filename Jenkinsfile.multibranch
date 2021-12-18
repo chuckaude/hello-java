@@ -4,7 +4,6 @@ pipeline {
 	environment {
 		CONNECT = 'http://sal-moonhyun-vm01.dc1.lan:8080'
 		PROJECT = 'hello-java-coverity-demo'
-		STREAM = "$PROJECT-jenkins"
 	}
 	
 	stages {	

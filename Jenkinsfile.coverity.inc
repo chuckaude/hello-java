@@ -8,6 +8,10 @@ pipeline {
 	
 	stages {
 		stage('Coverity Incremental Scan') {
+		
+			echo "CHANGE_ID #${env.CHANGE_ID}"
+			echo "CHANGE_TARGET #${env.CHANGE_TARGET}"
+		
 			when {
 				allOf {
 				    expression { env.CHANGE_ID != null }

@@ -14,7 +14,7 @@ pipeline {
 				allOf {
 					not { changeRequest() }
 					//expression { BRANCH_NAME ==~ /(master|stage|release)/ }
-					expression { BRANCH_NAME ==~ /(master|test)/ }
+					expression {env.BRANCH_NAME == 'master'}
 				}
 			}
 			steps {
@@ -36,9 +36,10 @@ pipeline {
 		stage('Coverity Incremental Scan') {
 			when {
 				allOf {
-					changeRequest()
+					//changeRequest()
 					//expression { BRANCH_NAME ==~ /(master|stage|release)/ }
-					expression { BRANCH_NAME ==~ /(master|test)/ }
+					//expression { BRANCH_NAME ==~ /(master|test)/ }
+					expression { env.BRANCH_NAME.startsWith('PR') }
 				}
 			}
 			steps {

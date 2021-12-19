@@ -59,9 +59,9 @@ pipeline {
 		}
 
 		stage('Deploy') {
-			when {
-				expression { BRANCH_NAME ==~ /(master|stage|release)/ }
-			}
+			//when {
+			//	expression { BRANCH_NAME ==~ /(master|stage|release)/ }
+			//}
 			steps {
 				sh 'mvn -B install'
 			}

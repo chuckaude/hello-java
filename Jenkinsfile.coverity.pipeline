@@ -13,10 +13,7 @@ pipeline {
 	stages {
 		stage('Coverity Full Scan') {
 			when {
-			//	allOf {
-					not { changeRequest() }
-			//		expression { env.BRANCH_NAME ==~ /(master|stage|release)/ }
-			//	}
+				expression { env.BRANCH_NAME.startsWith('PR') == false }
 			}
 			steps {
 				withCoverityEnvironment(coverityInstanceUrl: "$CONNECT", projectName: "$PROJECT", streamName: "$STREAM") {
@@ -36,11 +33,7 @@ pipeline {
 		
 		stage('Coverity Incremental Scan') {
 			when {
-			//	allOf {
-			//		{ changeRequest() }
-					changeRequest()
-			//		expression { env.BRANCH_NAME ==~ /(master|stage|release)/ }
-			//	}
+				expression { env.BRANCH_NAME.startsWith('PR') }
 			}
 			steps {
 				

@@ -11,13 +11,6 @@ pipeline {
 	}
 
 	stages {
-
-		stage('Initial Stage'){
-		        script {
-			  isPullRequest = env.CHANGE_ID != null
-			}
-		}
-		
 		stage('Coverity Full Scan') {
 			when {
 			//	allOf {

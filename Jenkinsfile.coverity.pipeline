@@ -60,14 +60,14 @@ pipeline {
 			}
 		}
 
-		stage('Deploy') {
+		//stage('Deploy') {
 			//when {
 			//	expression { BRANCH_NAME ==~ /(master|stage|release)/ }
 			//}
-			steps {
-				sh 'mvn -B install'
-			}
-		}
+		//	steps {
+		//		sh 'mvn -B install'
+		//	}
+		//}
 	}
 	post {
 		always {

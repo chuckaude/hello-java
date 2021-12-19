@@ -8,11 +8,7 @@ pipeline {
 	}
 
 	stages {
-
 		stage('Coverity Full Scan') {
-			when {
-				expression { env.CHANGE_ID == null }
-			}
 			steps {
 				withCoverityEnvironment(coverityInstanceUrl: "$CONNECT", projectName: "$PROJECT", streamName: "$PROJECT-$BRANCH_NAME") {
 					sh '''
@@ -26,40 +22,6 @@ pipeline {
 						if (count != 0) { unstable 'issues detected' }
 					}
 				}
-			}
-		}
-		
-		stage('Coverity Incremental Scan') {
-			when {
-				allOf {
-				    expression { env.CHANGE_ID != null }
-				    expression { env.CHANGE_TARGET != null }
-				}
-			}
-			steps {
-				echo "Building PR #${env.CHANGE_ID}"
-				
-				withCoverityEnvironment(coverityInstanceUrl: "$CONNECT", projectName: "$PROJECT", streamName: "$PROJECT-$CHANGE_TARGET") {
-					sh '''
-						export CHANGE_SET=$(git --no-pager diff origin/$CHANGE_TARGET --name-only)
-						[ -z "$CHANGE_SET" ] && exit 0
-						cov-run-desktop --dir idir --url $COV_URL --stream $COV_STREAM --build mvn -B clean package -DskipTests
-						cov-run-desktop --dir idir --url $COV_URL --stream $COV_STREAM --present-in-reference false \
-							--ignore-uncapturable-inputs true --text-output issues.txt $CHANGE_SET
-						if [ -s issues.txt ]; then cat issues.txt; touch issues_found; fi
-					'''
-				}
-				script { // Coverity Quality Gate
-					if (fileExists('issues_found')) { unstable 'issues detected' }
-				}
-			}
-		}
-		stage('Deploy') {
-			when {
-				expression { BRANCH_NAME ==~ /(master|stage|release)/ }
-			}
-			steps {
-				sh 'mvn -B install'
 			}
 		}
 	}

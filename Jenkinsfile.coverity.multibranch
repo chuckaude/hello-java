@@ -13,7 +13,8 @@ pipeline {
 			when {
 				allOf {
 					not { changeRequest() }
-					expression { BRANCH_NAME ==~ /(master|stage|release)/ }
+					//expression { BRANCH_NAME ==~ /(master|stage|release)/ }
+					expression { BRANCH_NAME ==~ /(master|test)/ }
 				}
 			}
 			steps {
@@ -35,8 +36,9 @@ pipeline {
 		stage('Coverity Incremental Scan') {
 			when {
 				allOf {
-					not { changeRequest() }
-					expression { BRANCH_NAME ==~ /(master|stage|release)/ }
+					changeRequest()
+					//expression { BRANCH_NAME ==~ /(master|stage|release)/ }
+					expression { BRANCH_NAME ==~ /(master|test)/ }
 				}
 			}
 			steps {
@@ -54,15 +56,6 @@ pipeline {
 				script { // Coverity Quality Gate
 					if (fileExists('issues_found')) { unstable 'issues detected' }
 				}
-			}
-		}
-
-		stage('Deploy') {
-			when {
-				expression { BRANCH_NAME ==~ /(master|stage|release)/ }
-			}
-			steps {
-				sh 'mvn -B install'
 			}
 		}
 	}

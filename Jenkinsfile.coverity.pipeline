@@ -13,7 +13,7 @@ pipeline {
 	stages {
 		stage('Coverity Full Scan') {
 			when {
-				expression { env.BRANCH_NAME.startsWith('PR') == false }
+				expression { !env.BRANCH_NAME.startsWith('PR')}
 			}
 			steps {
 				withCoverityEnvironment(coverityInstanceUrl: "$CONNECT", projectName: "$PROJECT", streamName: "$STREAM") {

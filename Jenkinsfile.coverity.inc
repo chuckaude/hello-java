@@ -5,12 +5,13 @@ pipeline {
 	environment {
 		CONNECT = 'http://sal-moonhyun-vm01.dc1.lan:8080'
 		PROJECT = 'hello-java-coverity-demo'
+		STREAM = "$PROJECT-jenkins"
 	}
 	
 	stages {
 		stage('Coverity Incremental Scan') {
 			steps {
-				withCoverityEnvironment(coverityInstanceUrl: "$CONNECT", projectName: "$PROJECT", streamName: "$PROJECT-$CHANGE_TARGET") {
+				withCoverityEnvironment(coverityInstanceUrl: "$CONNECT", projectName: "$PROJECT", streamName: "$STREAM") {
 					sh '''
 						export CHANGE_SET=$(git --no-pager diff origin/$CHANGE_TARGET --name-only)
 						[ -z "$CHANGE_SET" ] && exit 0

@@ -10,10 +10,10 @@ pipeline {
 	stages {
 		stage('Coverity Incremental Scan') {
 			when {
-			//	allOf {
-			//		changeRequest()
+				allOf {
+					changeRequest()
 					expression { CHANGE_TARGET ==~ /(master|stage|release)/ }
-			//	}
+				}
 			}
 			steps {
 				withCoverityEnvironment(coverityInstanceUrl: "$CONNECT", projectName: "$PROJECT", streamName: "$PROJECT-$CHANGE_TARGET") {

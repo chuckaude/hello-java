@@ -36,7 +36,8 @@ pipeline {
 		stage('Coverity Incremental Scan') {
 			when {
 			//	allOf {
-					{ changeRequest() }
+			//		{ changeRequest() }
+					changeRequest()
 			//		expression { BRANCH_NAME ==~ /(master|stage|release)/ }
 			//	}
 			}

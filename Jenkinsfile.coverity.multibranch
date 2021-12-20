@@ -15,6 +15,7 @@ pipeline {
 					//expression { BRANCH_NAME ==~ /(master|stage|release)/ }
 					//expression {env.BRANCH_NAME == 'master'}
 					expression {env.CHANGE_TARGET ==== 'master'}
+					expression { env.CHANGE_SET != null }
 				}
 			}
 			steps {
@@ -39,6 +40,7 @@ pipeline {
 					//changeRequest()
 					//expression { BRANCH_NAME ==~ /(master|stage|release)/ }
 					expression { env.BRANCH_NAME.startsWith('PR') }
+					expression { env.CHANGE_SET != null }
 				}
 			}
 			steps {

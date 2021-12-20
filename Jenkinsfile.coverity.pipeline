@@ -15,7 +15,8 @@ pipeline {
 			when {
 				allOf {
 					not { changeRequest() }
-					expression { env.CHANGE_SET != null }
+					//expression { env.CHANGE_SET != null }
+					expression {env.BRANCH_NAME == 'master'}
 				}
 			}
 			steps {

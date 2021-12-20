@@ -15,7 +15,7 @@ pipeline {
 			when {
 				allOf {
 					not { changeRequest() }
-					expression { CHANGE_TARGET ==~ /(master|stage|release)/ }
+					//expression { CHANGE_TARGET ==~ /(master|stage|release)/ }
 				}
 			}
 			steps {
@@ -38,14 +38,14 @@ pipeline {
 			when {
 				allOf {
 					changeRequest()
-					expression { CHANGE_TARGET ==~ /(master|stage|release)/ }
+					//expression { CHANGE_TARGET ==~ /(master|stage|release)/ }
 				}
 			}
 			steps {
 				
 				withCoverityEnvironment(coverityInstanceUrl: "$CONNECT", projectName: "$PROJECT", streamName: "$STREAM") {
 					sh '''
-						export CHANGE_SET=$(git --no-pager diff origin/$CHANGE_TARGET --name-only)
+						export CHANGE_SET=$(git --no-pager diff origin/$env.CHANGE_TARGET --name-only)
 						[ -z "$CHANGE_SET" ] && exit 0
 						cov-run-desktop --dir idir --url $COV_URL --stream $COV_STREAM --build mvn -B clean package -DskipTests
 						cov-run-desktop --dir idir --url $COV_URL --stream $COV_STREAM --present-in-reference false \

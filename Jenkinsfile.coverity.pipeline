@@ -13,10 +13,10 @@ pipeline {
 	stages {
 		stage('Coverity Full Scan') {
 			when {
-				allOf {
+				//allOf {
 					not { changeRequest() }
-					//expression { CHANGE_TARGET ==~ /(master|stage|release)/ }
-				}
+				//	expression { CHANGE_TARGET ==~ /(master|stage|release)/ }
+				//}
 			}
 			steps {
 				withCoverityEnvironment(coverityInstanceUrl: "$CONNECT", projectName: "$PROJECT", streamName: "$STREAM") {
@@ -36,13 +36,12 @@ pipeline {
 		
 		stage('Coverity Incremental Scan') {
 			when {
-				allOf {
+				//allOf {
 					changeRequest()
-					//expression { CHANGE_TARGET ==~ /(master|stage|release)/ }
-				}
+				//	expression { CHANGE_TARGET ==~ /(master|stage|release)/ }
+				//}
 			}
 			steps {
-				
 				withCoverityEnvironment(coverityInstanceUrl: "$CONNECT", projectName: "$PROJECT", streamName: "$STREAM") {
 					sh '''
 						export CHANGE_SET=$(git --no-pager diff origin/$env.CHANGE_TARGET --name-only)
@@ -58,15 +57,6 @@ pipeline {
 				}
 			}
 		}
-
-		//stage('Deploy') {
-			//when {
-			//	expression { BRANCH_NAME ==~ /(master|stage|release)/ }
-			//}
-		//	steps {
-		//		sh 'mvn -B install'
-		//	}
-		//}
 	}
 	post {
 		always {

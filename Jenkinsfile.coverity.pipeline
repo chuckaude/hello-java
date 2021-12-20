@@ -13,7 +13,10 @@ pipeline {
 	stages {
 		stage('Coverity Full Scan') {
 			when {
-				not { changeRequest() }
+				allOf {
+					not { changeRequest() }
+					expression { env.CHANGE_SET != null }
+				}
 			}
 			steps {
 				withCoverityEnvironment(coverityInstanceUrl: "$CONNECT", projectName: "$PROJECT", streamName: "$STREAM") {
@@ -33,7 +36,10 @@ pipeline {
 		
 		stage('Coverity Incremental Scan') {
 			when {
-				changeRequest()
+				allOf {
+					changeRequest()
+					expression { env.CHANGE_SET != null }
+				}				
 			}
 			steps {
 				withCoverityEnvironment(coverityInstanceUrl: "$CONNECT", projectName: "$PROJECT", streamName: "$STREAM") {

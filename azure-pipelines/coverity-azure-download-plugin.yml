@@ -2,14 +2,14 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-- group: coverity-azure
+- group: coverity-aws.chuckaude.com
 - name: COVERITY_PROJECT
   value: $(Build.Repository.Name)
 
 steps:
 
 - script: |
-   CSA=cov-analysis-linux64-2020.12
+   CSA=cov-analysis-linux64-2021.12.1
    set -x
    cd $(Agent.BuildDirectory)
    curl -fLsS --user $(COV_USER):$(COVERITY_PASSPHRASE) $(COV_URL)/downloadFile.htm?fn=$CSA.tar.gz | tar -xzf -
@@ -24,7 +24,8 @@ steps:
 
 - task: synopsys-coverity.synopsys-coverity-azure-devops.coverity-task.synopsys-coverity@1
   inputs:
-    coverityService: 'coverity-azure'
+    coverityService: 'coverity-aws.chuckaude.com'
+    allowUntrusted: false
     projectName: '$(COVERITY_PROJECT)'
     streamName: '$(COVERITY_PROJECT)-$(Build.SourceBranchName)'
     checkIssues: true

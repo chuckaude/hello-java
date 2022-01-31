@@ -5,7 +5,7 @@ workspace:
   clean: all
 
 variables:
-  - group: polaris-sipse
+  - group: sipse.polaris.synopsys.com
   - name: PROJECT
     value: 'chuckaude-$(Build.Repository.Name)'
 

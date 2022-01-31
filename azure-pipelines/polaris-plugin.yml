@@ -11,6 +11,8 @@ variables:
 steps:
 - task: synopsys-polaris.synopsys-polaris.synopsys-polaris-task.SynopsysPolaris@1
   inputs:
-    polarisService: 'polaris-sipse'
+    polarisService: 'sipse.polaris.synopsys.com'
     polarisCommand: '--co project.name=$(PROJECT) analyze -w -- mvn -B package -DskipTests'
+    waitForIssues: true
+    populateChangeSetFile: true
   displayName: 'Polaris Scan'

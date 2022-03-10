@@ -1,0 +1,28 @@
+# Polaris on a GitHub-hosted ephemeral runner
+name: polaris-ephemeral
+
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  polaris:
+    runs-on: ubuntu-latest
+
+    env:
+      POLARIS_SERVER_URL: ${{ secrets.POLARIS_SERVER_URL }}
+      POLARIS_ACCESS_TOKEN: ${{ secrets.POLARIS_ACCESS_TOKEN }}
+      PROJECT: chuckaude-hello-java
+      BLDCMD: mvn -B compile
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-java@v1
+      with:
+        java-version: 11
+    - name: Polaris Scan
+      run: |
+        curl -fLOsS $POLARIS_SERVER_URL/api/tools/polaris_cli-linux64.zip
+        unzip -d $RUNNER_TEMP -jo polaris_cli-linux64.zip
+        $RUNNER_TEMP/polaris --co project.name=$PROJECT analyze -w -- $BLDCMD

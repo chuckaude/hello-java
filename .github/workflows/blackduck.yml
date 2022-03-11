@@ -24,4 +24,4 @@ jobs:
     - name: Black Duck Scan
       uses: blackducksoftware/github-action@v2
       with:
-        args: --detect.project.name=$PROJECT --detect.project.version.name=$BRANCH --detect.tools=SIGNATURE_SCAN,DETECTOR
+        args: --detect.project.name=$PROJECT --detect.project.version.name=$BRANCH --detect.excluded.detector.types=GRADLE

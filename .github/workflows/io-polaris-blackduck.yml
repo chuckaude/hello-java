@@ -50,7 +50,7 @@ jobs:
       if: ${{steps.prescription.outputs.scaScan == 'true' }}
       uses: blackducksoftware/github-action@v2
       with:
-        args: --detect.project.name=$PROJECT --detect.project.version.name=$BRANCH --detect.tools=SIGNATURE_SCAN,DETECTOR
+        args: --detect.project.name=$PROJECT --detect.project.version.name=$BRANCH --detect.excluded.detector.types=GRADLE
 
     - name: Synopsys Intelligent Security Scan
       if: ${{ steps.prescription.outputs.sastScan == 'true' || steps.prescription.outputs.scaScan == 'true' }}

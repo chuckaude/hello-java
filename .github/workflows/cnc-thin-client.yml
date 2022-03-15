@@ -32,7 +32,5 @@ jobs:
     - name: Coverity Full Scan
       if: ${{ github.event_name != 'pull_request' }}
       run: |
-        export PATH=$PATH:$RUNNER_TEMP/bin
-        export COVERITY_CLI_ANALYSIS_LOCATION=cloud
         export COVERITY_CLI_CLOUD_ANALYSIS_ASYNC=false
-        coverity scan -o commit.connect.url=$COV_URL -o commit.connect.stream=$COV_STREAM -- $BLDCMD
+        $RUNNER_TEMP/bin/coverity scan -o analyze.location=connect -o commit.connect.url=$COV_URL -o commit.connect.stream=$COV_STREAM -- $BLDCMD

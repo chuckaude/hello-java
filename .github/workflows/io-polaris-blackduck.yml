@@ -3,7 +3,7 @@ name: io-polaris-blackduck
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
@@ -17,7 +17,7 @@ jobs:
       BLACKDUCK_API_TOKEN: ${{ secrets.BLACKDUCK_API_TOKEN }}
       PROJECT: chuckaude-hello-java
       #BRANCH: ${GITHUB_REF##*/}
-      BRANCH: master
+      BRANCH: main
       BLDCMD: mvn -B compile
 
     steps:

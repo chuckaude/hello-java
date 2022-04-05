@@ -1,6 +1,6 @@
 node ('linux64') {
     def GIT_REPO = 'https://github.com/chuckaude/hello-java.git'
-	def BRANCH = 'master'
+	def BRANCH = 'main'
     def PROJECT = 'chuckaude-hello-java'
     jdk = tool name: 'openjdk-11'
     env.JAVA_HOME = "${jdk}"

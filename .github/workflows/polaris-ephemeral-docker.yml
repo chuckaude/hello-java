@@ -3,7 +3,7 @@ name: polaris-ephemeral-docker
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:

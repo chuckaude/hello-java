@@ -23,10 +23,10 @@ jobs:
   workspace:
     clean: all
 
-  # Coverity enabled on Builds or Pull Requests for master, stage or release branches
+  # Coverity enabled on Builds or Pull Requests for main, stage or release branches
   condition: |
-    or(in(variables['Build.SourceBranchName'],'master','stage','release'),
-    in(variables['System.PullRequest.TargetBranch'],'refs/heads/master','refs/heads/stage','refs/heads/release'))
+    or(in(variables['Build.SourceBranchName'],'main','stage','release'),
+    in(variables['System.PullRequest.TargetBranch'],'refs/heads/main','refs/heads/stage','refs/heads/release'))
 
   variables:
   - group: coverity-onprem

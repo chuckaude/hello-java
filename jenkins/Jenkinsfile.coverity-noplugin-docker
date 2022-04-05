@@ -6,7 +6,7 @@ pipeline {
 			when {
 				allOf {
 					not { changeRequest() }
-					expression { BRANCH_NAME ==~ /(master|stage|release)/ }
+					expression { BRANCH_NAME ==~ /(main|stage|release)/ }
 				}
 			}
 			agent {

@@ -10,7 +10,7 @@ pipelines:
           - mvn -B verify --file pom.xml
 
   branches:
-    '{master,stage,release/*}':
+    '{main,stage,release/*}':
       - step:
           name: Build and Test
           caches:

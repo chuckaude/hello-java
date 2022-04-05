@@ -3,9 +3,9 @@ name: coverity-ephemeral
 
 on:
   push:
-    branches: [ master, stage, 'releases/**' ]
+    branches: [ main, stage, 'releases/**' ]
   pull_request:
-    branches: [ master, stage, 'releases/**' ]
+    branches: [ main, stage, 'releases/**' ]
   workflow_dispatch:
 
 jobs:

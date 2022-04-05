@@ -7,7 +7,7 @@ stages:
 variables:
   MAVEN_CLI_OPTS: "--batch-mode"
   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
-  MAIN_BRANCHES: "/master|stage|release/"
+  MAIN_BRANCHES: "/main|stage|release/"
 
 cache:
   paths:

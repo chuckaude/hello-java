@@ -10,7 +10,7 @@ pipelines:
           - mvn -B verify --file pom.xml
 
   branches:
-    '{master,stage,release/*}':
+    '{main,stage,release/*}':
       - step:
           name: Build and Test
           caches:
@@ -46,7 +46,7 @@ pipelines:
           caches:
             - maven
           script:
-            - if [[ ! "${BITBUCKET_PR_DESTINATION_BRANCH}" =~ (master|stage|release/*) ]]; then exit; fi
+            - if [[ ! "${BITBUCKET_PR_DESTINATION_BRANCH}" =~ (main|stage|release/*) ]]; then exit; fi
             - export CHANGE_SET=$(git --no-pager diff origin/$BITBUCKET_PR_DESTINATION_BRANCH --name-only)
             - export COV_STREAM=$BITBUCKET_REPO_SLUG-$BITBUCKET_PR_DESTINATION_BRANCH
             - export CSA=cov-analysis-linux64-2020.12

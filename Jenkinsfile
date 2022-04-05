@@ -25,7 +25,7 @@ pipeline {
 			when {
 				allOf {
 					not { changeRequest() }
-					expression { BRANCH_NAME ==~ /(master|stage|release)/ }
+					expression { BRANCH_NAME ==~ /(main|stage|release)/ }
 				}
 			}
 			steps {
@@ -47,7 +47,7 @@ pipeline {
 			when {
 				allOf {
 					changeRequest()
-					expression { CHANGE_TARGET ==~ /(master|stage|release)/ }
+					expression { CHANGE_TARGET ==~ /(main|stage|release)/ }
 				}
 			}
 			steps {
@@ -68,7 +68,7 @@ pipeline {
 		}
 		stage('Deploy') {
 			when {
-				expression { BRANCH_NAME ==~ /(master|stage|release)/ }
+				expression { BRANCH_NAME ==~ /(main|stage|release)/ }
 			}
 			steps {
 				sh 'mvn -B install'

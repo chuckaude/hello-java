@@ -8,19 +8,15 @@ def BLDCMD = 'mvn -B package -DskipTests'
 def COVBIN = '/opt/coverity/analysis/latest/bin'
 
 pipeline {
-    agent {
-        docker {
-            image 'maven:3-openjdk-11'
-            args '-v $HOME/.m2:/home/build/.m2 -v /opt/coverity/analysis:/opt/coverity/analysis -v $HOME/.coverity:/home/build/.coverity'
-        }
-    }
-    environment {
-        HOME = '/home/build'
-        JAVA_TOOL_OPTIONS = '-Duser.home=/home/build'
+    agent { label 'linux64' }
+    tools {
+        maven 'maven-3.8'
+        jdk 'openjdk-11'
     }
     stages {
         stage('checkout') {
             steps {
+                cleanWs()
                 git url: "$GIT_REPO", branch: "$BRANCH", credentialsId: 'github-chuckaude'
             }
         }

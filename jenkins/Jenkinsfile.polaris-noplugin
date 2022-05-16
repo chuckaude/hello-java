@@ -1,0 +1,37 @@
+def GIT_REPO = 'https://github.com/chuckaude/hello-java.git'
+def BRANCH = 'main'
+def PROJECT = 'chuckaude-hello-java'
+def BLDCMD = 'mvn -B package -DskipTests'
+
+pipeline {
+    agent { label 'linux64' }
+    tools {
+        maven 'maven-3.8'
+        jdk 'openjdk-11'
+    }
+    stages {
+        stage('checkout') {
+            steps {
+                cleanWs()
+                git url: "$GIT_REPO", branch: "$BRANCH", credentialsId: 'github-chuckaude'
+            }
+        }
+        stage('polaris') {
+            steps {
+                withCredentials([string(credentialsId: 'polaris-sipse', variable: 'POLARIS_ACCESS_TOKEN')]) {
+                    sh """
+                        curl -fLOsS $POLARIS_SERVER_URL/api/tools/polaris_cli-linux64.zip
+                        unzip -d /tmp -jo polaris_cli-linux64.zip && rm -f polaris_cli-linux64.zip
+                        /tmp/polaris --co project.name=$PROJECT --co capture.build.cleanCommands='null' analyze -w -- $BLDCMD
+                    """
+                }
+            }
+        }
+    }
+    post {
+        always {
+            archiveArtifacts artifacts: '.synopsys/polaris/configuration/synopsys.yml, .synopsys/polaris/data/coverity/*/idir/build-log.txt'
+            cleanWs()
+        }
+    }
+}

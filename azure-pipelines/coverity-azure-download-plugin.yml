@@ -3,37 +3,34 @@ pool:
 
 variables:
 - group: coverity-aws.chuckaude.com
-- name: COVERITY_PROJECT
-  value: $(Build.Repository.Name)
+- name: COVERITY_VERSION
+  value: cov-analysis-linux64-2022.6.0
 
 steps:
 
 - script: |
-   CSA=cov-analysis-linux64-2021.12.1
-   set -x
-   cd $(Agent.BuildDirectory)
-   curl -fLsS --user $(COV_USER):$(COVERITY_PASSPHRASE) $(COV_URL)/downloadFile.htm?fn=$CSA.tar.gz | tar -xzf -
-   curl -fLsS --user $(COV_USER):$(COVERITY_PASSPHRASE) -o license.dat $(COV_URL)/downloadFile.htm?fn=license.dat
-   mv license.dat $CSA/bin
-   COVERITY_TOOL_HOME="$(Agent.BuildDirectory)/$CSA"
-   echo "##vso[task.setvariable variable=COVERITY_TOOL_HOME]$COVERITY_TOOL_HOME"
-   $COVERITY_TOOL_HOME/bin/cov-configure --java
+    COVERITY_TOOL_HOME=$(Agent.TempDirectory)/$COVERITY_VERSION
+    set -x
+    curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE $COV_URL/downloadFile.htm?fn=$COVERITY_VERSION.tar.gz | tar -C $(Agent.TempDirectory) -xzf -
+    curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE -o $COVERITY_TOOL_HOME/bin/license.dat $COV_URL/downloadFile.htm?fn=license.dat
+    $COVERITY_TOOL_HOME/bin/cov-configure --java
+    echo "##vso[task.setvariable variable=COVERITY_TOOL_HOME]$COVERITY_TOOL_HOME"
   env:
     COVERITY_PASSPHRASE: $(COVERITY_PASSPHRASE)
   displayName: 'Coverity Download'
 
-- task: synopsys-coverity.synopsys-coverity-azure-devops.coverity-task.synopsys-coverity@1
+- task: synopsys-coverity@1
   inputs:
     coverityService: 'coverity-aws.chuckaude.com'
-    allowUntrusted: false
-    projectName: '$(COVERITY_PROJECT)'
-    streamName: '$(COVERITY_PROJECT)-$(Build.SourceBranchName)'
+    projectName: '$(Build.Repository.Name)'
+    streamName: '$(Build.Repository.Name)-$(Build.SourceBranchName)'
     checkIssues: true
     issueView: 'Outstanding Issues'
     issueStatus: 'unstable'
-    buildCommand: 'mvn -B package -DskipTests'
+    buildCommand: 'mvn -B -DskipTests package'
     customCommandArgs: true
     covBuildArgs: '--fs-capture-search $(Build.SourcesDirectory)'
     covAnalyzeArgs: '--ticker-mode none --strip-path $(Build.SourcesDirectory) --webapp-security'
     covCommitArgs: '--ticker-mode none --description $(Build.BuildURI) --version $(Build.SourceVersion) --scm git'
+    allowUntrusted: true
   displayName: 'Coverity Scan'

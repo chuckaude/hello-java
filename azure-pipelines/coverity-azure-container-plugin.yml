@@ -2,28 +2,27 @@ pool:
   vmImage: ubuntu-latest
 
 container:
-  image: coverity-linux64-2020.12
+  image: coverity-linux64-2022.6.0
   endpoint: acr-chuckaude
 
 variables:
-- group: coverity-azure
+- group: coverity-aws.chuckaude.com
 - name: COVERITY_TOOL_HOME
-  value: /opt/coverity/analysis/2020.12
-- name: COVERITY_PROJECT
-  value: $(Build.Repository.Name)
+  value: /opt/coverity/analysis/2022.6.0
 
 steps:
-- task: synopsys-coverity.synopsys-coverity-azure-devops.coverity-task.synopsys-coverity@1
+- task: synopsys-coverity@1
   inputs:
-    coverityService: 'coverity-azure'
-    projectName: '$(COVERITY_PROJECT)'
-    streamName: '$(COVERITY_PROJECT)-$(Build.SourceBranchName)'
+    coverityService: 'coverity-aws.chuckaude.com'
+    projectName: '$(Build.Repository.Name)'
+    streamName: '$(Build.Repository.Name)-$(Build.SourceBranchName)'
     checkIssues: true
     issueView: 'Outstanding Issues'
     issueStatus: 'unstable'
-    buildCommand: 'mvn -B package -DskipTests'
+    buildCommand: 'mvn -B -DskipTests package'
     customCommandArgs: true
     covBuildArgs: '--fs-capture-search $(Build.SourcesDirectory)'
     covAnalyzeArgs: '--ticker-mode none --strip-path $(Build.SourcesDirectory) --webapp-security'
     covCommitArgs: '--ticker-mode none --description $(Build.BuildURI) --version $(Build.SourceVersion) --scm git'
+    allowUntrusted: true
   displayName: 'Coverity Scan'

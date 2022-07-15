@@ -6,7 +6,7 @@ workspace:
 
 variables:
 - name: COVERITY_TOOL_HOME
-  value: /opt/coverity/analysis/2021.12.1
+  value: /opt/coverity/analysis/2022.6.0
 
 steps:
 - task: synopsys-coverity.synopsys-coverity-azure-devops.coverity-task.synopsys-coverity@1
@@ -17,7 +17,7 @@ steps:
     checkIssues: true
     issueView: 'Outstanding Issues'
     issueStatus: 'unstable'
-    buildCommand: 'mvn -B package -DskipTests'
+    buildCommand: 'mvn -B -DskipTests package'
     customCommandArgs: true
     covBuildArgs: '--fs-capture-search $(Build.SourcesDirectory)'
     covAnalyzeArgs: '--ticker-mode none --strip-path $(Build.SourcesDirectory) --webapp-security'

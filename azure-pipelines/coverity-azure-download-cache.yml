@@ -1,0 +1,35 @@
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+- group: coverity-aws.chuckaude.com
+- name: COVERITY_TOOLKIT
+  value: cov-analysis-linux64-2022.6.0
+- name: COVERITY_TOOL_HOME
+  value: $(Agent.TempDirectory)/$(COVERITY_TOOLKIT)
+
+steps:
+
+- task: Cache@2
+  inputs:
+    key: '"$(COVERITY_TOOLKIT)"'
+    path: '$(COVERITY_TOOL_HOME)'
+    cacheHitVar: 'CACHE_RESTORED'
+  enabled: true
+  displayName: 'Cache Coverity Tool Installation'
+
+- script: |
+    set -x
+    curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE $COV_URL/downloadFile.htm?fn=$COVERITY_TOOLKIT.tar.gz | tar -C $(Agent.TempDirectory) -xzf -
+    curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE -o $COVERITY_TOOL_HOME/bin/license.dat $COV_URL/downloadFile.htm?fn=license.dat
+  env:
+    COVERITY_PASSPHRASE: $(COVERITY_PASSPHRASE)
+  condition: ne(variables.CACHE_RESTORED, 'true')
+  displayName: 'Coverity Download'
+
+- script: |
+   set -x
+   $COVERITY_TOOL_HOME/bin/coverity scan -o commit.connect.url=$COV_URL -o commit.connect.stream=$(Build.Repository.Name)-$(Build.SourceBranchName)
+  env:
+    COVERITY_PASSPHRASE: $(COVERITY_PASSPHRASE)
+  displayName: 'Coverity Scan'

@@ -14,7 +14,6 @@ steps:
     set -x
     curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE $COV_URL/downloadFile.htm?fn=$COVERITY_TOOLKIT.tar.gz | tar -C $(Agent.TempDirectory) -xzf -
     curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE -o $COVERITY_TOOL_HOME/bin/license.dat $COV_URL/downloadFile.htm?fn=license.dat
-    $COVERITY_TOOL_HOME/bin/cov-configure --java
   env:
     COVERITY_PASSPHRASE: $(COVERITY_PASSPHRASE)
   displayName: 'Coverity Download'
@@ -27,10 +26,7 @@ steps:
     checkIssues: true
     issueView: 'Outstanding Issues'
     issueStatus: 'unstable'
-    buildCommand: 'mvn -B -DskipTests package'
-    customCommandArgs: true
-    covBuildArgs: '--fs-capture-search $(Build.SourcesDirectory)'
-    covAnalyzeArgs: '--ticker-mode none --strip-path $(Build.SourcesDirectory) --webapp-security'
-    covCommitArgs: '--ticker-mode none --description $(Build.BuildURI) --version $(Build.SourceVersion) --scm git'
+    coverityRunType: 'custom'
+    customCoverityCommands: 'coverity scan -o commit.connect.url=$COV_URL -o commit.connect.stream=$COV_STREAM'
     allowUntrusted: true
   displayName: 'Coverity Scan'

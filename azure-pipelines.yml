@@ -28,3 +28,8 @@ steps:
     mavenAuthenticateFeed: false
     effectivePomSkip: false
     sonarQubeRunAnalysis: false
+ 
+ - task: SynopsysDetectTask@7
+   inputs:
+     BlackDuckService: 'Partner-Demo'
+     DetectVersion: 'latest'

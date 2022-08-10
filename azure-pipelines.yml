@@ -31,5 +31,6 @@ steps:
  
 - task: SynopsysDetectTask@7
   inputs:
-     BlackDuckService: 'Partner-Demo'
-     DetectVersion: 'latest'
+    BlackDuckService: 'Partner-Demo'
+    DetectArguments: '--detect.impact.analysis.enabled=true --detect.policy.check.fail.on.severities=ALL  --detect.blackduck.scan.mode=INTELLIGENT --detect.impact.analysis.output.path=hello-javaDoc'
+    DetectVersion: 'latest'

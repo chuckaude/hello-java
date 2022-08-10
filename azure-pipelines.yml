@@ -1,4 +1,7 @@
 # Starter pipeline
+- task: CmdLine@2
+  inputs:
+    script: 'powershell "[Net.ServicePointManager]::SecurityProtocol = ''tls12''; irm https://detect.synopsys.com/detect7.ps1?$(Get-Random) | iex;" detect --blackduck.url=https://partner-demo.blackduck.synopsys.com --blackduck.api.token=YjUwNzcwMDAtNWM3Zi00ZjBjLThkZjEtNTlkZTMwNDhhMzA1OjU4MmVlMmYwLTc5ZmQtNGIxNi05MTAyLTNiZWRkMmMxMGUwZg==   --detect.impact.analysis.enabled=true --detect.policy.check.fail.on.severities=ALL  --detect.blackduck.scan.mode=RAPID --detect.impact.analysis.output.path=c:\codebases1\helo-java-script'
 # Start with a minimal pipeline that you can customize to build and deploy your code.
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
@@ -28,9 +31,7 @@ steps:
     mavenAuthenticateFeed: false
     effectivePomSkip: false
     sonarQubeRunAnalysis: false
- 
-- task: SynopsysDetectTask@7
+ - task: CmdLine@2
   inputs:
-    BlackDuckService: 'Partner-Demo'
-    DetectArguments: '--detect.impact.analysis.enabled=true --detect.policy.check.fail.on.severities=ALL  --detect.blackduck.scan.mode=INTELLIGENT --detect.impact.analysis.output.path=hello-javaDoc'
-    DetectVersion: 'latest'
+    script: 'powershell "[Net.ServicePointManager]::SecurityProtocol = ''tls12''; irm https://detect.synopsys.com/detect7.ps1?$(Get-Random) | iex;" detect --blackduck.url=https://partner-demo.blackduck.synopsys.com --blackduck.api.token=YjUwNzcwMDAtNWM3Zi00ZjBjLThkZjEtNTlkZTMwNDhhMzA1OjU4MmVlMmYwLTc5ZmQtNGIxNi05MTAyLTNiZWRkMmMxMGUwZg==   --detect.impact.analysis.enabled=true --detect.policy.check.fail.on.severities=ALL  --detect.blackduck.scan.mode=RAPID --detect.impact.analysis.output.path=c:\codebases1\helo-java-script'
+  

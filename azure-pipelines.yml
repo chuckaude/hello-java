@@ -30,6 +30,6 @@ steps:
     sonarQubeRunAnalysis: false
  
 - task: SynopsysDetectTask@7
-   inputs:
+  inputs:
      BlackDuckService: 'Partner-Demo'
      DetectVersion: 'latest'

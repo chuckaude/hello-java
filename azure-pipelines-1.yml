@@ -24,4 +24,4 @@ steps:
 
 - task: CmdLine@2
   inputs:
-      script: 'bash <(curl -s -L https://detect.synopsys.com/detect7.sh) --blackduck.url=https://partner-demo.blackduck.synopsys.com --blackduck.api.token=YjUwNzcwMDAtNWM3Zi00ZjBjLThkZjEtNTlkZTMwNDhhMzA1OjU4MmVlMmYwLTc5ZmQtNGIxNi05MTAyLTNiZWRkMmMxMGUwZg==   --detect.impact.analysis.enabled=true --detect.policy.check.fail.on.severities=ALL  --detect.blackduck.scan.mode=RAPID'
+      script: 'bash <(curl -s -L https://detect.synopsys.com/detect7.sh) --blackduck.url=https://partner-demo.blackduck.synopsys.com --blackduck.api.token=YjUwNzcwMDAtNWM3Zi00ZjBjLThkZjEtNTlkZTMwNDhhMzA1OjU4MmVlMmYwLTc5ZmQtNGIxNi05MTAyLTNiZWRkMmMxMGUwZg=='

@@ -29,8 +29,8 @@ steps:
     effectivePomSkip: false
     sonarQubeRunAnalysis: false
 
- - task: SynopsysDetectTask@7
-   inputs:
-     BlackDuckService: 'Partner-Demo'
-     DetectArguments: '--detect.policy.check.fail.on.severities=ALL --detect.impact.analysis.output.path='c:\codebases1\helo-java-script1'
-     DetectVersion: 'latest'
+- task: SynopsysDetectTask@7
+  inputs:
+    BlackDuckService: 'Partner-Demo'
+    DetectArguments: '--detect.policy.check.fail.on.severities=ALL --detect.impact.analysis.output.path=c:\codebases1\helo-java-script1'
+    DetectVersion: 'latest'

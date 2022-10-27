@@ -32,5 +32,5 @@ steps:
  - task: SynopsysDetectTask@7
    inputs:
      BlackDuckService: 'Partner-Demo'
-     DetectArguments: '--detect.policy.check.fail.on.severities=ALL  --detect.blackduck.scan.mode=RAPID --detect.impact.analysis.output.path=c:\codebases1\helo-java-script1'
+     DetectArguments: '--detect.policy.check.fail.on.severities=ALL --detect.impact.analysis.output.path='c:\codebases1\helo-java-script1'
      DetectVersion: 'latest'

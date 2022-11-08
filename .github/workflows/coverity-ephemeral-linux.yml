@@ -1,0 +1,51 @@
+# demonstrate Coverity toolkit caching on ephemeral build agents
+name: coverity-ephemeral-linux
+
+on:
+  push:
+    branches: [ main, master, stage ]
+  workflow_dispatch:
+
+jobs:
+  coverity:
+    runs-on: ubuntu-latest
+
+    env:
+      COV_URL: ${{ secrets.COV_URL }}
+      COV_USER: ${{ secrets.COV_USER }}
+      COVERITY_PASSPHRASE: ${{ secrets.COVERITY_PASSPHRASE }}
+      COVERITY_PROJECT: ${{ github.event.repository.name }}
+      COVERITY_STREAM: ${{ github.event.repository.name }}-${{ github.ref_name }}
+      TOOLKIT: cov-analysis-linux64-2022.9.1
+      BLDCMD: mvn -B -DskipTests package
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2.5.0
+
+    - name: Setup Java JDK
+      uses: actions/setup-java@v3.6.0
+      with:
+        java-version: 11
+        distribution: microsoft
+        cache: maven
+
+    # designate the Coverity toolkit as something to cache, for more details see:
+    # https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows
+    - name: Cache Coverity Toolkit
+      id: cache-coverity
+      uses: actions/cache@v3.0.11
+      with:
+        path: ${{ runner.temp }}/${{ env.TOOLKIT }}
+        key: ${{ env.TOOLKIT }}
+
+    # download Coverity only if cache-hit from above is not true
+    - name: Coverity Download
+      if: ${{ steps.cache-coverity.outputs.cache-hit != 'true' }}
+      run: |
+        curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE $COV_URL/downloadFile.htm?fn=$TOOLKIT.tar.gz | tar -C $RUNNER_TEMP -xzf -
+        curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE -o $RUNNER_TEMP/$TOOLKIT/bin/license.dat $COV_URL/downloadFile.htm?fn=license.dat
+
+    - name: Coverity Scan
+      run: |
+        $RUNNER_TEMP/$TOOLKIT/bin/coverity scan -o commit.connect.url=$COV_URL -o commit.connect.stream=$COVERITY_STREAM -- $BLDCMD

@@ -21,7 +21,11 @@ jobs:
     - uses: actions/setup-java@v1
       with:
         java-version: 11
+        
     - name: Black Duck Scan
       uses: blackducksoftware/github-action@v2
       with:
         args: --detect.project.name=$PROJECT --detect.project.version.name=$BRANCH --detect.excluded.detector.types=GRADLE
+    - name: Upload to CoPilot
+      if: github.event_name == 'push' || github.event_name == 'pull_request'
+      run: bash <(curl -s https://copilot.blackducksoftware.com/ci/githubactions/scripts/upload)

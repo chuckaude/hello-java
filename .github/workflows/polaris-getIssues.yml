@@ -1,0 +1,34 @@
+# demonstrate Polaris quality gate with getIssues
+name: polaris-getIssues
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  polaris:
+    runs-on: ubuntu-latest
+
+    env:
+      POLARIS_SERVER_URL: ${{ secrets.POLARIS_SERVER_URL }}
+      POLARIS_ACCESS_TOKEN: ${{ secrets.POLARIS_ACCESS_TOKEN }}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2.5.0
+    - name: Setup Java JDK
+      uses: actions/setup-java@v3.6.0
+      with:
+        java-version: 11
+        distribution: microsoft
+        cache: maven
+    - name: Polaris Scan
+      run: |
+        curl -fLOsS $POLARIS_SERVER_URL/api/tools/polaris_cli-linux64.zip
+        unzip -d $RUNNER_TEMP -jo polaris_cli-linux64.zip
+        $RUNNER_TEMP/polaris --co project.name=chuckaude-${{ github.event.repository.name }} analyze -w
+    - name: Polaris Quality Gate
+      run: |
+        curl -fLOsS https://www.chuckaude.com/repo/getIssues && chmod +x getIssues
+        ./getIssues --project chuckaude-${{ github.event.repository.name }} --branch ${{ github.ref_name }} --severity high --spec checker,path --exit1-if-issues

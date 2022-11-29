@@ -1,0 +1,54 @@
+# Polaris on a GitHub-hosted ephemeral runner
+name: polaris-incremental
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  polaris:
+    runs-on: ubuntu-latest
+
+    env:
+      POLARIS_SERVER_URL: ${{ secrets.POLARIS_SERVER_URL }}
+      POLARIS_ACCESS_TOKEN: ${{ secrets.POLARIS_ACCESS_TOKEN }}
+      POLARIS_ZIP: polaris_cli-linux64.zip
+      PROJECT: chuckaude-${{ github.event.repository.name }}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2.5.0
+    - name: Setup Java JDK
+      uses: actions/setup-java@v3.6.0
+      with:
+        java-version: 11
+        distribution: microsoft
+        cache: maven
+
+    - name: Polaris Full Scan
+      if: ${{ github.event_name != 'pull_request' }}
+      run: |
+        curl -fLOsS $POLARIS_SERVER_URL/api/tools/$POLARIS_ZIP
+        unzip -d $RUNNER_TEMP -jo $POLARIS_ZIP && rm -f $POLARIS_ZIP
+        $RUNNER_TEMP/polaris --co project.name=$PROJECT analyze -w
+
+    - id: changeset
+      name: Get Pull Request Changeset
+      uses: jitterbit/get-changed-files@v1
+      if: ${{ github.event_name == 'pull_request' }}
+
+    - name: Polaris Incremental Scan
+      if: ${{ github.event_name == 'pull_request' && steps.changeset.outputs.added_modified != '' }}
+      run: |
+        curl -fLOsS $POLARIS_SERVER_URL/api/tools/$POLARIS_ZIP
+        unzip -d $RUNNER_TEMP -jo $POLARIS_ZIP && rm -f $POLARIS_ZIP
+        export POLARIS_FF_ENABLE_COVERITY_INCREMENTAL=true
+        echo ${{ steps.changeset.outputs.added_modified }} | tee changeset.txt
+        $RUNNER_TEMP/polaris --co project.name=$PROJECT --co project.branch=$GITHUB_BASE_REF analyze -w --incremental changeset.txt
+        COUNT=$(cat .synopsys/polaris/data/coverity/*/idir/incremental-results/new-issues.json | jq '. | length')
+        if [ $COUNT -ne 0 ]; then
+          echo "$COUNT new issues detected, do something here"
+        fi

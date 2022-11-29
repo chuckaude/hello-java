@@ -13,4 +13,3 @@ analyze:
 install:
   coverity:
     version: default
-serverUrl: https://sipse.polaris.synopsys.com

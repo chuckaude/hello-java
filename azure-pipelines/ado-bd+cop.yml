@@ -1,0 +1,45 @@
+# example ADO pipeline for Black Duck + Coverity on Polaris using the Synopsys Detect and Polaris plugins for Jenkins
+trigger:
+- develop
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- task: JavaToolInstaller@0
+  displayName: 'Use Java 17'
+  inputs:
+    versionSpec: 17
+    jdkArchitectureOption: x64
+    jdkSourceOption: PreInstalled
+
+- task: Maven@4
+  inputs:
+    options: '-B'
+
+- task: SynopsysDetectTask@7
+  displayName: 'Black Duck Scan'
+  inputs:
+    BlackDuckService: testing.blackduck.synopsys.com
+    DetectArguments: '--detect.project.name=chuckaude-$(Build.Repository.Name) --detect.project.version.name=$(Build.SourceBranchName)'
+
+- task: SynopsysPolaris@1
+  displayName: 'Coverity on Polaris Scan'
+  inputs:
+    polarisService: 'sipse.polaris.synopsys.com'
+    polarisCommand: 'analyze -w'
+
+- task: CopyFiles@2
+  displayName: 'Copy Log Files'
+  inputs:
+    Contents: |
+      .synopsys/polaris/configuration/synopsys.yml
+      .synopsys/polaris/data/coverity/*/idir/build-log.txt
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    flattenFolders: true
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Log Files'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'logs'

@@ -1,9 +1,10 @@
-# Black Duck on GitHub-hosted ephemeral runner
+# example workflow for Black Duck scans using the legacy Black Duck Action
+# https://github.com/blackducksoftware/github-action
 name: blackduck
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, master, stage, release ]
   workflow_dispatch:
 
 jobs:
@@ -17,10 +18,16 @@ jobs:
       BRANCH: ${GITHUB_REF##*/}
 
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-java@v1
+    - name: Checkout Source
+      uses: actions/checkout@v3
+    - name: Setup Java JDK
+      uses: actions/setup-java@v3
       with:
         java-version: 11
+        distribution: microsoft
+        cache: maven
+    - name: Maven Build
+      run: mvn -B -DskipTests package
     - name: Black Duck Scan
       uses: blackducksoftware/github-action@v2
       with:

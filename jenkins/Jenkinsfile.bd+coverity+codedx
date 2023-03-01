@@ -1,0 +1,135 @@
+// Example Jenkinsfile with SIG Security Scan that implements:
+// - Black Duck INTELLIGENT & Coverity FULL scans on pushes to "important" branches
+// - Black Duck RAPID & Coverity INCREMENTAL scans on PRs to "important" branches
+// - Black Duck RAPID scans only on "unimportant" branches
+// - Import results into CodeDX on pushes to "important" branches
+
+// normally not needed, unless you have multiple Connect instances
+// see also coverityInstanceUrl in withCoverityEnvironment below
+def CONNECT = 'https://cnc.chuckaude.com'
+
+// CodeDX plugin only supports projectId, not projectName, see ER CDX-1693
+// need to manually lookup projectId and set here
+def CODEDX_PROJECT_ID = '1'
+
+pipeline {
+    agent { label 'linux64' }
+    environment {
+        // production branches on which we want security reports
+        PRODUCTION = "${env.BRANCH_NAME ==~ /^(stage|release)$/ ? 'true' : 'false'}"
+        // Coverity full scan on important branches
+        FULLSCAN = "${env.BRANCH_NAME ==~ /^(main|master|develop|stage|release)$/ ? 'true' : 'false'}"
+        // Coverity incremental scan on PRs to important branches
+        INCRSCAN = "${env.CHANGE_TARGET ==~ /^(main|master|develop|stage|release)$/ ? 'true' : 'false'}"
+        // set project name to be repo name
+        PROJECT = sh(script: "basename $GIT_URL .git", returnStdout: true).trim()
+        // avoid exposing secrets stored in environment variables
+        COVERITY_NO_LOG_ENVIRONMENT_VARIABLES = '1'
+        // only needed on shared SE Black Duck Hub instance
+        DETECT_EXCLUDED_DETECTOR_TYPES = 'GIT'
+    }
+    tools {
+        maven 'maven-3.8'
+        jdk 'openjdk-17'
+    }
+    stages {
+        stage('Build') {
+            steps {
+                sh 'mvn -B compile'
+            }
+        }
+        stage('Test') {
+            steps {
+                sh 'mvn -B test'
+            }
+        }
+        stage('Scan') {
+            parallel {
+                stage('Black Duck') {
+                    environment {
+                        DETECT_PROJECT_NAME = "$PROJECT"
+                        DETECT_PROJECT_VERSION_NAME = "$BRANCH_NAME"
+                        DETECT_CODE_LOCATION_NAME = "$PROJECT-$BRANCH_NAME"
+                        DETECT_BLACKDUCK_SCAN_MODE = "${env.FULLSCAN == 'true' ? 'INTELLIGENT' : 'RAPID'}"
+                        DETECT_RISK_REPORT_PDF = "${env.PRODUCTION == 'true' ? 'true' : 'false'}"
+                    }
+                    steps {
+                        script {
+                            status = synopsys_detect detectProperties: "--detect.policy.check.fail.on.severities=BLOCKER --detect.timeout=300", returnStatus: true
+                            if (status == 3) { unstable 'Policy Violation' }
+                            else if (status != 0) { error 'Detect Failure' }
+                        }
+                    }
+                }
+                stage('Coverity Full Scan') {
+                    when { environment name: 'FULLSCAN', value: 'true' }
+                    steps {
+                        withCoverityEnvironment(coverityInstanceUrl: "$CONNECT", projectName: "$PROJECT", streamName: "$PROJECT-$BRANCH_NAME") {
+                            sh "coverity scan -o analyze.location=connect -o commit.connect.url=$COV_URL -o commit.connect.stream=$COV_STREAM -o commit.connect.description=$BUILD_TAG"
+                            script {
+                                count = coverityIssueCheck viewName: 'Outstanding Issues', returnIssueCount: true
+                                if (count != 0) { unstable 'Issues Detected' }
+                            }
+                        }
+                    }
+                }
+                stage('Coverity PR Scan') {
+                    when { environment name: 'INCRSCAN', value: 'true' }
+                    steps {
+                        withCoverityEnvironment(coverityInstanceUrl: "$CONNECT", projectName: "$PROJECT", streamName: "$PROJECT-$CHANGE_TARGET") {
+                            script {
+                                status = sh returnStatus: true, script: """
+                                    coverity scan -o analyze.location=connect -o commit.connect.url=$COV_URL -o commit.connect.stream=$COV_STREAM -o commit.connect.comparison-report=comparison-report.json
+                                    cat comparison-report.json | jq '.issues[] | select(.presentInReferenceSnapshot == false and (.impact == "Medium" or .impact == "High"))' > new-issues.json
+                                    if [ -s new-issues.json ]; then cat new-issues.json | jq; exit 3; fi
+                                """
+                                if (status == 3) { unstable 'New Issues Detected' }
+                                else if (status != 0) { error 'Coverity Failure' }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        stage('CodeDX') {
+            when { environment name: 'FULLSCAN', value: 'true' }
+            steps {
+                withCredentials([string(credentialsId: 'codedx.chuckaude.com', variable: 'CODEDX_API_KEY')]) {
+                    step([
+                        $class: 'CodeDxPublisher',
+                        url: "$CODEDX_URL",
+                        selfSignedCertificateFingerprint: '',
+                        key: "$CODEDX_API_KEY",
+                        projectId: '1',
+                        baseBranchName: 'main',
+                        targetBranchName: "$BRANCH_NAME",
+                        // include then exclude everything to use only CodeDX tool connectors, see ER CDX-1700
+                        sourceAndBinaryFiles: '**',
+                        excludedSourceAndBinaryFiles: '**',
+                        analysisName: "Build [#$BUILD_TAG]($BUILD_URL)",
+                        analysisResultConfiguration: [
+                            policyBreakBuildBehavior: 'MarkFailed',
+                            failureSeverity: 'Critical',
+                            failureOnlyNew: false,
+                            unstableSeverity: 'High',
+                            unstableOnlyNew: false,
+                            numBuildsInGraph: 0
+                        ]
+                    ])
+                }
+            }
+        }
+        stage('Deploy') {
+            when { environment name: 'PRODUCTION', value: 'true' }
+            steps {
+                sh 'mvn -B -DskipTests install'
+            }
+        }
+    }
+    post {
+        always {
+            archiveArtifacts allowEmptyArchive: true, artifacts: 'idir/build-log.txt, idir/output/analysis-log.txt, *_BlackDuck_RiskReport.pdf'
+            cleanWs()
+        }
+    }
+}

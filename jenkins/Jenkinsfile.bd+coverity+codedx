@@ -100,7 +100,7 @@ pipeline {
                         url: "$CODEDX_URL",
                         selfSignedCertificateFingerprint: '',
                         key: "$CODEDX_API_KEY",
-                        projectId: '1',
+                        projectId: "$CODEDX_PROJECT_ID",
                         baseBranchName: 'main',
                         targetBranchName: "$BRANCH_NAME",
                         // include then exclude everything to use only CodeDX tool connectors, see ER CDX-1700

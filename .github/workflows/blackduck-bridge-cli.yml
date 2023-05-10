@@ -1,0 +1,38 @@
+# example workflow for Black Duck scans using the Bridge CLI
+name: blackduck-bridge-cli
+
+on:
+  push:
+    branches: [ main, master, stage, release ]
+  pull_request:
+    branches: [ main, master, stage, release ]
+  workflow_dispatch:
+
+jobs:
+  blackduck:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Source
+      uses: actions/checkout@v3
+    - name: Setup Java JDK
+      uses: actions/setup-java@v3
+      with:
+        java-version: 11
+        distribution: microsoft
+        cache: maven
+    - name: Maven Build
+      run: mvn -B -DskipTests package
+    - name: Black Duck Scan
+      env:
+        #DETECT_CODE_LOCATION_NAME: chuckaude-${{ github.event.repository.name }}-${{ github.ref_name }}
+        DETECT_EXCLUDED_DETECTOR_TYPES: GIT
+      run: |
+        env | sort
+        curl -fLsS -o bridge.zip ${{ vars.BRIDGECLI_LINUX64 }} && unzip -qo -d $RUNNER_TEMP bridge.zip && rm -f bridge.zip
+        $RUNNER_TEMP/synopsys-bridge --verbose --stage blackduck \
+            blackduck.url=${{ vars.BLACKDUCK_URL }} \
+            blackduck.token=${{ secrets.BLACKDUCK_API_TOKEN }} \
+            blackduck.project.id=chuckaude-${{ github.event.repository.name }} \
+            blackduck.project.version.id=${{ github.ref_name }} \
+            blackduck.scan.failure.severities='BLOCKER' \
+            blackduck.scan.full='true'

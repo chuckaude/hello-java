@@ -25,6 +25,7 @@ jobs:
       env:
         BRIDGECLI_LINUX64: ${{ vars.BRIDGECLI_LINUX64 }}
       run: |
+        env | sort
         curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d $RUNNER_TEMP bridge.zip && rm -f bridge.zip
         $RUNNER_TEMP/synopsys-bridge --verbose --stage connect \
             coverity.connect.url=${{ vars.COVERITY_URL }} \
@@ -38,6 +39,7 @@ jobs:
       env:
         BRIDGECLI_LINUX64: ${{ vars.BRIDGECLI_LINUX64 }}
       run: |
+        env | sort
         curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d $RUNNER_TEMP bridge.zip && rm -f bridge.zip
         $RUNNER_TEMP/synopsys-bridge --verbose --stage connect \
             coverity.connect.url=${{ vars.COVERITY_URL }} \
@@ -45,4 +47,9 @@ jobs:
             coverity.connect.user.password=${{ secrets.COVERITY_PASSPHRASE }} \
             coverity.connect.project.name=${{ github.event.repository.name }} \
             coverity.connect.stream.name=${{ github.event.repository.name }}-${{ github.base_ref }} \
-            coverity.automation.prcomment=true
+            coverity.automation.prcomment=true \
+            github.repository.branch.name=${{ github.ref_name }} \
+            github.repository.name=${{ github.event.repository.name }} \
+            github.repository.owner.name=${{ github.repository_owner }} \
+            github.repository.pull.number=${{ github.event.number }} \
+            github.user.token=${{ secrets.GITHUB_TOKEN }}

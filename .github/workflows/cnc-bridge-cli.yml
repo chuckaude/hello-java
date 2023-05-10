@@ -1,5 +1,5 @@
 # example workflow for Coverity Thin Client (CNC) scans using the Bridge CLI
-name: cnc-bridge
+name: cnc-bridge-cli
 
 on:
   push:

@@ -22,11 +22,9 @@ jobs:
         cache: maven
     - name: Coverity Full Scan
       if: ${{ github.event_name != 'pull_request' }}
-      env:
-        BRIDGECLI_LINUX64: ${{ vars.BRIDGECLI_LINUX64 }}
       run: |
         env | sort
-        curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d $RUNNER_TEMP bridge.zip && rm -f bridge.zip
+        curl -fLsS -o bridge.zip ${{ vars.BRIDGECLI_LINUX64 }} && unzip -qo -d $RUNNER_TEMP bridge.zip && rm -f bridge.zip
         $RUNNER_TEMP/synopsys-bridge --verbose --stage connect \
             coverity.connect.url=${{ vars.COVERITY_URL }} \
             coverity.connect.user.name=${{ secrets.COVERITY_USER }} \
@@ -36,11 +34,9 @@ jobs:
             coverity.connect.policy.view=10044 # viewID for Outstanding Issues
     - name: Coverity PR Scan
       if: ${{ github.event_name == 'pull_request' }}
-      env:
-        BRIDGECLI_LINUX64: ${{ vars.BRIDGECLI_LINUX64 }}
       run: |
         env | sort
-        curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d $RUNNER_TEMP bridge.zip && rm -f bridge.zip
+        curl -fLsS -o bridge.zip ${{ vars.BRIDGECLI_LINUX64 }} && unzip -qo -d $RUNNER_TEMP bridge.zip && rm -f bridge.zip
         $RUNNER_TEMP/synopsys-bridge --verbose --stage connect \
             coverity.connect.url=${{ vars.COVERITY_URL }} \
             coverity.connect.user.name=${{ secrets.COVERITY_USER }} \

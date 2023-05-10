@@ -20,7 +20,8 @@ jobs:
         java-version: 11
         distribution: microsoft
         cache: maven
-    - name: Coverity Scan
+    - name: Coverity Full Scan
+      if: ${{ github.event_name != 'pull_request' }}
       env:
         BRIDGECLI_LINUX64: ${{ vars.BRIDGECLI_LINUX64 }}
       run: |
@@ -32,3 +33,16 @@ jobs:
             coverity.connect.project.name=${{ github.event.repository.name }} \
             coverity.connect.stream.name=${{ github.event.repository.name }}-${{ github.ref_name }} \
             coverity.connect.policy.view=10044 # viewID for Outstanding Issues
+    - name: Coverity PR Scan
+      if: ${{ github.event_name == 'pull_request' }}
+      env:
+        BRIDGECLI_LINUX64: ${{ vars.BRIDGECLI_LINUX64 }}
+      run: |
+        curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d $RUNNER_TEMP bridge.zip && rm -f bridge.zip
+        $RUNNER_TEMP/synopsys-bridge --verbose --stage connect \
+            coverity.connect.url=${{ vars.COVERITY_URL }} \
+            coverity.connect.user.name=${{ secrets.COVERITY_USER }} \
+            coverity.connect.user.password=${{ secrets.COVERITY_PASSPHRASE }} \
+            coverity.connect.project.name=${{ github.event.repository.name }} \
+            coverity.connect.stream.name=${{ github.event.repository.name }}-${{ github.base_ref }} \
+            coverity.automation.prcomment=true

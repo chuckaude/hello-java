@@ -54,7 +54,7 @@ jobs:
             blackduck.project.version.id=${{ github.base_ref }} \
             blackduck.scan.full='false' \
             blackduck.automation.prcomment='true' \
-            github.repository.branch.name=${{ github.base_ref }} \
+            github.repository.branch.name=${{ github.ref_name }} \
             github.repository.name=${{ github.event.repository.name }} \
             github.repository.owner.name=${{ github.repository_owner }} \
             github.repository.pull.number=${{ github.event.number }} \

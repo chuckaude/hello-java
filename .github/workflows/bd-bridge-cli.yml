@@ -38,3 +38,24 @@ jobs:
             blackduck.project.version.id=${{ github.ref_name }} \
             blackduck.scan.failure.severities='BLOCKER' \
             blackduck.scan.full='true'
+    - name: Black Duck PR Scan
+      if: ${{ github.event_name == 'pull_request' }}
+      env:
+        DETECT_PROJECT_NAME: ${{ github.event.repository.name }}
+        DETECT_PROJECT_VERSION_NAME: ${{ github.ref_name }}
+        DETECT_CODE_LOCATION_NAME: ${{ github.event.repository.name }}-${{ github.base_ref }}
+      run: |
+        env | sort
+        curl -fLsS -o bridge.zip ${{ vars.BRIDGECLI_LINUX64 }} && unzip -qo -d $RUNNER_TEMP bridge.zip && rm -f bridge.zip
+        $RUNNER_TEMP/synopsys-bridge --verbose --stage blackduck \
+            blackduck.url=${{ vars.BLACKDUCK_URL }} \
+            blackduck.token=${{ secrets.BLACKDUCK_API_TOKEN }} \
+            blackduck.project.id=${{ github.event.repository.name }} \
+            blackduck.project.version.id=${{ github.base_ref }} \
+            blackduck.scan.full='false' \
+            blackduck.automation.prcomment='true' \
+            github.repository.branch.name=${{ github.ref_name }} \
+            github.repository.name=${{ github.event.repository.name }} \
+            github.repository.owner.name=${{ github.repository_owner }} \
+            github.repository.pull.number=${{ github.event.number }} \
+            github.user.token=${{ secrets.GITHUB_TOKEN }}

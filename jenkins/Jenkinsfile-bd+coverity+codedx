@@ -1,7 +1,6 @@
 // Example Jenkinsfile with SIG Security Scan that implements:
 // - Black Duck INTELLIGENT & Coverity FULL scans on pushes to "important" branches
 // - Black Duck RAPID & Coverity INCREMENTAL scans on PRs to "important" branches
-// - Black Duck RAPID scans only on "unimportant" branches
 // - Import results into CodeDX on pushes to "important" branches
 
 // normally not needed, unless you have multiple Connect instances
@@ -17,19 +16,15 @@ pipeline {
     environment {
         // production branches on which we want security reports
         PRODUCTION = "${env.BRANCH_NAME ==~ /^(stage|release)$/ ? 'true' : 'false'}"
-        // Coverity full scan on important branches
+        // full scan on pushes to important branches
         FULLSCAN = "${env.BRANCH_NAME ==~ /^(main|master|develop|stage|release)$/ ? 'true' : 'false'}"
-        // Coverity incremental scan on PRs to important branches
-        INCRSCAN = "${env.CHANGE_TARGET ==~ /^(main|master|develop|stage|release)$/ ? 'true' : 'false'}"
+        // PR scan on pulll requests to important branches
+        PRSCAN = "${env.CHANGE_TARGET ==~ /^(main|master|develop|stage|release)$/ ? 'true' : 'false'}"
         // set project name to be repo name
         PROJECT = sh(script: "basename $GIT_URL .git", returnStdout: true).trim()
-        // avoid exposing secrets stored in environment variables
-        COVERITY_NO_LOG_ENVIRONMENT_VARIABLES = '1'
-        // only needed on shared SE Black Duck Hub instance
-        DETECT_EXCLUDED_DETECTOR_TYPES = 'GIT'
     }
     tools {
-        maven 'maven-3.8'
+        maven 'maven-3.9'
         jdk 'openjdk-17'
     }
     stages {
@@ -45,17 +40,34 @@ pipeline {
         }
         stage('Scan') {
             parallel {
-                stage('Black Duck') {
+                stage('Black Duck Full Scan') {
+                    when { environment name: 'FULLSCAN', value: 'true' }
                     environment {
                         DETECT_PROJECT_NAME = "$PROJECT"
                         DETECT_PROJECT_VERSION_NAME = "$BRANCH_NAME"
                         DETECT_CODE_LOCATION_NAME = "$PROJECT-$BRANCH_NAME"
-                        DETECT_BLACKDUCK_SCAN_MODE = "${env.FULLSCAN == 'true' ? 'INTELLIGENT' : 'RAPID'}"
                         DETECT_RISK_REPORT_PDF = "${env.PRODUCTION == 'true' ? 'true' : 'false'}"
+                        DETECT_EXCLUDED_DETECTOR_TYPES = 'GIT'
                     }
                     steps {
                         script {
-                            status = synopsys_detect detectProperties: "--detect.policy.check.fail.on.severities=BLOCKER --detect.timeout=300", returnStatus: true
+                            status = synopsys_detect detectProperties: "--detect.policy.check.fail.on.severities=BLOCKER", returnStatus: true
+                            if (status == 3) { unstable 'Policy Violation' }
+                            else if (status != 0) { error 'Detect Failure' }
+                        }
+                    }
+                }
+                stage('Black Duck PR Scan') {
+                    when { environment name: 'PRSCAN', value: 'true' }
+                    environment {
+                        DETECT_PROJECT_NAME = "$PROJECT"
+                        DETECT_PROJECT_VERSION_NAME = "$CHANGE_TARGET"
+                        DETECT_CODE_LOCATION_NAME = "$PROJECT-$CHANGE_TARGET"
+                        DETECT_EXCLUDED_DETECTOR_TYPES = 'GIT'
+                    }
+                    steps {
+                        script {
+                            status = synopsys_detect detectProperties: "--detect.blackduck.scan.mode=RAPID", returnStatus: true
                             if (status == 3) { unstable 'Policy Violation' }
                             else if (status != 0) { error 'Detect Failure' }
                         }
@@ -74,7 +86,7 @@ pipeline {
                     }
                 }
                 stage('Coverity PR Scan') {
-                    when { environment name: 'INCRSCAN', value: 'true' }
+                    when { environment name: 'PRSCAN', value: 'true' }
                     steps {
                         withCoverityEnvironment(coverityInstanceUrl: "$CONNECT", projectName: "$PROJECT", streamName: "$PROJECT-$CHANGE_TARGET") {
                             script {

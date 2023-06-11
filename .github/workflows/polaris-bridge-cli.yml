@@ -1,0 +1,34 @@
+# example workflow for Polaris scans using the Bridge CLI
+name: polaris-bridge-cli
+on:
+  push:
+    branches: [ main, master, develop, stage, release ]
+  workflow_dispatch:
+jobs:
+  polaris:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Source
+      uses: actions/checkout@v3
+    - name: Setup Java JDK
+      uses: actions/setup-java@v3
+      with:
+        java-version: 17
+        distribution: microsoft
+        cache: maven
+    - name: Polaris Scan
+      env:
+        BRIDGE_POLARIS_SERVERURL: ${{ vars.POLARIS_SERVERURL }}
+        BRIDGE_POLARIS_ACCESSTOKEN: ${{ secrets.POLARIS_ACCESSTOKEN }}
+        BRIDGE_POLARIS_APPLICATION_NAME: chuckaude-${{ github.event.repository.name }}
+        BRIDGE_POLARIS_PROJECT_NAME: chuckaude-${{ github.event.repository.name }}
+        BRIDGECLI_LINUX64: ${{ vars.BRIDGECLI_LINUX64 }}
+      run: |
+        curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d $RUNNER_TEMP bridge.zip && rm -f bridge.zip
+        $RUNNER_TEMP/synopsys-bridge --verbose --stage polaris polaris.assessment.types=SAST,SCA
+#    - name: Save Logs
+#      if: always()
+#      uses: actions/upload-artifact@v3
+#      with:
+#        name: bridge-logs
+#        path: ${{ github.workspace }}/.bridge

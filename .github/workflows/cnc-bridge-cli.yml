@@ -1,0 +1,53 @@
+# example workflow for Coverity scans (CNC only) using the Bridge CLI
+name: cnc-bridge-cli
+on:
+  push:
+    branches: [ main, master, develop, stage, release ]
+  pull_request:
+    branches: [ main, master, develop, stage, release ]
+  workflow_dispatch:
+jobs:
+  coverity:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Source
+      uses: actions/checkout@v3
+    - name: Setup Java JDK
+      uses: actions/setup-java@v3
+      with:
+        java-version: 17
+        distribution: microsoft
+        cache: maven
+    - name: Coverity Full Scan
+      if: ${{ github.event_name != 'pull_request' }}
+      run: |
+        curl -fLsS -o bridge.zip ${{ vars.BRIDGECLI_LINUX64 }} && unzip -qo -d $RUNNER_TEMP bridge.zip && rm -f bridge.zip
+        $RUNNER_TEMP/synopsys-bridge --verbose --stage connect \
+            coverity.connect.url=${{ vars.COVERITY_URL }} \
+            coverity.connect.user.name=${{ secrets.COVERITY_USER }} \
+            coverity.connect.user.password=${{ secrets.COVERITY_PASSPHRASE }} \
+            coverity.connect.project.name=${{ github.event.repository.name }} \
+            coverity.connect.stream.name=${{ github.event.repository.name }}-${{ github.ref_name }} \
+            coverity.connect.policy.view=10042 # viewID for Outstanding Issues
+    - name: Coverity PR Scan
+      if: ${{ github.event_name == 'pull_request' }}
+      run: |
+        curl -fLsS -o bridge.zip ${{ vars.BRIDGECLI_LINUX64 }} && unzip -qo -d $RUNNER_TEMP bridge.zip && rm -f bridge.zip
+        $RUNNER_TEMP/synopsys-bridge --verbose --stage connect \
+            coverity.connect.url=${{ vars.COVERITY_URL }} \
+            coverity.connect.user.name=${{ secrets.COVERITY_USER }} \
+            coverity.connect.user.password=${{ secrets.COVERITY_PASSPHRASE }} \
+            coverity.connect.project.name=${{ github.event.repository.name }} \
+            coverity.connect.stream.name=${{ github.event.repository.name }}-${{ github.base_ref }} \
+            coverity.automation.prcomment=true \
+            github.repository.branch.name=${{ github.ref_name }} \
+            github.repository.name=${{ github.event.repository.name }} \
+            github.repository.owner.name=${{ github.repository_owner }} \
+            github.repository.pull.number=${{ github.event.number }} \
+            github.user.token=${{ secrets.GITHUB_TOKEN }}
+#    - name: Save Logs
+#      if: always()
+#      uses: actions/upload-artifact@v3
+#      with:
+#        name: bridge-logs
+#        path: ${{ github.workspace }}/.bridge

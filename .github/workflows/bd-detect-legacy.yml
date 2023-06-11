@@ -1,0 +1,34 @@
+# example workflow for Black Duck scans using the legacy Black Duck Action
+# https://github.com/blackducksoftware/github-action
+name: bd-detect-legacy
+on:
+  push:
+    branches: [ main, master, develop, stage, release ]
+  pull_request:
+    branches: [ main, master, develop, stage, release ]
+  workflow_dispatch:
+jobs:
+  blackduck:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Source
+      uses: actions/checkout@v3
+    - name: Setup Java JDK
+      uses: actions/setup-java@v3
+      with:
+        java-version: 17
+        distribution: microsoft
+        cache: maven
+    - name: Maven Build
+      run: mvn -B -DskipTests package
+    - name: Black Duck Scan
+      uses: blackducksoftware/github-action@v2.2
+      env:
+        DETECT_PROJECT_NAME: ${{ github.event.repository.name }}
+        DETECT_PROJECT_VERSION_NAME: ${{ github.ref_name }}
+        DETECT_CODE_LOCATION_NAME: ${{ github.event.repository.name }}-${{ github.ref_name }}
+        DETECT_EXCLUDED_DETECTOR_TYPES: 'GIT'
+      with:
+        blackduck.url: ${{ vars.BLACKDUCK_URL }}
+        blackduck.api.token: ${{ secrets.BLACKDUCK_API_TOKEN }}
+        args: --detect.policy.check.fail.on.severities=BLOCKER

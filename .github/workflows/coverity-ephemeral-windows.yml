@@ -1,53 +1,46 @@
 # demonstrate Coverity toolkit caching on ephemeral build agents
 name: coverity-ephemeral-windows
-
 on:
   push:
-    branches: [ main, master, stage, release ]
+    branches: [ main, master, develop, stage, release ]
   workflow_dispatch:
-
 jobs:
   coverity:
     runs-on: windows-latest
-
     env:
-      COV_URL: ${{ secrets.COV_URL }}
-      COV_USER: ${{ secrets.COV_USER }}
+      COVERITY_URL: ${{ vars.COVERITY_URL }}
+      COV_USER: ${{ secrets.COVERITY_USER }}
       COVERITY_PASSPHRASE: ${{ secrets.COVERITY_PASSPHRASE }}
       COVERITY_PROJECT: ${{ github.event.repository.name }}
       COVERITY_STREAM: ${{ github.event.repository.name }}-${{ github.ref_name }}
-      TOOLKIT: cov-analysis-win64-2022.12.1
-
+      COVERITY_TOOLKIT: cov-analysis-win64-2023.3.2
     steps:
     - name: Checkout Source
       uses: actions/checkout@v3
     - name: Setup Java JDK
       uses: actions/setup-java@v3
       with:
-        java-version: 11
+        java-version: 17
         distribution: microsoft
         cache: maven
-
     # designate the Coverity toolkit as something to cache, for more details see:
     # https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows
     - name: Cache Coverity Toolkit
       id: cache-coverity
       uses: actions/cache@v3
       with:
-        path: ${{ runner.temp }}/${{ env.TOOLKIT }}
-        key: ${{ env.TOOLKIT }}
-
+        path: ${{ runner.temp }}/${{ env.COVERITY_TOOLKIT }}
+        key: ${{ env.COVERITY_TOOLKIT }}
     # download Coverity only if cache-hit from above is not true
     - name: Coverity Download
       if: ${{ steps.cache-coverity.outputs.cache-hit != 'true' }}
       run: |
         cd ${env:RUNNER_TEMP}
-        $ZIPFILE=${env:TOOLKIT}+".zip"
-        curl.exe -fLsS --user ${env:COV_USER}:${env:COVERITY_PASSPHRASE} -o $ZIPFILE ${env:COV_URL}/downloadFile.htm?fn=$ZIPFILE
+        $ZIPFILE=${env:COVERITY_TOOLKIT}+".zip"
+        curl.exe -fLsS --user ${env:COV_USER}:${env:COVERITY_PASSPHRASE} -o $ZIPFILE ${env:COVERITY_URL}/downloadFile.htm?fn=$ZIPFILE
         unzip -q $ZIPFILE
-        curl.exe -fLsS --user ${env:COV_USER}:${env:COVERITY_PASSPHRASE} -o ${env:TOOLKIT}/bin/license.dat ${env:COV_URL}/downloadFile.htm?fn=license.dat
-
+        curl.exe -fLsS --user ${env:COV_USER}:${env:COVERITY_PASSPHRASE} -o ${env:COVERITY_TOOLKIT}/bin/license.dat ${env:COVERITY_URL}/downloadFile.htm?fn=license.dat
     - name: Coverity Scan
       run: |
-        $env:PATH += ";${env:RUNNER_TEMP}/${env:TOOLKIT}/bin"
-        coverity scan -o commit.connect.url=${env:COV_URL} -o commit.connect.stream=${env:COVERITY_STREAM}
+        $env:PATH += ";${env:RUNNER_TEMP}/${env:COVERITY_TOOLKIT}/bin"
+        coverity scan -o commit.connect.url=${env:COVERITY_URL} -o commit.connect.project=${env:COVERITY_PROJECT} -o commit.connect.stream=${env:COVERITY_STREAM}

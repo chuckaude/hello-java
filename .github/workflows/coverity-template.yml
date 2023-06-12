@@ -1,13 +1,11 @@
 # Coverity template on a GitHub-hosted ephemeral runner
 name: coverity-template
-
 on:
   push:
-    branches: [ main, master, stage, release ]
+    branches: [ main, master, develop, stage, release ]
   pull_request:
-    branches: [ main, master, stage, release ]
+    branches: [ main, master, develop, stage, release ]
   workflow_dispatch:
-
 jobs:
   coverity:
     runs-on: ubuntu-latest
@@ -17,20 +15,20 @@ jobs:
     - name: Setup Java JDK
       uses: actions/setup-java@v3
       with:
-        java-version: 11
+        java-version: 17
         distribution: microsoft
         cache: maven
     - uses: synopsys-sig-community/synopsys-github-templates/coverity@main
       with:
         # Required to identify new defects and commit results
-        coverity-url: ${{ secrets.COV_URL }}
-        coverity-user: ${{ secrets.COV_USER }}
+        coverity-url: ${{ vars.COVERITY_URL }}
+        coverity-user: ${{ secrets.COVERITY_USER }}
         coverity-passphrase: ${{ secrets.COVERITY_PASSPHRASE }}
         coverity-project-name: ${{ github.event.repository.name }}
         # Optional, for auto-download Coverity bits
         coverity-download-url: synopsys-sig-community/synopsys-github-bits
         coverity-download-creds: ${{ secrets.COVERITY_DOWNLOAD_CREDS }}
-        coverity-download-version: 2022.12.1
+        coverity-download-version: 2023.3.2
         coverity-license-url: https://www.chuckaude.com/repo/license.dat
         coverity-license-creds: ${{ secrets.COVERITY_LICENSE_CREDS }}
         # Optional, defaults to cov-capture

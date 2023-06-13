@@ -5,7 +5,7 @@ on:
     branches: [ main, master, develop, stage, release ]
   workflow_dispatch:
 jobs:
-  polaris:
+  coverity-on-polaris:
     runs-on: ubuntu-latest
     container:
       image: maven:latest

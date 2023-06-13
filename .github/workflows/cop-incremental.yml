@@ -7,7 +7,7 @@ on:
     branches: [ main, master, develop, stage, release ]
   workflow_dispatch:
 jobs:
-  polaris:
+  coverity-on-polaris:
     runs-on: ubuntu-latest
     env:
       POLARIS_SERVER_URL: ${{ vars.POLARIS_SERVER_URL }}

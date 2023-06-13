@@ -5,7 +5,7 @@ on:
     branches: [ main, master, develop, stage, release ]
   workflow_dispatch:
 jobs:
-  polaris-blackduck-io:
+  io-bd-cop:
     runs-on: self-hosted
     env:
       POLARIS_SERVER_URL: ${{ vars.POLARIS_SERVER_URL }}
@@ -36,7 +36,7 @@ jobs:
                   --polaris.url=${{vars.POLARIS_SERVER_URL}} --polaris.token=${{secrets.POLARIS_ACCESS_TOKEN}}
                   --sensitive.package.pattern='.*(.txt)$'
         stage: "IO"
-    - name: Polaris Scan
+    - name: Coverity on Polaris Scan
       if: ${{steps.prescription.outputs.sastScan == 'true' }}
       run: |
         curl -fLOsS $POLARIS_SERVER_URL/api/tools/polaris_cli-linux64.zip

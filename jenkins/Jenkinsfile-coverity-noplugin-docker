@@ -10,7 +10,7 @@ def COVBIN = '/opt/coverity/analysis/latest/bin'
 pipeline {
     agent {
         docker {
-            image 'maven:3-openjdk-11'
+            image 'maven:latest'
             args '-v $HOME/.m2:/home/build/.m2 -v /opt/coverity/analysis:/opt/coverity/analysis -v $HOME/.coverity:/home/build/.coverity'
         }
     }

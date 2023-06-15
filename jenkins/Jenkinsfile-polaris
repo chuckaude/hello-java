@@ -1,0 +1,33 @@
+pipeline {
+    agent { label 'linux64' }
+    tools {
+        maven 'maven-3.8'
+        jdk 'openjdk-17'
+    }
+    environment {
+        BRIDGE_POLARIS_APPLICATION_NAME = 'chuckaude-webgoat'
+        BRIDGE_POLARIS_PROJECT_NAME = 'chuckaude-webgoat'
+    }
+    stages {
+        stage('polaris') {
+            steps {
+                withCredentials([string(credentialsId: 'altair-POC', variable: 'BRIDGE_POLARIS_ACCESSTOKEN')]) {
+                    script {
+                        status = sh returnStatus: true, script: """
+                            curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d $WORKSPACE_TMP bridge.zip && rm -f bridge.zip
+                            $WORKSPACE_TMP/bridge --verbose --stage polaris polaris.assessment.types=SAST,SCA
+                        """
+                        if (status == 8) { unstable 'policy violation' }
+                        else if (status != 0) { error 'bridge failure' }
+                    }
+                }
+            }
+        }
+    }
+    post {
+        always {
+            archiveArtifacts allowEmptyArchive: true, artifacts: 'bridge.log, idir/build-log.txt'
+            cleanWs()
+        }
+    }
+}

@@ -6,8 +6,8 @@ def BLDCMD = 'mvn -B package -DskipTests'
 pipeline {
     agent { label 'linux64' }
     tools {
-        maven 'maven-3.8'
-        jdk 'openjdk-11'
+        maven 'maven-3.9'
+        jdk 'openjdk-17'
     }
     stages {
         stage('checkout') {
@@ -18,12 +18,9 @@ pipeline {
         }
         stage('polaris') {
             steps {
-                withCredentials([string(credentialsId: 'polaris-sipse', variable: 'POLARIS_ACCESS_TOKEN')]) {
-                    sh """
-                        curl -fLOsS $POLARIS_SERVER_URL/api/tools/polaris_cli-linux64.zip
-                        unzip -d /tmp -jo polaris_cli-linux64.zip && rm -f polaris_cli-linux64.zip
-                        /tmp/polaris --co project.name=$PROJECT --co capture.build.cleanCommands='null' analyze -w -- $BLDCMD
-                    """
+                polaris arguments: "--co project.name=$PROJECT --co capture.build.cleanCommands='null' analyze -w -- $BLDCMD", polarisCli: 'default'
+                script {
+                    count = polarisIssueCheck jobTimeoutInMinutes: 30, returnIssueCount: true
                 }
             }
         }

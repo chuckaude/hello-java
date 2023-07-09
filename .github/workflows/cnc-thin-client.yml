@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       COVERITY_URL: ${{ vars.COVERITY_URL }}
-      COV_USER: ${{ secrets.COVERITY_USER }}
+      COV_USER: ${{ secrets.COV_USER }}
       COVERITY_PASSPHRASE: ${{ secrets.COVERITY_PASSPHRASE }}
       COVERITY_THIN_CLIENT: cov_thin_client-linux64-2023.3.2.tar.gz   # see ER CNC-861 to support version=latest
       COVERITY_PROJECT: ${{ github.event.repository.name }}

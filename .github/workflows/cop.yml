@@ -26,3 +26,9 @@ jobs:
         curl -fLOsS $POLARIS_SERVER_URL/api/tools/$POLARIS_ZIP
         unzip -d $RUNNER_TEMP -jo $POLARIS_ZIP && rm -f $POLARIS_ZIP
         $RUNNER_TEMP/polaris --co project.name=$POLARIS_PROJECT analyze -w
+#    - name: Save Logs
+#      if: always()
+#      uses: actions/upload-artifact@v3
+#      with:
+#        name: polaris-cli-logs
+#        path: ${{ github.workspace }}/.synopsys

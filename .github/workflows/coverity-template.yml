@@ -22,13 +22,13 @@ jobs:
       with:
         # Required to identify new defects and commit results
         coverity-url: ${{ vars.COVERITY_URL }}
-        coverity-user: ${{ secrets.COVERITY_USER }}
+        coverity-user: ${{ secrets.COV_USER }}
         coverity-passphrase: ${{ secrets.COVERITY_PASSPHRASE }}
         coverity-project-name: ${{ github.event.repository.name }}
         # Optional, for auto-download Coverity bits
         coverity-download-url: synopsys-sig-community/synopsys-github-bits
         coverity-download-creds: ${{ secrets.COVERITY_DOWNLOAD_CREDS }}
-        coverity-download-version: 2023.3.2
+        coverity-download-version: 2023.6.0
         coverity-license-url: https://www.chuckaude.com/repo/license.dat
         coverity-license-creds: ${{ secrets.COVERITY_LICENSE_CREDS }}
         # Optional, defaults to cov-capture

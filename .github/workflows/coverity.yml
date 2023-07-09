@@ -11,7 +11,7 @@ jobs:
     runs-on: self-hosted
     env:
       COVERITY_URL: ${{ vars.COVERITY_URL }}
-      COV_USER: ${{ secrets.COVERITY_USER }}
+      COV_USER: ${{ secrets.COV_USER }}
       COVERITY_PASSPHRASE: ${{ secrets.COVERITY_PASSPHRASE }}
       COVERITY_TOOL_HOME: /opt/coverity/analysis/current
       COVERITY_PROJECT: ${{ github.event.repository.name }}

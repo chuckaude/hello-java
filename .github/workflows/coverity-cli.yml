@@ -11,10 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     env:
       COVERITY_URL: ${{ vars.COVERITY_URL }}
-      COV_USER: ${{ secrets.COVERITY_USER }}
+      COV_USER: ${{ secrets.COV_USER }}
       COVERITY_PASSPHRASE: ${{ secrets.COVERITY_PASSPHRASE }}
       COVERITY_PROJECT: ${{ github.event.repository.name }}
-      COVERITY_TOOLKIT: cov-analysis-linux64-2023.3.2
+      COVERITY_TOOLKIT: cov-analysis-linux64-2023.6.0
     steps:
     - name: Checkout Source
       uses: actions/checkout@v3

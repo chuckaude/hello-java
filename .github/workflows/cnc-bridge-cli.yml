@@ -24,7 +24,7 @@ jobs:
         curl -fLsS -o bridge.zip ${{ vars.BRIDGECLI_LINUX64 }} && unzip -qo -d $RUNNER_TEMP bridge.zip && rm -f bridge.zip
         $RUNNER_TEMP/synopsys-bridge --verbose --stage connect \
             coverity.connect.url=${{ vars.COVERITY_URL }} \
-            coverity.connect.user.name=${{ secrets.COVERITY_USER }} \
+            coverity.connect.user.name=${{ secrets.COV_USER }} \
             coverity.connect.user.password=${{ secrets.COVERITY_PASSPHRASE }} \
             coverity.connect.project.name=${{ github.event.repository.name }} \
             coverity.connect.stream.name=${{ github.event.repository.name }}-${{ github.ref_name }} \
@@ -35,7 +35,7 @@ jobs:
         curl -fLsS -o bridge.zip ${{ vars.BRIDGECLI_LINUX64 }} && unzip -qo -d $RUNNER_TEMP bridge.zip && rm -f bridge.zip
         $RUNNER_TEMP/synopsys-bridge --verbose --stage connect \
             coverity.connect.url=${{ vars.COVERITY_URL }} \
-            coverity.connect.user.name=${{ secrets.COVERITY_USER }} \
+            coverity.connect.user.name=${{ secrets.COV_USER }} \
             coverity.connect.user.password=${{ secrets.COVERITY_PASSPHRASE }} \
             coverity.connect.project.name=${{ github.event.repository.name }} \
             coverity.connect.stream.name=${{ github.event.repository.name }}-${{ github.base_ref }} \

@@ -15,11 +15,11 @@ jobs:
     env:
       #COVERITY_URL: ${{ vars.COVERITY_URL }}
       COVERITY_URL: https://coverity-aws.chuckaude.com
-      COV_USER: ${{ secrets.COVERITY_USER }}
+      COV_USER: ${{ secrets.COV_USER }}
       COVERITY_PASSPHRASE: ${{ secrets.COVERITY_PASSPHRASE }}
       COVERITY_PROJECT: ${{ github.event.repository.name }}
       COVERITY_STREAM: ${{ github.event.repository.name }}-${{ github.ref_name }}
-      TOOLKIT: cov-analysis-linux64-2023.3.0
+      TOOLKIT: cov-analysis-linux64-2023.6.0
 
     steps:
     - name: Checkout Source

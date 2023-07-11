@@ -1,17 +1,19 @@
 pool:
-  name: private-windows
+  vmImage: ubuntu-latest
 
-workspace:
-  clean: all
+container:
+  image: coverity-linux64-2023.6.0
+  endpoint: acr-chuckaude
 
 variables:
+- group: coverity-aws.chuckaude.com
 - name: COVERITY_TOOL_HOME
-  value: c:/tools/coverity/analysis/2022.6.0
+  value: /opt/coverity/analysis/2023.6.0
 
 steps:
 - task: synopsys-coverity@1
   inputs:
-    coverityService: 'coverity.chuckaude.com'
+    coverityService: 'coverity-aws.chuckaude.com'
     projectName: '$(Build.Repository.Name)'
     streamName: '$(Build.Repository.Name)-$(Build.SourceBranchName)'
     checkIssues: true

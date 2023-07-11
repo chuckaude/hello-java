@@ -1,0 +1,57 @@
+# example pipeline for Coverity scans using the Synopsys Coverity extension and the Coverity thin client
+# https://marketplace.visualstudio.com/items?itemName=synopsys-coverity.synopsys-coverity-azure-devops
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+- group: poc329.coverity.synopsys.com
+- name: COVERITY_TOOL_HOME
+  value: $(Agent.TempDirectory)/ctc
+
+steps:
+- task: JavaToolInstaller@0
+  displayName: 'Use Java 17'
+  inputs:
+    versionSpec: 17
+    jdkArchitectureOption: x64
+    jdkSourceOption: PreInstalled
+
+- task: Maven@4
+  displayName: 'Maven Build'
+  inputs:
+    options: '-B -DskipTests'
+
+- bash: |
+    rm -rf $COVERITY_TOOL_HOME && mkdir $COVERITY_TOOL_HOME
+    curl -fLsS $COVERITY_URL/api/v2/scans/downloads/$COVERITY_THIN_CLIENT | tar -C $COVERITY_TOOL_HOME -xzf -
+  displayName: 'Coverity Download'
+
+- task: synopsys-coverity@1
+  displayName: 'Coverity Scan'
+  inputs:
+    coverityService: 'poc329.coverity.synopsys.com'
+    allowUntrusted: true
+    projectName: '$(Build.Repository.Name)'
+    streamName: '$(Build.Repository.Name)-$(Build.SourceBranchName)'
+    checkIssues: true
+    issueView: 'Outstanding Issues'
+    issueStatus: 'unstable'
+    coverityRunType: 'custom'
+    customCoverityCommands: 'coverity scan -o commit.connect.url=$COVERITY_URL -o commit.connect.project=$COV_PROJECT -o commit.connect.stream=$COV_STREAM -o analyze.location=connect'
+
+- task: CopyFiles@2
+  displayName: 'Copy Log Files'
+  inputs:
+    Contents: |
+      idir/build-log.txt
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    flattenFolders: true
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Log Files'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'logs'

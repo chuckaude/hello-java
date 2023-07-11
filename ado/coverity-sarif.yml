@@ -6,7 +6,7 @@ workspace:
 
 variables:
 - name: COVERITY_TOOL_HOME
-  value: /opt/coverity/analysis/2022.6.0
+  value: /opt/coverity/analysis/2023.6.0
 
 steps:
 - task: synopsys-coverity.synopsys-coverity-azure-devops.coverity-task.synopsys-coverity@1

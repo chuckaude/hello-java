@@ -1,9 +1,17 @@
-# example ADO pipeline for Black Duck + Coverity on Polaris using the Synopsys Detect and Polaris plugins for Jenkins
+# example pipeline for Black Duck & Coverity on Polaris scans using the Synopsys Detect & Coverity on Polaris extensions
+# https://marketplace.visualstudio.com/items?itemName=synopsys-detect.synopsys-detect
+# https://marketplace.visualstudio.com/items?itemName=synopsys-polaris.synopsys-polaris
 trigger:
-- develop
+- main
 
 pool:
   vmImage: ubuntu-latest
+
+variables:
+  DETECT_PROJECT_NAME: $(Build.Repository.Name)
+  DETECT_PROJECT_VERSION_NAME: $(Build.SourceBranchName)
+  DETECT_CODE_LOCATION_NAME: $(Build.Repository.Name)-$(Build.SourceBranchName)
+  DETECT_EXCLUDED_DETECTOR_TYPES: 'GIT'
 
 steps:
 - task: JavaToolInstaller@0
@@ -14,20 +22,21 @@ steps:
     jdkSourceOption: PreInstalled
 
 - task: Maven@4
+  displayName: 'Maven Build'
   inputs:
-    options: '-B'
+    options: '-B -DskipTests'
 
 - task: SynopsysDetectTask@7
   displayName: 'Black Duck Scan'
   inputs:
-    BlackDuckService: testing.blackduck.synopsys.com
-    DetectArguments: '--detect.project.name=chuckaude-$(Build.Repository.Name) --detect.project.version.name=$(Build.SourceBranchName)'
+    BlackDuckService: poc329.blackduck.synopsys.com
+    DetectArguments: '--detect.policy.check.fail.on.severities=BLOCKER'
 
 - task: SynopsysPolaris@1
   displayName: 'Coverity on Polaris Scan'
   inputs:
     polarisService: 'sipse.polaris.synopsys.com'
-    polarisCommand: 'analyze -w'
+    polarisCommand: '--co project.name=$(Build.Repository.Name) analyze -w'
 
 - task: CopyFiles@2
   displayName: 'Copy Log Files'

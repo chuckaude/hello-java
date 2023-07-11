@@ -10,11 +10,10 @@ jobs:
 
   steps:
 
-  - task: Maven@3
+  - task: Maven@4
+    displayName: 'Maven Build'
     inputs:
-      mavenPomFile: 'pom.xml'
-      goals: 'package -DskipTests'
-      publishJUnitResults: false
+      options: '-B -DskipTests'
 
 - job: Coverity
 
@@ -31,7 +30,7 @@ jobs:
   variables:
   - group: coverity.chuckaude.com
   - name: COVERITY_TOOL_HOME
-    value: /opt/coverity/analysis/2022.6.0
+    value: /opt/coverity/analysis/2023.6.0
   - name: COVERITY_PROJECT
     value: $(Build.Repository.Name)
 
@@ -63,8 +62,8 @@ jobs:
       export STREAM="$(COVERITY_PROJECT)-$SYSTEM_PULLREQUEST_TARGETBRANCHNAME"
       export PATH=$PATH:$COVERITY_TOOL_HOME/bin
       set -x
-      cov-run-desktop --dir idir --url $(COV_URL) --stream $STREAM --build mvn -B -DskipTests package
-      cov-run-desktop --dir idir --url $(COV_URL) --stream $STREAM --present-in-reference false --ignore-uncapturable-inputs true --exit1-if-defects true $CHANGE_SET
+      cov-run-desktop --dir idir --url $(COVERITY_URL) --stream $STREAM --build mvn -B -DskipTests package
+      cov-run-desktop --dir idir --url $(COVERITY_URL) --stream $STREAM --present-in-reference false --ignore-uncapturable-inputs true --exit1-if-defects true $CHANGE_SET
     env:
       COVERITY_PASSPHRASE: $(COVERITY_PASSPHRASE)
     displayName: 'Incremental Scan'

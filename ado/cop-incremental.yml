@@ -1,0 +1,77 @@
+# example pipeline for Polaris scans using the Synopsys Coverity on Polaris extension
+# https://marketplace.visualstudio.com/items?itemName=synopsys-polaris.synopsys-polaris
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  - group: sipse.polaris.synopsys.com
+
+steps:
+- task: JavaToolInstaller@0
+  displayName: 'Use Java 17'
+  inputs:
+    versionSpec: 17
+    jdkArchitectureOption: x64
+    jdkSourceOption: PreInstalled
+
+- task: Maven@4
+  displayName: 'Maven Build'
+  inputs:
+    options: '-B -DskipTests'
+
+- task: SynopsysPolaris@1
+  displayName: 'Polaris Full Scan'
+  condition: and(in(variables['Build.SourceBranchName'],'main','stage','release'),not(eq(variables['Build.Reason'],'PullRequest')))
+  inputs:
+    polarisService: 'sipse.polaris.synopsys.com'
+    polarisCommand: 'analyze -w'
+    # Note: waitForeIssues will fail the pipeline if ANY issues are detected, not very practical, parse JSON or use API instead
+    waitForIssues: false
+    populateChangeSetFile: false
+
+- task: SynopsysPolaris@1
+  displayName: 'Polaris Incremental Scan - Plugin'
+  enabled: false
+  condition: eq(variables['Build.Reason'],'PullRequest')
+  inputs:
+    polarisService: 'sipse.polaris.synopsys.com'
+    polarisCommand: 'analyze -w --incremental $CHANGE_SET_FILE_PATH'
+    # Note: waitForeIssues will fail the pipeline if ANY issues are detected, not very practical, parse JSON or use API instead
+    waitForIssues: false
+    # BUG: plugin fails to populate changeset on additional edits to a PR beyond the first
+    populateChangeSetFile: true
+
+- bash: |
+    set -ex
+    curl -fLOsS $POLARIS_SERVER_URL/api/tools/polaris_cli-linux64.zip
+    unzip -d $(Agent.TempDirectory) -jo polaris_cli-linux64.zip
+    git diff --name-only HEAD HEAD~1 > changeset.txt
+    cat changeset.txt
+    POLARIS_FF_ENABLE_COVERITY_INCREMENTAL=true $(Agent.TempDirectory)/polaris analyze -w --incremental changeset.txt
+    COUNT=$(cat .synopsys/polaris/data/coverity/*/idir/incremental-results/new-issues.json | jq '. | length')
+    if [ $COUNT -ne 0 ]; then
+      echo "new issues detected, do something here"
+    fi
+  env:
+    POLARIS_ACCESS_TOKEN: $(POLARIS_ACCESS_TOKEN)
+  displayName: 'Polaris Incremental Scan - Noplugin'
+  enabled: false
+  condition: eq(variables['Build.Reason'],'PullRequest')
+
+- bash: |
+    set -ex
+    curl -fLOsS $POLARIS_SERVER_URL/api/tools/polaris_cli-linux64.zip
+    unzip -d $(Agent.TempDirectory) -jo polaris_cli-linux64.zip
+    git diff --name-only HEAD HEAD~1 > changeset.txt
+    cat changeset.txt
+    $(Agent.TempDirectory)/polaris --co analyze.mode=local install
+    export PATH=$PATH:$(ls -d $HOME/.synopsys/polaris/coverity-analysis-tools/cov_analysis*/bin)
+    curl -fLOsS http://www.chuckaude.com/repo/getRuns && chmod +x getRuns
+    POLARIS_RUNID=$(./getRuns --project chuckaude-hello-java --branch main -s)
+    cov-capture --dir idir --source-list changeset.txt
+    cov-run-desktop --dir idir --polaris-auth-token $POLARIS_ACCESS_TOKEN --url $POLARIS_SERVER_URL --polaris-run-id $POLARIS_RUNID --analyze-captured-source
+  env:
+    POLARIS_ACCESS_TOKEN: $(POLARIS_ACCESS_TOKEN)
+  displayName: 'Polaris Incremental Scan - Fast Capture'
+  enabled: true
+  condition: eq(variables['Build.Reason'],'PullRequest')

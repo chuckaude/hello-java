@@ -1,21 +1,41 @@
 pool:
-  vmImage: ubuntu-20.04
-
-workspace:
-  clean: all
+  vmImage: ubuntu-latest
 
 variables:
   - group: sipse.polaris.synopsys.com
-  - name: PROJECT
-    value: 'chuckaude-$(Build.Repository.Name)'
-  - name: BLDCMD
-    value: 'mvn -B -DskipTests package'
 
 steps:
+- task: JavaToolInstaller@0
+  displayName: 'Use Java 17'
+  inputs:
+    versionSpec: 17
+    jdkArchitectureOption: x64
+    jdkSourceOption: PreInstalled
+
+- task: Maven@4
+  displayName: 'Maven Build'
+  inputs:
+    options: '-B -DskipTests'
+
 - bash: |
     curl -fLOsS $(POLARIS_SERVER_URL)/api/tools/polaris_cli-linux64.zip
     unzip -d $(Agent.TempDirectory) -jo polaris_cli-linux64.zip && rm -f polaris_cli-linux64.zip
-    $(Agent.TempDirectory)/polaris --co project.name=$(PROJECT) analyze -w -- $(BLDCMD)
+    $(Agent.TempDirectory)/polaris --co project.name=chuckaude-$(Build.Repository.Name) analyze -w -- $(BLDCMD)
   env:
     POLARIS_ACCESS_TOKEN: $(POLARIS_ACCESS_TOKEN)
   displayName: 'Polaris Scan'
+  
+- task: CopyFiles@2
+  displayName: 'Copy Log Files'
+  inputs:
+    Contents: |
+      .synopsys/polaris/configuration/synopsys.yml
+      .synopsys/polaris/data/coverity/*/idir/build-log.txt
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    flattenFolders: true
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Log Files'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'logs'

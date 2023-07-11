@@ -1,0 +1,44 @@
+# example pipeline for Coverity scans using the Synopsys Coverity extension and the Coverity CLI
+# https://marketplace.visualstudio.com/items?itemName=synopsys-coverity.synopsys-coverity-azure-devops
+# demonstrate COVERITY_TOOL_HOME caching on ephemeral build agents
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+- group: coverity-aws.chuckaude.com
+- name: COVERITY_TOOLKIT
+  value: cov-analysis-linux64-2023.6.0
+- name: COVERITY_TOOL_HOME
+  value: $(Agent.TempDirectory)/$(COVERITY_TOOLKIT)
+
+steps:
+# designate COVERITY_TOOL_HOME as something to cache, for more details see:
+# https://learn.microsoft.com/en-us/azure/devops/pipelines/release/caching
+- task: Cache@2
+  inputs:
+    key: '"$(COVERITY_TOOLKIT)"'
+    path: '$(COVERITY_TOOL_HOME)'
+    cacheHitVar: 'CACHE_RESTORED'
+  enabled: true
+  displayName: 'Cache Coverity Tool Installation'
+
+- script: |
+    set -x
+    curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE $COVERITY_URL/downloadFile.htm?fn=$COVERITY_TOOLKIT.tar.gz | tar -C $(Agent.TempDirectory) -xzf -
+    curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE -o $COVERITY_TOOL_HOME/bin/license.dat $COVERITY_URL/downloadFile.htm?fn=license.dat
+  env:
+    COV_USER: $(COV_USER)
+    COVERITY_PASSPHRASE: $(COVERITY_PASSPHRASE)
+  condition: ne(variables.CACHE_RESTORED, 'true')
+  displayName: 'Coverity Download'
+
+- script: |
+   set -x
+   $COVERITY_TOOL_HOME/bin/coverity scan -o commit.connect.url=$COVERITY_URL -o commit.connect.stream=$(Build.Repository.Name)-$(Build.SourceBranchName)
+  env:
+    COV_USER: $(COV_USER)
+    COVERITY_PASSPHRASE: $(COVERITY_PASSPHRASE)
+  displayName: 'Coverity Scan'

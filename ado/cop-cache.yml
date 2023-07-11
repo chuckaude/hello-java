@@ -1,0 +1,35 @@
+# example pipeline for Polaris scans using the Synopsys Coverity on Polaris extension
+# https://marketplace.visualstudio.com/items?itemName=synopsys-polaris.synopsys-polaris
+# demonstrate POLARIS_HOME caching on ephemeral build agents
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+# designate POLARIS_HOME as something to cache, for more details see:
+# https://learn.microsoft.com/en-us/azure/devops/pipelines/release/caching
+- task: Cache@2
+  displayName: 'Cache POLARIS_HOME'
+  inputs:
+    key: 'POLARIS_HOME | "$(Agent.OS)"'
+    path: $(Agent.ToolsDirectory)/.synopsys/polaris
+    cacheHitVar: 'POLARIS_HOME_CACHEHIT'
+
+- task: SynopsysPolaris@1
+  displayName: 'Polaris Scan'
+  inputs:
+    polarisService: sipse.polaris.synopsys.com
+    polarisCommand: '--co project.name=chuckaude-$(Build.Repository.Name) analyze -w -- mvn -B -DskipTests package'
+
+- task: CopyFiles@2
+  displayName: 'Copy Log Files'
+  inputs:
+    Contents: |
+     .synopsys/polaris/configuration/synopsys.yml
+     .synopsys/polaris/data/coverity/*/idir/build-log.txt
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    flattenFolders: true
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Log Files'
+  inputs:
+    ArtifactName: logs

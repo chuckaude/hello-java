@@ -1,0 +1,68 @@
+# example pipeline for Coverity scans using the Synopsys Coverity extension and a classic BAC
+# https://marketplace.visualstudio.com/items?itemName=synopsys-coverity.synopsys-coverity-azure-devops
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+- group: coverity-aws.chuckaude.com
+- name: COVERITY_TOOL_HOME
+  value: $(Agent.TempDirectory)/$(COVERITY_TOOLKIT)
+
+steps:
+- task: JavaToolInstaller@0
+  displayName: 'Use Java 17'
+  inputs:
+    versionSpec: 17
+    jdkArchitectureOption: x64
+    jdkSourceOption: PreInstalled
+
+- task: Maven@4
+  displayName: 'Maven Build'
+  inputs:
+    options: '-B -DskipTests'
+
+- bash: |
+    curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE $COVERITY_URL/downloadFile.htm?fn=$COVERITY_TOOLKIT.tar.gz | tar -C $(Agent.TempDirectory) -xzf -
+    curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE -o $COVERITY_TOOL_HOME/bin/license.dat $COVERITY_URL/downloadFile.htm?fn=license.dat
+    $COVERITY_TOOL_HOME/bin/cov-configure --java
+    $COVERITY_TOOL_HOME/bin/cov-configure --javascript
+  env:
+    COV_USER: $(COV_USER)
+    COVERITY_PASSPHRASE: $(COVERITY_PASSPHRASE)
+  displayName: 'Coverity Download'
+
+- task: synopsys-coverity@1
+  displayName: 'Coverity Scan'
+  inputs:
+    coverityService: 'coverity-aws.chuckaude.com'
+    allowUntrusted: true
+    projectName: '$(Build.Repository.Name)'
+    streamName: '$(Build.Repository.Name)-$(Build.SourceBranchName)'
+    checkIssues: true
+    issueView: 'Outstanding Issues'
+    issueStatus: 'unstable'
+    buildCommand: 'mvn -B -DskipTests clean package'
+    customCommandArgs: true
+    covBuildArgs: '--fs-capture-search $(Build.SourcesDirectory)'
+    covAnalyzeArgs: '--ticker-mode none --strip-path $(Build.SourcesDirectory) --webapp-security'
+    covCommitArgs: '--ticker-mode none --description $(Build.BuildURI) --version $(Build.SourceVersion) --scm git'
+
+- task: CopyFiles@2
+  displayName: 'Copy Log Files'
+  enabled: false
+  inputs:
+    Contents: |
+      idir/build-log.txt
+      idir/output/analysis-log.txt
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    flattenFolders: true
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Log Files'
+  enabled: false
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'logs'

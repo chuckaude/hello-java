@@ -10,7 +10,6 @@ variables:
   DETECT_PROJECT_NAME: $(Build.Repository.Name)
   DETECT_PROJECT_VERSION_NAME: $(Build.SourceBranchName)
   DETECT_CODE_LOCATION_NAME: $(Build.Repository.Name)-$(Build.SourceBranchName)
-  DETECT_EXCLUDED_DETECTOR_TYPES: 'GIT'
 
 steps:
 - task: JavaToolInstaller@0

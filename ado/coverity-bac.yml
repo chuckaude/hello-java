@@ -52,6 +52,7 @@ steps:
 
 - task: CopyFiles@2
   displayName: 'Copy Log Files'
+  condition: succeededOrFailed()
   enabled: false
   inputs:
     Contents: |
@@ -62,6 +63,7 @@ steps:
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Log Files'
+  condition: succeededOrFailed()
   enabled: false
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'

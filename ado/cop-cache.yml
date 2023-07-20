@@ -18,18 +18,23 @@ steps:
   displayName: 'Polaris Scan'
   inputs:
     polarisService: sipse.polaris.synopsys.com
-    polarisCommand: '--co project.name=chuckaude-$(Build.Repository.Name) analyze -w -- mvn -B -DskipTests package'
+    polarisCommand: '--co project.name=$(Build.Repository.Name) analyze -w'
 
 - task: CopyFiles@2
   displayName: 'Copy Log Files'
+  condition: succeededOrFailed()
+  enabled: false
   inputs:
     Contents: |
-     .synopsys/polaris/configuration/synopsys.yml
-     .synopsys/polaris/data/coverity/*/idir/build-log.txt
+      .synopsys/polaris/configuration/synopsys.yml
+      .synopsys/polaris/data/coverity/*/idir/build-log.txt
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
     flattenFolders: true
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Log Files'
+  condition: succeededOrFailed()
+  enabled: false
   inputs:
-    ArtifactName: logs
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'logs'

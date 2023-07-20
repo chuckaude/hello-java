@@ -20,13 +20,15 @@ steps:
 - bash: |
     curl -fLOsS $(POLARIS_SERVER_URL)/api/tools/polaris_cli-linux64.zip
     unzip -d $(Agent.TempDirectory) -jo polaris_cli-linux64.zip && rm -f polaris_cli-linux64.zip
-    $(Agent.TempDirectory)/polaris --co project.name=chuckaude-$(Build.Repository.Name) analyze -w -- $(BLDCMD)
+    $(Agent.TempDirectory)/polaris --co project.name=$(Build.Repository.Name) analyze -w
   env:
     POLARIS_ACCESS_TOKEN: $(POLARIS_ACCESS_TOKEN)
   displayName: 'Polaris Scan'
   
 - task: CopyFiles@2
   displayName: 'Copy Log Files'
+  condition: succeededOrFailed()
+  enabled: false
   inputs:
     Contents: |
       .synopsys/polaris/configuration/synopsys.yml
@@ -36,6 +38,8 @@ steps:
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Log Files'
+  condition: succeededOrFailed()
+  enabled: false
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'logs'

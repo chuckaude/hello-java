@@ -11,7 +11,6 @@ variables:
   DETECT_PROJECT_NAME: $(Build.Repository.Name)
   DETECT_PROJECT_VERSION_NAME: $(Build.SourceBranchName)
   DETECT_CODE_LOCATION_NAME: $(Build.Repository.Name)-$(Build.SourceBranchName)
-  DETECT_EXCLUDED_DETECTOR_TYPES: 'GIT'
 
 steps:
 - task: JavaToolInstaller@0
@@ -40,6 +39,8 @@ steps:
 
 - task: CopyFiles@2
   displayName: 'Copy Log Files'
+  condition: succeededOrFailed()
+  enabled: false
   inputs:
     Contents: |
       .synopsys/polaris/configuration/synopsys.yml
@@ -49,6 +50,8 @@ steps:
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Log Files'
+  condition: succeededOrFailed()
+  enabled: false
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'logs'

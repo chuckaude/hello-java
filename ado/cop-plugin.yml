@@ -16,7 +16,7 @@ steps:
   inputs:
     options: '-B -DskipTests'
  
- - task: SynopsysPolaris@1
+- task: SynopsysPolaris@1
   displayName: 'Coverity on Polaris Scan'
   inputs:
     polarisService: 'sipse.polaris.synopsys.com'
@@ -27,6 +27,8 @@ steps:
 
 - task: CopyFiles@2
   displayName: 'Copy Log Files'
+  condition: succeededOrFailed()
+  enabled: false
   inputs:
     Contents: |
       .synopsys/polaris/configuration/synopsys.yml
@@ -36,6 +38,8 @@ steps:
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Log Files'
+  condition: succeededOrFailed()
+  enabled: false
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'logs'

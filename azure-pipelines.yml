@@ -6,7 +6,7 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-## - group: poc.polaris.synopsys.com
+- group: group
 - name: BRIDGE_POLARIS_APPLICATION_NAME
   value: 'JW-Hello-$(Build.Repository.Name)'
 - name: BRIDGE_POLARIS_PROJECT_NAME

@@ -8,7 +8,8 @@ pool:
 variables:
 - group: group
 - name: BRIDGE_POLARIS_APPLICATION_NAME
-  value: 'JW-Hello-$(Build.Repository.Name)'
+  ## value: 'JW-Hello-$(Build.Repository.Name)'
+  value: 'AJW'
 - name: BRIDGE_POLARIS_PROJECT_NAME
   value: 'JW-$(Build.Repository.Name)'
 

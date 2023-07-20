@@ -25,10 +25,9 @@ jobs:
     - name: Black Duck Scan
       uses: synopsys-sig/synopsys-action@v1.2.0
       env:
-        DETECT_PROJECT_NAME: chuckaude-${{ github.event.repository.name }}
+        DETECT_PROJECT_NAME: ${{ github.event.repository.name }}
         DETECT_PROJECT_VERSION_NAME: ${{ github.ref_name }}
-        DETECT_CODE_LOCATION_NAME: chuckaude-${{ github.event.repository.name }}-${{ github.ref_name }}
-        DETECT_EXCLUDED_DETECTOR_TYPES: GIT
+        DETECT_CODE_LOCATION_NAME: ${{ github.event.repository.name }}-${{ github.ref_name }}
       with:
         blackduck_url: ${{ vars.BLACKDUCK_URL }}
         blackduck_apiToken: ${{ secrets.BLACKDUCK_API_TOKEN }}
@@ -48,7 +47,7 @@ jobs:
     env:
       POLARIS_SERVER_URL: ${{ vars.POLARIS_SERVER_URL }}
       POLARIS_ACCESS_TOKEN: ${{ secrets.POLARIS_ACCESS_TOKEN }}
-      POLARIS_PROJECT: chuckaude-${{ github.event.repository.name }}
+      POLARIS_PROJECT: ${{ github.event.repository.name }}
       POLARIS_ZIP: polaris_cli-linux64.zip
     steps:
     - name: Checkout Source

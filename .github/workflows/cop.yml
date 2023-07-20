@@ -20,7 +20,7 @@ jobs:
       env:
         POLARIS_SERVER_URL: ${{ vars.POLARIS_SERVER_URL }}
         POLARIS_ACCESS_TOKEN: ${{ secrets.POLARIS_ACCESS_TOKEN }}
-        POLARIS_PROJECT: chuckaude-${{ github.event.repository.name }}
+        POLARIS_PROJECT: ${{ github.event.repository.name }}
         POLARIS_ZIP: polaris_cli-linux64.zip
       run: |
         curl -fLOsS $POLARIS_SERVER_URL/api/tools/$POLARIS_ZIP

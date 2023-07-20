@@ -27,7 +27,6 @@ jobs:
         DETECT_PROJECT_NAME: ${{ github.event.repository.name }}
         DETECT_PROJECT_VERSION_NAME: ${{ github.ref_name }}
         DETECT_CODE_LOCATION_NAME: ${{ github.event.repository.name }}-${{ github.ref_name }}
-        DETECT_EXCLUDED_DETECTOR_TYPES: 'GIT'
       run: |
         curl -fLsS -o $RUNNER_TEMP/detect8.sh https://detect.synopsys.com/detect8.sh && chmod +x $RUNNER_TEMP/detect8.sh
         $RUNNER_TEMP/detect8.sh --detect.policy.check.fail.on.severities=BLOCKER

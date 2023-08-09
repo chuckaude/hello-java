@@ -9,11 +9,10 @@ variables:
 - group: group
 - name: BRIDGE_POLARIS_APPLICATION_NAME
   ## value: 'JW-Hello-$(Build.Repository.Name)'
-  value: 'AJW'
+  value: 'AJWhello-java'
 - name: BRIDGE_POLARIS_PROJECT_NAME
-  value: 'AJW-$(Build.Repository.Name)'
-
-steps:
+ ## value: 'AJW-$(Build.Repository.Name)'
+  value: 'AJWhello-java'steps:
 - task: JavaToolInstaller@0
   displayName: 'Use Java 17'
   inputs:

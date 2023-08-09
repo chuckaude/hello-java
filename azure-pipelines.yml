@@ -13,7 +13,7 @@ variables:
 - name: BRIDGE_POLARIS_PROJECT_NAME
   value: 'AJWhello-java'
   ## value: 'AJW-$(Build.Repository.Name)'
- steps:
+steps:
 - task: JavaToolInstaller@0
   displayName: 'Use Java 17'
   inputs:

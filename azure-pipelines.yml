@@ -8,11 +8,9 @@ pool:
 variables:
 - group: group
 - name: BRIDGE_POLARIS_APPLICATION_NAME
-  ## value: 'JW-Hello-$(Build.Repository.Name)'
-  value: 'AJWhello-java'
+  value: 'AJWhello-java'      #change this name
 - name: BRIDGE_POLARIS_PROJECT_NAME
-  value: 'AJWHelloJ'
-  ## value: 'AJW-$(Build.Repository.Name)'
+  value: 'AJWHelloJ'    # change this name
 steps:
 - task: JavaToolInstaller@0
   displayName: 'Use Java 17'
@@ -20,11 +18,6 @@ steps:
     versionSpec: 17
     jdkArchitectureOption: x64
     jdkSourceOption: PreInstalled
-
-##- task: Maven@4
-##  displayName: 'Maven Build'
-##  inputs:
-##    options: '-B -DskipTests'
 
 - bash: |
     curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d $(Agent.TempDirectory) bridge.zip && rm -f bridge.zip

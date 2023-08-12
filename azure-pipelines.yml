@@ -1,4 +1,4 @@
-# example ADO pipeline for Polaris using the Bridge CLI
+# example ADO pipeline for Polaris using the Bridge CLI good test
 trigger:
 - main
 

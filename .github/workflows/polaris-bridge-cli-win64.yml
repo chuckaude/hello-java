@@ -1,12 +1,12 @@
 # example workflow for Polaris scans using the Bridge CLI
-name: polaris-bridge-cli
+name: polaris-bridge-cli-win64
 on:
   push:
     branches: [ main, master, develop, stage, release ]
   workflow_dispatch:
 jobs:
   polaris:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
     - name: Checkout Source
       uses: actions/checkout@v3
@@ -24,8 +24,10 @@ jobs:
         BRIDGE_POLARIS_PROJECT_NAME: ${{ github.event.repository.name }}
         BRIDGE_POLARIS_BRANCH_NAME: ${{ github.event.ref_name }}
       run: |
-        curl -fLsS -o bridge.zip ${{ vars.BRIDGECLI_LINUX64 }} && unzip -qo -d $RUNNER_TEMP bridge.zip && rm -f bridge.zip
-        $RUNNER_TEMP/synopsys-bridge --verbose --stage polaris polaris.assessment.types=SAST,SCA
+        Invoke-WebRequest -Uri ${{ vars.BRIDGECLI_WIN64 }} -OutFile bridge.zip
+        Expand-Archive -Path bridge.zip -DestinationPath ${{ runner.temp }} -Force
+        Remove-Item -Path bridge.zip -Force
+        ${{ runner.temp }}/synopsys-bridge --verbose --stage polaris polaris.assessment.types=SAST,SCA
 #    - name: Save Logs
 #      if: always()
 #      uses: actions/upload-artifact@v3

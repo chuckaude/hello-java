@@ -1,24 +1,60 @@
 pipeline {
-    agent { label 'linux64' }
+    agent any
     tools {
-        maven 'maven-3.8'
+        maven 'maven-3.9'
         jdk 'openjdk-17'
     }
     environment {
-        BRIDGE_POLARIS_APPLICATION_NAME = 'chuckaude-webgoat'
-        BRIDGE_POLARIS_PROJECT_NAME = 'chuckaude-webgoat'
+        REPO_NAME = "${env.GIT_URL.tokenize('/.')[-2]}"
+        BRIDGECLI_LINUX64 = 'https://sig-repo.synopsys.com/artifactory/bds-integrations-release/com/synopsys/integration/synopsys-bridge/latest/synopsys-bridge-linux64.zip'
+        BRIDGE_POLARIS_SERVERURL = 'https://poc.polaris.synopsys.com'
+        BRIDGE_POLARIS_APPLICATION_NAME = "chuckaude-${env.REPO_NAME}"
+        BRIDGE_POLARIS_PROJECT_NAME = "${env.REPO_NAME}"
+        BRIDGE_POLARIS_ASSESSMENT_TYPES = 'SAST,SCA'
     }
     stages {
-        stage('polaris') {
+        stage('Build') {
             steps {
-                withCredentials([string(credentialsId: 'altair-POC', variable: 'BRIDGE_POLARIS_ACCESSTOKEN')]) {
+                sh 'mvn -B package'
+            }
+        }
+        stage('Polaris Full Scan') {
+            when { not { changeRequest() } }
+            steps {
+                withCredentials([string(credentialsId: 'poc.polaris.synopsys.com', variable: 'BRIDGE_POLARIS_ACCESSTOKEN')]) {
                     script {
-                        status = sh returnStatus: true, script: """
+                        status = sh returnStatus: true, script: '''
+                            env | sort
                             curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d $WORKSPACE_TMP bridge.zip && rm -f bridge.zip
-                            $WORKSPACE_TMP/bridge --verbose --stage polaris polaris.assessment.types=SAST,SCA
-                        """
+                            $WORKSPACE_TMP/synopsys-bridge --verbose --stage polaris \
+                                polaris.branch.name=$BRANCH_NAME
+                        '''
                         if (status == 8) { unstable 'policy violation' }
-                        else if (status != 0) { error 'bridge failure' }
+                        else if (status != 0) { error 'scan failure' }
+                    }
+                }
+            }
+        }
+        stage('Polaris PR Scan') {
+                when { changeRequest() }
+                steps {
+                withCredentials([string(credentialsId: 'poc.polaris.synopsys.com', variable: 'BRIDGE_POLARIS_ACCESSTOKEN'), string(credentialsId: 'github-pat', variable: 'GITHUB_TOKEN')]) {
+                    script {
+                        status = sh returnStatus: true, script: '''
+                            env | sort
+                            curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d $WORKSPACE_TMP bridge.zip && rm -f bridge.zip
+                            $WORKSPACE_TMP/synopsys-bridge --verbose --stage polaris \
+                                polaris.prcomment.enabled=true \
+                                polaris.branch.name=$BRANCH_NAME \
+                                polaris.branch.parent.name=$CHANGE_TARGET \
+                                github.repository.name=$REPO_NAME \
+                                github.repository.branch.name=$BRANCH_NAME \
+                                github.repository.owner.name=chuckaude-org \
+                                github.repository.pull.number=$CHANGE_ID \
+                                github.user.token=$GITHUB_TOKEN
+                        '''
+                        if (status == 8) { unstable 'policy violation' }
+                        else if (status != 0) { error 'scan failure' }
                     }
                 }
             }
@@ -26,7 +62,7 @@ pipeline {
     }
     post {
         always {
-            archiveArtifacts allowEmptyArchive: true, artifacts: 'bridge.log, idir/build-log.txt'
+            //zip archive: true, dir: '.bridge', zipFile: 'bridge-logs.zip'
             cleanWs()
         }
     }

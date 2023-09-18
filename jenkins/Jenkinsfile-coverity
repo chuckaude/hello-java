@@ -1,0 +1,82 @@
+pipeline {
+    agent any
+    tools {
+        maven 'maven-3.9'
+        jdk 'openjdk-17'
+    }
+    environment {
+        // full scan on pushes to important branches
+        FULLSCAN = "${env.BRANCH_NAME ==~ /^(main|master|develop|stage|release)$/ ? 'true' : 'false'}"
+        // PR scan on pulll requests to important branches
+        PRSCAN = "${env.CHANGE_TARGET ==~ /^(main|master|develop|stage|release)$/ ? 'true' : 'false'}"
+        // extract REPO_NAME from GIT_URL
+        REPO_NAME = "${env.GIT_URL.tokenize('/.')[-2]}"
+        // Coverity Connect server
+        CONNECT = 'https://poc329.coverity.synopsys.com'
+        // Bridge CLI download URL
+        BRIDGECLI_LINUX64 = 'https://sig-repo.synopsys.com/artifactory/bds-integrations-release/com/synopsys/integration/synopsys-bridge/latest/synopsys-bridge-linux64.zip'
+        // uncomment for local analysis using the full client
+        //BRIDGE_COVERITY_LOCAL = 'true'
+        //BRIDGE_COVERITY_INSTALL_DIRECTORY = "$JENKINS_HOME/tools/cov-analysis-linux64-2023.3.2"
+    }
+    stages {
+        stage('Build') {
+            steps {
+                sh 'mvn -B package'
+            }
+        }
+        stage('Coverity Full Scan') {
+            when { environment name: 'FULLSCAN', value: 'true' }
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'poc329.coverity.synopsys.com', usernameVariable: 'COV_USER', passwordVariable: 'COVERITY_PASSPHRASE')]) {
+                    script {
+                        status = sh returnStatus: true, script: '''
+                            curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d $WORKSPACE_TMP bridge.zip && rm -f bridge.zip
+                            $WORKSPACE_TMP/synopsys-bridge --verbose --stage connect \
+                                coverity.connect.url=$CONNECT \
+                                coverity.connect.user.name=$COV_USER \
+                                coverity.connect.user.password=$COVERITY_PASSPHRASE \
+                                coverity.connect.project.name=$REPO_NAME \
+                                coverity.connect.stream.name=$REPO_NAME-$BRANCH_NAME \
+                                coverity.connect.policy.view='Outstanding Issues'
+                        '''
+                        if (status == 8) { unstable 'policy violation' }
+                        else if (status != 0) { error 'scan failure' }
+                    }
+                }
+            }
+        }
+        stage('Coverity PR Scan') {
+                when { environment name: 'PRSCAN', value: 'true' }
+                steps {
+                withCredentials([usernamePassword(credentialsId: 'poc329.coverity.synopsys.com', usernameVariable: 'COV_USER', passwordVariable: 'COVERITY_PASSPHRASE'),string(credentialsId: 'github-pat', variable: 'GITHUB_TOKEN')]) {
+                    script {
+                        status = sh returnStatus: true, script: '''
+                            curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d $WORKSPACE_TMP bridge.zip && rm -f bridge.zip
+                            $WORKSPACE_TMP/synopsys-bridge --verbose --stage connect \
+                                coverity.connect.url=$CONNECT \
+                                coverity.connect.user.name=$COV_USER \
+                                coverity.connect.user.password=$COVERITY_PASSPHRASE \
+                                coverity.connect.project.name=$REPO_NAME \
+                                coverity.connect.stream.name=$REPO_NAME-$CHANGE_TARGET \
+                                coverity.automation.prcomment='true' \
+                                github.repository.name=$REPO_NAME \
+                                github.repository.branch.name=$BRANCH_NAME \
+                                github.repository.owner.name=chuckaude-org \
+                                github.repository.pull.number=$CHANGE_ID \
+                                github.user.token=$GITHUB_TOKEN
+                        '''
+                        if (status == 8) { unstable 'policy violation' }
+                        else if (status != 0) { error 'scan failure' }
+                    }
+                }
+            }
+        }
+    }
+    post {
+        always {
+            //zip archive: true, dir: '.bridge', zipFile: 'bridge-logs.zip'
+            cleanWs()
+        }
+    }
+}

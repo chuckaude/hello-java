@@ -20,6 +20,7 @@ jobs:
       env:
         BRIDGE_POLARIS_SERVERURL: ${{ vars.POLARIS_SERVERURL }}
         BRIDGE_POLARIS_ACCESSTOKEN: ${{ secrets.POLARIS_ACCESSTOKEN }}
+        BRIDGE_POLARIS_ASSESSMENT_TYPES: 'SAST,SCA'
         BRIDGE_POLARIS_APPLICATION_NAME: chuckaude-${{ github.event.repository.name }}
         BRIDGE_POLARIS_PROJECT_NAME: ${{ github.event.repository.name }}
         BRIDGE_POLARIS_BRANCH_NAME: ${{ github.event.ref_name }}
@@ -27,7 +28,7 @@ jobs:
         Invoke-WebRequest -Uri ${{ vars.BRIDGECLI_WIN64 }} -OutFile bridge.zip
         Expand-Archive -Path bridge.zip -DestinationPath ${{ runner.temp }} -Force
         Remove-Item -Path bridge.zip -Force
-        ${{ runner.temp }}/synopsys-bridge --verbose --stage polaris polaris.assessment.types=SAST,SCA
+        ${{ runner.temp }}/synopsys-bridge --verbose --stage polaris
 #    - name: Save Logs
 #      if: always()
 #      uses: actions/upload-artifact@v3

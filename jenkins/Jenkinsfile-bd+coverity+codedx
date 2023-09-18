@@ -20,8 +20,8 @@ pipeline {
         FULLSCAN = "${env.BRANCH_NAME ==~ /^(main|master|develop|stage|release)$/ ? 'true' : 'false'}"
         // PR scan on pulll requests to important branches
         PRSCAN = "${env.CHANGE_TARGET ==~ /^(main|master|develop|stage|release)$/ ? 'true' : 'false'}"
-        // set project name to be repo name
-        PROJECT = sh(script: "basename $GIT_URL .git", returnStdout: true).trim()
+        // extract REPO_NAME from GIT_URL
+        REPO_NAME = "${env.GIT_URL.tokenize('/.')[-2]}"
     }
     tools {
         maven 'maven-3.9'
@@ -43,9 +43,9 @@ pipeline {
                 stage('Black Duck Full Scan') {
                     when { environment name: 'FULLSCAN', value: 'true' }
                     environment {
-                        DETECT_PROJECT_NAME = "$PROJECT"
+                        DETECT_PROJECT_NAME = "$REPO_NAME"
                         DETECT_PROJECT_VERSION_NAME = "$BRANCH_NAME"
-                        DETECT_CODE_LOCATION_NAME = "$PROJECT-$BRANCH_NAME"
+                        DETECT_CODE_LOCATION_NAME = "$REPO_NAME-$BRANCH_NAME"
                         DETECT_RISK_REPORT_PDF = "${env.PRODUCTION == 'true' ? 'true' : 'false'}"
                         DETECT_EXCLUDED_DETECTOR_TYPES = 'GIT'
                     }
@@ -60,9 +60,9 @@ pipeline {
                 stage('Black Duck PR Scan') {
                     when { environment name: 'PRSCAN', value: 'true' }
                     environment {
-                        DETECT_PROJECT_NAME = "$PROJECT"
+                        DETECT_PROJECT_NAME = "$REPO_NAME"
                         DETECT_PROJECT_VERSION_NAME = "$CHANGE_TARGET"
-                        DETECT_CODE_LOCATION_NAME = "$PROJECT-$CHANGE_TARGET"
+                        DETECT_CODE_LOCATION_NAME = "$REPO_NAME-$CHANGE_TARGET"
                         DETECT_EXCLUDED_DETECTOR_TYPES = 'GIT'
                     }
                     steps {
@@ -76,7 +76,7 @@ pipeline {
                 stage('Coverity Full Scan') {
                     when { environment name: 'FULLSCAN', value: 'true' }
                     steps {
-                        withCoverityEnvironment(coverityInstanceUrl: "$CONNECT", projectName: "$PROJECT", streamName: "$PROJECT-$BRANCH_NAME") {
+                        withCoverityEnvironment(coverityInstanceUrl: "$CONNECT", projectName: "$REPO_NAME", streamName: "$REPO_NAME-$BRANCH_NAME") {
                             sh "coverity scan -o analyze.location=connect -o commit.connect.url=$COV_URL -o commit.connect.stream=$COV_STREAM -o commit.connect.description=$BUILD_TAG"
                             script {
                                 count = coverityIssueCheck viewName: 'Outstanding Issues', returnIssueCount: true
@@ -88,7 +88,7 @@ pipeline {
                 stage('Coverity PR Scan') {
                     when { environment name: 'PRSCAN', value: 'true' }
                     steps {
-                        withCoverityEnvironment(coverityInstanceUrl: "$CONNECT", projectName: "$PROJECT", streamName: "$PROJECT-$CHANGE_TARGET") {
+                        withCoverityEnvironment(coverityInstanceUrl: "$CONNECT", projectName: "$REPO_NAME", streamName: "$REPO_NAME-$CHANGE_TARGET") {
                             script {
                                 status = sh returnStatus: true, script: """
                                     coverity scan -o analyze.location=connect -o commit.connect.url=$COV_URL -o commit.connect.stream=$COV_STREAM -o commit.connect.comparison-report=comparison-report.json

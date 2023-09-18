@@ -1,6 +1,5 @@
 // Example Jenkinsfile with SIG Security Scan that implements:
 // - Black Duck INTELLIGENT scan on pushes and RAPID scan on PRs to "important" branches
-// - Coverity on Polaris FULL scan on pushes and PRs to "important" branches
 pipeline {
     agent { label 'linux64' }
     environment {
@@ -89,42 +88,6 @@ pipeline {
                         }
                     }
                 }
-                stage('Coverity on Polaris Full Scan') {
-                    when { environment name: 'FULLSCAN', value: 'true' }
-                    steps {
-                        withCredentials([string(credentialsId: 'sipse.polaris.synopsys.com', variable: 'POLARIS_ACCESS_TOKEN')]) {
-                            script {
-                                status = sh returnStatus: true, script: """
-                                    curl -fLOsS $POLARIS_SERVER_URL/api/tools/polaris_cli-linux64.zip
-                                    unzip -qo -d $WORKSPACE_TMP -jo polaris_cli-linux64.zip && rm -f polaris_cli-linux64.zip
-                                    $WORKSPACE_TMP/polaris --co project.name=$REPO_NAME analyze -w
-                                    # simple quality gate for critical and high impact issues; more advanced filtering requires an API script
-                                    if [ \$(cat .synopsys/polaris/cli-scan.json | jq '[.issueSummary.issuesBySeverity|.critical,.high]|add') -ne 0 ]; then exit 8; fi
-                                """
-                                if (status == 8) { unstable 'policy violation' }
-                                else if (status != 0) { error 'scan failure' }
-                            }
-                        }
-                    }
-                }
-                stage('Coverity on Polaris PR Scan') {
-                    when { environment name: 'PRSCAN', value: 'true' }
-                    steps {
-                        withCredentials([string(credentialsId: 'sipse.polaris.synopsys.com', variable: 'POLARIS_ACCESS_TOKEN')]) {
-                            script {
-                                status = sh returnStatus: true, script: """
-                                    curl -fLOsS $POLARIS_SERVER_URL/api/tools/polaris_cli-linux64.zip
-                                    unzip -qo -d $WORKSPACE_TMP -jo polaris_cli-linux64.zip && rm -f polaris_cli-linux64.zip
-                                    $WORKSPACE_TMP/polaris --co project.name=$REPO_NAME analyze -w
-                                    # query for new issues; will always be non-zero for PRs; replace with API script to compare with CHANGE_TARGET
-                                    if [ \$(cat .synopsys/polaris/cli-scan.json | jq '.issueSummary.newIssues') -ne 0 ]; then exit 8; fi
-                                """
-                                if (status == 8) { unstable 'policy violation' }
-                                else if (status != 0) { error 'scan failure' }
-                            }
-                        }
-                    }
-                }
             }
         }
         stage('Deploy') {
@@ -136,7 +99,7 @@ pipeline {
     }
     post {
         always {
-            archiveArtifacts allowEmptyArchive: true, artifacts: '.synopsys/polaris/configuration/synopsys.yml, .synopsys/polaris/data/coverity/*/idir/build-log.txt, *_BlackDuck_RiskReport.pdf'
+            archiveArtifacts allowEmptyArchive: true, artifacts: '*_BlackDuck_RiskReport.pdf'
             //zip archive: true, dir: '.bridge', zipFile: 'bridge-logs.zip'
             cleanWs()
         }

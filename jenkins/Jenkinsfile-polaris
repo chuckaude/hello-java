@@ -24,7 +24,6 @@ pipeline {
                 withCredentials([string(credentialsId: 'poc.polaris.synopsys.com', variable: 'BRIDGE_POLARIS_ACCESSTOKEN')]) {
                     script {
                         status = sh returnStatus: true, script: '''
-                            env | sort
                             curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d $WORKSPACE_TMP bridge.zip && rm -f bridge.zip
                             $WORKSPACE_TMP/synopsys-bridge --verbose --stage polaris \
                                 polaris.branch.name=$BRANCH_NAME
@@ -41,7 +40,6 @@ pipeline {
                 withCredentials([string(credentialsId: 'poc.polaris.synopsys.com', variable: 'BRIDGE_POLARIS_ACCESSTOKEN'), string(credentialsId: 'github-pat', variable: 'GITHUB_TOKEN')]) {
                     script {
                         status = sh returnStatus: true, script: '''
-                            env | sort
                             curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d $WORKSPACE_TMP bridge.zip && rm -f bridge.zip
                             $WORKSPACE_TMP/synopsys-bridge --verbose --stage polaris \
                                 polaris.prcomment.enabled=true \

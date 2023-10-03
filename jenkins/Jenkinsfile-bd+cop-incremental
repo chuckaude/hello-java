@@ -3,7 +3,8 @@ pipeline {
     agent { label 'linux64' }
 
     environment {
-        PROJECT = 'chuckaude-hello-java'
+        // extract REPO_NAME from GIT_URL
+        REPO_NAME = "${env.GIT_URL.tokenize('/.')[-2]}"
         POLARIS_FF_ENABLE_COVERITY_INCREMENTAL = 'true'
     }
 
@@ -27,7 +28,7 @@ pipeline {
             parallel {
                 stage('Black Duck') {
                     steps {
-                        synopsys_detect "--detect.project.name=$PROJECT --detect.project.version.name=$BRANCH_NAME"
+                        synopsys_detect "--detect.project.name=$REPO_NAME --detect.project.version.name=$BRANCH_NAME"
                     }
                 }
                 stage('Polaris Full Scan') {
@@ -38,7 +39,7 @@ pipeline {
                         }
                     }
                     steps {
-                        polaris arguments: "--co project.name=$PROJECT analyze -w", polarisCli: 'default'
+                        polaris arguments: "--co project.name=$REPO_NAME analyze -w", polarisCli: 'default'
                         script {
                             count = polarisIssueCheck jobTimeoutInMinutes: 30, returnIssueCount: true
                             if (count != 0) { unstable 'Outstanding Issues Detected' }
@@ -57,7 +58,7 @@ pipeline {
                             git --no-pager diff origin/$CHANGE_TARGET --name-only > changeset.txt
                             [ -s changeset.txt ] || exit 0
                         '''
-                        polaris arguments: "--co project.name=$PROJECT analyze -w --incremental changeset.txt", polarisCli: 'default'
+                        polaris arguments: "--co project.name=$REPO_NAME analyze -w --incremental changeset.txt", polarisCli: 'default'
                         sh '''
                             COUNT=$(cat .synopsys/polaris/data/coverity/*/idir/incremental-results/new-issues.json | jq '. | length')
                             if [ $COUNT -ne 0 ]; then touch issues_found; fi

@@ -47,7 +47,6 @@ pipeline {
                         DETECT_PROJECT_VERSION_NAME = "$BRANCH_NAME"
                         DETECT_CODE_LOCATION_NAME = "$REPO_NAME-$BRANCH_NAME"
                         DETECT_RISK_REPORT_PDF = "${env.PRODUCTION == 'true' ? 'true' : 'false'}"
-                        DETECT_EXCLUDED_DETECTOR_TYPES = 'GIT'
                     }
                     steps {
                         script {
@@ -63,7 +62,6 @@ pipeline {
                         DETECT_PROJECT_NAME = "$REPO_NAME"
                         DETECT_PROJECT_VERSION_NAME = "$CHANGE_TARGET"
                         DETECT_CODE_LOCATION_NAME = "$REPO_NAME-$CHANGE_TARGET"
-                        DETECT_EXCLUDED_DETECTOR_TYPES = 'GIT'
                     }
                     steps {
                         script {

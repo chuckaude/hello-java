@@ -18,7 +18,7 @@ steps:
   displayName: 'Polaris Scan'
   inputs:
     polarisService: sipse.polaris.synopsys.com
-    polarisCommand: '--co project.name=$(Build.Repository.Name) analyze -w'
+    polarisCommand: '--co project.name=chuckaude-$(Build.Repository.Name) analyze -w'
 
 - task: CopyFiles@2
   displayName: 'Copy Log Files'

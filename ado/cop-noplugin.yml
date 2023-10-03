@@ -20,7 +20,7 @@ steps:
 - bash: |
     curl -fLOsS $(POLARIS_SERVER_URL)/api/tools/polaris_cli-linux64.zip
     unzip -d $(Agent.TempDirectory) -jo polaris_cli-linux64.zip && rm -f polaris_cli-linux64.zip
-    $(Agent.TempDirectory)/polaris --co project.name=$(Build.Repository.Name) analyze -w
+    $(Agent.TempDirectory)/polaris --co project.name=chuckaude-$(Build.Repository.Name) analyze -w
   env:
     POLARIS_ACCESS_TOKEN: $(POLARIS_ACCESS_TOKEN)
   displayName: 'Polaris Scan'

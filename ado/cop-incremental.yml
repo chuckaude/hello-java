@@ -24,7 +24,7 @@ steps:
   condition: and(in(variables['Build.SourceBranchName'],'main','stage','release'),not(eq(variables['Build.Reason'],'PullRequest')))
   inputs:
     polarisService: 'sipse.polaris.synopsys.com'
-    polarisCommand: 'analyze -w'
+    polarisCommand: '--co project.name=chuckaude-$(Build.Repository.Name) analyze -w'
     # Note: waitForeIssues will fail the pipeline if ANY issues are detected, not very practical, parse JSON or use API instead
     waitForIssues: false
     populateChangeSetFile: false
@@ -35,7 +35,7 @@ steps:
   condition: eq(variables['Build.Reason'],'PullRequest')
   inputs:
     polarisService: 'sipse.polaris.synopsys.com'
-    polarisCommand: 'analyze -w --incremental $CHANGE_SET_FILE_PATH'
+    polarisCommand: '--co project.name=chuckaude-$(Build.Repository.Name) analyze -w --incremental $CHANGE_SET_FILE_PATH'
     # Note: waitForeIssues will fail the pipeline if ANY issues are detected, not very practical, parse JSON or use API instead
     waitForIssues: false
     # BUG: plugin fails to populate changeset on additional edits to a PR beyond the first
@@ -47,7 +47,7 @@ steps:
     unzip -d $(Agent.TempDirectory) -jo polaris_cli-linux64.zip
     git diff --name-only HEAD HEAD~1 > changeset.txt
     cat changeset.txt
-    POLARIS_FF_ENABLE_COVERITY_INCREMENTAL=true $(Agent.TempDirectory)/polaris analyze -w --incremental changeset.txt
+    POLARIS_FF_ENABLE_COVERITY_INCREMENTAL=true $(Agent.TempDirectory)/polaris --co project.name=chuckaude-$(Build.Repository.Name) analyze -w --incremental changeset.txt
     COUNT=$(cat .synopsys/polaris/data/coverity/*/idir/incremental-results/new-issues.json | jq '. | length')
     if [ $COUNT -ne 0 ]; then
       echo "new issues detected, do something here"

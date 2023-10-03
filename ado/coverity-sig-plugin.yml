@@ -3,11 +3,21 @@
 trigger:
 - main
 
+#pool:
+#  vmImage: ubuntu-latest
+
 pool:
-  vmImage: ubuntu-latest
+  name: private-linux
+workspace:
+  clean: all
 
 variables:
   - group: poc329.coverity.synopsys.com
+  - name: BRIDGE_COVERITY_LOCAL
+    value: true
+  # uncomment for a preinstalled analysis toolkit
+  - name: BRIDGE_COVERITY_INSTALL_DIRECTORY
+    value: /opt/coverity/analysis/2023.6.1
 
 steps:
 - task: JavaToolInstaller@0

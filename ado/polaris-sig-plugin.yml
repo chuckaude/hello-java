@@ -29,7 +29,7 @@ steps:
     bridge_polaris_serverUrl: '$(BRIDGE_POLARIS_SERVERURL)'
     bridge_polaris_accessToken: '$(BRIDGE_POLARIS_ACCESSTOKEN)'
     bridge_polaris_application_name: 'chuckaude-$(Build.Repository.Name)'
-    bridge_polaris_project_name: 'chuckaude-$(Build.Repository.Name)'
+    bridge_polaris_project_name: '$(Build.Repository.Name)'
     bridge_polaris_assessment_types: 'SAST,SCA'
 
 - task: ArchiveFiles@2

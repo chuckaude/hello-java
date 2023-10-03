@@ -1,4 +1,4 @@
-# example workflow for Coverity scans (CNC only) using the Bridge CLI
+# example workflow for Coverity scans (CNC with scan farm) using the Bridge CLI
 name: cnc-bridge-cli
 on:
   push:

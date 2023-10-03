@@ -1,5 +1,5 @@
-# Black Duck using Synopsys Action and Coverity on Polaris with getIssues quality gate and full PR scans
-name: BD + CoP
+# Black Duck using Synopsys Action and Coverity on Polaris with getIssues quality gate and LCA incremental PR scans
+name: BD + CoP Incremental
 
 on:
   push:
@@ -23,7 +23,7 @@ jobs:
     - name: Maven Build
       run: mvn -B -DskipTests package
     - name: Black Duck Scan
-      uses: synopsys-sig/synopsys-action@v1.2.0
+      uses: synopsys-sig/synopsys-action@v1.5.0
       env:
         DETECT_PROJECT_NAME: ${{ github.event.repository.name }}
         DETECT_PROJECT_VERSION_NAME: ${{ github.ref_name }}
@@ -75,6 +75,11 @@ jobs:
       run: |
         curl -fLOsS $POLARIS_SERVER_URL/api/tools/$POLARIS_ZIP
         unzip -d $RUNNER_TEMP -jo $POLARIS_ZIP && rm -f $POLARIS_ZIP
-        $RUNNER_TEMP/polaris --co project.name=$POLARIS_PROJECT --co project.branch=${{ github.ref_name }} analyze -w
-        curl -fLOsS https://www.chuckaude.com/repo/getIssues && chmod +x getIssues
-        ./getIssues --project $POLARIS_PROJECT --branch ${{ github.ref_name }} --compare ${{ github.base_ref }} --new --exit1-if-issues
+        export POLARIS_FF_ENABLE_COVERITY_INCREMENTAL=true
+        echo ${{ steps.changeset.outputs.added_modified }} | tee changeset.txt
+        $RUNNER_TEMP/polaris --co project.name=$POLARIS_PROJECT --co project.branch=$GITHUB_BASE_REF analyze -w --incremental changeset.txt
+        COUNT=$(cat .synopsys/polaris/data/coverity/*/idir/incremental-results/new-issues.json | jq '. | length')
+        if [ $COUNT -ne 0 ]; then
+          echo "$COUNT new issues detected, do something here"
+          exit 1
+        fi

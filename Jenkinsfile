@@ -13,7 +13,7 @@ pipeline {
         BRIDGE_POLARIS_ASSESSMENT_TYPES = 'SAST,SCA'
     }
     stages {
-        stage('Build') {
+        stage('Build2') {
             steps {
                 sh 'mvn -B package'
             }

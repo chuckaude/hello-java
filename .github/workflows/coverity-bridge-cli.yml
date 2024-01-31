@@ -1,4 +1,4 @@
-# example workflow for Coverity scans (local analysis with full client) using the Bridge CLI
+# example workflow for Coverity scans using the Bridge CLI
 name: coverity-bridge-cli
 on:
   push:
@@ -9,10 +9,6 @@ on:
 jobs:
   coverity:
     runs-on: ubuntu-latest
-    env:
-      BRIDGE_COVERITY_LOCAL: true
-      # uncomment for a preinstalled analysis toolkit
-      #BRIDGE_COVERITY_INSTALL_DIRECTORY: /opt/coverity/analysis/2023.9.0
     steps:
     - name: Checkout Source
       uses: actions/checkout@v3
@@ -26,18 +22,20 @@ jobs:
       if: ${{ github.event_name != 'pull_request' }}
       run: |
         curl -fLsS -o bridge.zip ${{ vars.BRIDGECLI_LINUX64 }} && unzip -qo -d $RUNNER_TEMP bridge.zip && rm -f bridge.zip
-        $RUNNER_TEMP/synopsys-bridge --verbose --stage connect \
+        $RUNNER_TEMP/synopsys-bridge --stage connect \
             coverity.connect.url=${{ vars.COVERITY_URL }} \
             coverity.connect.user.name=${{ secrets.COV_USER }} \
             coverity.connect.user.password=${{ secrets.COVERITY_PASSPHRASE }} \
             coverity.connect.project.name=${{ github.event.repository.name }} \
             coverity.connect.stream.name=${{ github.event.repository.name }}-${{ github.ref_name }} \
             coverity.connect.policy.view='Outstanding Issues'
+            # coverity.local: true
+            # coverity.install.directory: ${{ runner.temp }}/coverity
     - name: Coverity PR Scan
       if: ${{ github.event_name == 'pull_request' }}
       run: |
         curl -fLsS -o bridge.zip ${{ vars.BRIDGECLI_LINUX64 }} && unzip -qo -d $RUNNER_TEMP bridge.zip && rm -f bridge.zip
-        $RUNNER_TEMP/synopsys-bridge --verbose --stage connect \
+        $RUNNER_TEMP/synopsys-bridge --stage connect \
             coverity.connect.url=${{ vars.COVERITY_URL }} \
             coverity.connect.user.name=${{ secrets.COV_USER }} \
             coverity.connect.user.password=${{ secrets.COVERITY_PASSPHRASE }} \
@@ -49,6 +47,8 @@ jobs:
             github.repository.owner.name=${{ github.repository_owner }} \
             github.repository.pull.number=${{ github.event.number }} \
             github.user.token=${{ secrets.GITHUB_TOKEN }}
+            # coverity.local: true
+            # coverity.install.directory: ${{ runner.temp }}/coverity
 #    - name: Save Logs
 #      if: always()
 #      uses: actions/upload-artifact@v3

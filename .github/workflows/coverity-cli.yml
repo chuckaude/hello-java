@@ -14,7 +14,7 @@ jobs:
       COV_USER: ${{ secrets.COV_USER }}
       COVERITY_PASSPHRASE: ${{ secrets.COVERITY_PASSPHRASE }}
       COVERITY_PROJECT: ${{ github.event.repository.name }}
-      COVERITY_TOOLKIT: cov-analysis-linux64-2023.9.0
+      COVERITY_TOOLKIT: cov-analysis-linux64-2023.12.0
     steps:
     - name: Checkout Source
       uses: actions/checkout@v3
@@ -33,7 +33,7 @@ jobs:
       env:
         COVERITY_STREAM: ${{ github.event.repository.name }}-${{ github.ref_name }}
       run: |
-        $RUNNER_TEMP/$COVERITY_TOOLKIT/bin/coverity scan -o commit.connect.url=$COVERITY_URL \
+        $RUNNER_TEMP/$COVERITY_TOOLKIT/bin/coverity --ticker-mode none scan -o commit.connect.url=$COVERITY_URL \
             -o commit.connect.project=$COVERITY_PROJECT -o commit.connect.stream=$COVERITY_STREAM
     - name: Coverity Quality Gate
       if: ${{ github.event_name != 'pull_request' }}
@@ -49,7 +49,7 @@ jobs:
       env:
         COVERITY_STREAM: ${{ github.event.repository.name }}-${{ github.base_ref }}
       run: |
-        $RUNNER_TEMP/$COVERITY_TOOLKIT/bin/coverity scan -o commit.connect.url=$COVERITY_URL \
+        $RUNNER_TEMP/$COVERITY_TOOLKIT/bin/coverity --ticker-mode none scan -o commit.connect.url=$COVERITY_URL \
             -o commit.connect.project=$COVERITY_PROJECT -o commit.connect.stream=$COVERITY_STREAM \
             -o commit.connect.comparison-report=comparison-report.json
         cat comparison-report.json | jq '.issues[] | select(.presentInReferenceSnapshot == false and (.impact == "Medium" or .impact == "High"))' > new-issues.json

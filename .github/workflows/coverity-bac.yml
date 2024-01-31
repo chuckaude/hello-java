@@ -14,7 +14,7 @@ jobs:
       COV_USER: ${{ secrets.COV_USER }}
       COVERITY_PASSPHRASE: ${{ secrets.COVERITY_PASSPHRASE }}
       COVERITY_PROJECT: ${{ github.event.repository.name }}
-      COVERITY_TOOLKIT: cov-analysis-linux64-2023.9.0
+      COVERITY_TOOLKIT: cov-analysis-linux64-2023.12.0
       BLDCMD: mvn -B -DskipTests package
       CHECKERS: --webapp-security
     steps:
@@ -59,7 +59,7 @@ jobs:
         export PATH=$PATH:$RUNNER_TEMP/$COVERITY_TOOLKIT/bin
         cov-run-desktop --dir idir --url $COVERITY_URL --stream $COVERITY_STREAM --build $BLDCMD
         cov-run-desktop --dir idir --url $COVERITY_URL --stream $COVERITY_STREAM --present-in-reference false \
-          --ignore-uncapturable-inputs true --json-output-v7 issues.json --exit1-if-defects true ${{ steps.changeset.outputs.added_modified }}
+          --ignore-uncapturable-inputs true --json-output-v10 issues.json --exit1-if-defects true ${{ steps.changeset.outputs.added_modified }}
 #    - name: Save Logs
 #      if: always()
 #      uses: actions/upload-artifact@v3

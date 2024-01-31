@@ -28,7 +28,7 @@ jobs:
         DETECT_CODE_LOCATION_NAME: ${{ github.event.repository.name }}-${{ github.ref_name }}
       run: |
         curl -fLsS -o bridge.zip ${{ vars.BRIDGECLI_LINUX64 }} && unzip -qo -d $RUNNER_TEMP bridge.zip && rm -f bridge.zip
-        $RUNNER_TEMP/synopsys-bridge --verbose --stage blackduck \
+        $RUNNER_TEMP/synopsys-bridge --stage blackduck \
             blackduck.url=${{ vars.BLACKDUCK_URL }} \
             blackduck.token=${{ secrets.BLACKDUCK_API_TOKEN }} \
             blackduck.project.id=${{ github.event.repository.name }} \
@@ -43,7 +43,7 @@ jobs:
         DETECT_CODE_LOCATION_NAME: ${{ github.event.repository.name }}-${{ github.base_ref }}
       run: |
         curl -fLsS -o bridge.zip ${{ vars.BRIDGECLI_LINUX64 }} && unzip -qo -d $RUNNER_TEMP bridge.zip && rm -f bridge.zip
-        $RUNNER_TEMP/synopsys-bridge --verbose --stage blackduck \
+        $RUNNER_TEMP/synopsys-bridge --stage blackduck \
             blackduck.url=${{ vars.BLACKDUCK_URL }} \
             blackduck.token=${{ secrets.BLACKDUCK_API_TOKEN }} \
             blackduck.project.id=${{ github.event.repository.name }} \

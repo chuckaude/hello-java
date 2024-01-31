@@ -1,5 +1,5 @@
 # example workflow for Coverity thin client with CNC scan farm
-name: cnc-thin-client
+name: coverity-thin-client
 on:
   push:
     branches: [ main, master, develop, stage, release ]
@@ -13,7 +13,7 @@ jobs:
       COVERITY_URL: ${{ vars.COVERITY_URL }}
       COV_USER: ${{ secrets.COV_USER }}
       COVERITY_PASSPHRASE: ${{ secrets.COVERITY_PASSPHRASE }}
-      COVERITY_THIN_CLIENT: cov_thin_client-linux64-2023.3.2.tar.gz   # see ER CNC-861 to support version=latest
+      COVERITY_THIN_CLIENT: cov-thin-client-linux64-2023.12.0.tar.gz   # see ER CNC-861 to support version=latest
       COVERITY_PROJECT: ${{ github.event.repository.name }}
     steps:
     - name: Checkout Source
@@ -30,7 +30,7 @@ jobs:
         COVERITY_STREAM: ${{ github.event.repository.name }}-${{ github.ref_name }}
       run: |
         curl -fLsS $COVERITY_URL/api/v2/scans/downloads/$COVERITY_THIN_CLIENT | tar -C $RUNNER_TEMP -xzf -
-        $RUNNER_TEMP/bin/coverity scan -o analyze.location=connect -o commit.connect.url=$COVERITY_URL \
+        $RUNNER_TEMP/bin/coverity --ticker-mode none scan -o analyze.location=connect -o commit.connect.url=$COVERITY_URL \
             -o commit.connect.project=$COVERITY_PROJECT -o commit.connect.stream=$COVERITY_STREAM
     - name: Coverity Quality Gate
       if: ${{ github.event_name != 'pull_request' }}
@@ -47,7 +47,7 @@ jobs:
         COVERITY_STREAM: ${{ github.event.repository.name }}-${{ github.base_ref }}
       run: |
         curl -fLsS $COVERITY_URL/api/v2/scans/downloads/$COVERITY_THIN_CLIENT | tar -C $RUNNER_TEMP -xzf -
-        $RUNNER_TEMP/bin/coverity scan -o analyze.location=connect -o commit.connect.url=$COVERITY_URL \
+        $RUNNER_TEMP/bin/coverity --ticker-mode none scan -o analyze.location=connect -o commit.connect.url=$COVERITY_URL \
             -o commit.connect.project=$COVERITY_PROJECT -o commit.connect.stream=$COVERITY_STREAM \
             -o commit.connect.comparison-report=comparison-report.json
         cat comparison-report.json | jq '.issues[] | select(.presentInReferenceSnapshot == false and (.impact == "Medium" or .impact == "High"))' > new-issues.json

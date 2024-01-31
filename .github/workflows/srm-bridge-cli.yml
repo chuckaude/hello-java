@@ -1,12 +1,12 @@
 # example workflow for SRM scans using the Bridge CLI
-name: srm-bridge-cli-win64
+name: srm-bridge-cli
 on:
   push:
     branches: [ main, master, develop, stage, release ]
   workflow_dispatch:
 jobs:
   srm:
-    runs-on: [self-hosted, windows]
+    runs-on: ubuntu-latest
     env:
       BRIDGE_SRM_URL: ${{ vars.SRM_URL }}
       BRIDGE_SRM_APIKEY: ${{ secrets.SRM_APIKEY }}
@@ -24,10 +24,8 @@ jobs:
         cache: maven
     - name: SRM Full Scan
       run: |
-        Invoke-WebRequest -Uri ${{ vars.BRIDGECLI_WIN64 }} -OutFile bridge.zip
-        Expand-Archive -Path bridge.zip -DestinationPath ${{ runner.temp }} -Force
-        Remove-Item -Path bridge.zip -Force
-        ${{ runner.temp }}/synopsys-bridge --stage srm
+        curl -fLsS -o bridge.zip ${{ vars.BRIDGECLI_LINUX64 }} && unzip -qo -d $RUNNER_TEMP bridge.zip && rm -f bridge.zip
+        $RUNNER_TEMP/synopsys-bridge --stage srm
 #    - name: Save Logs
 #      if: always()
 #      uses: actions/upload-artifact@v3

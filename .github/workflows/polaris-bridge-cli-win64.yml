@@ -28,7 +28,7 @@ jobs:
         Invoke-WebRequest -Uri ${{ vars.BRIDGECLI_WIN64 }} -OutFile bridge.zip
         Expand-Archive -Path bridge.zip -DestinationPath ${{ runner.temp }} -Force
         Remove-Item -Path bridge.zip -Force
-        ${{ runner.temp }}/synopsys-bridge --verbose --stage polaris
+        ${{ runner.temp }}/synopsys-bridge --stage polaris
 #    - name: Save Logs
 #      if: always()
 #      uses: actions/upload-artifact@v3

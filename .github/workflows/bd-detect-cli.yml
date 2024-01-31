@@ -28,5 +28,5 @@ jobs:
         DETECT_PROJECT_VERSION_NAME: ${{ github.ref_name }}
         DETECT_CODE_LOCATION_NAME: ${{ github.event.repository.name }}-${{ github.ref_name }}
       run: |
-        curl -fLsS -o $RUNNER_TEMP/detect8.sh https://detect.synopsys.com/detect8.sh && chmod +x $RUNNER_TEMP/detect8.sh
-        $RUNNER_TEMP/detect8.sh --detect.policy.check.fail.on.severities=BLOCKER
+        curl -fLsS -o $RUNNER_TEMP/detect9.sh https://detect.synopsys.com/detect9.sh && chmod +x $RUNNER_TEMP/detect9.sh
+        $RUNNER_TEMP/detect9.sh --detect.policy.check.fail.on.severities=BLOCKER

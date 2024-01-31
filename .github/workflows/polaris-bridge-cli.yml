@@ -29,12 +29,12 @@ jobs:
       if: ${{ github.event_name != 'pull_request' }}
       run: |
         curl -fLsS -o bridge.zip ${{ vars.BRIDGECLI_LINUX64 }} && unzip -qo -d $RUNNER_TEMP bridge.zip && rm -f bridge.zip
-        $RUNNER_TEMP/synopsys-bridge --verbose --stage polaris
+        $RUNNER_TEMP/synopsys-bridge --stage polaris
     - name: Polaris PR Scan
       if: ${{ github.event_name == 'pull_request' }}
       run: |
         curl -fLsS -o bridge.zip ${{ vars.BRIDGECLI_LINUX64 }} && unzip -qo -d $RUNNER_TEMP bridge.zip && rm -f bridge.zip
-        $RUNNER_TEMP/synopsys-bridge --verbose --stage polaris \
+        $RUNNER_TEMP/synopsys-bridge --stage polaris \
             polaris.prcomment.enabled=true \
             polaris.branch.parent.name=${{ github.event.base_ref }} \
             github.repository.branch.name=${{ github.ref_name }} \

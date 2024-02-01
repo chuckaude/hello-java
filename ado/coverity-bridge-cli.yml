@@ -6,12 +6,7 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-  - group: poc329.coverity.synopsys.com
-  - name: BRIDGE_COVERITY_LOCAL
-    value: true
-  # uncomment for a preinstalled analysis toolkit
-  #- name: BRIDGE_COVERITY_INSTALL_DIRECTORY
-  #  value: /opt/coverity/analysis/2023.6.0
+  - group: poc357.coverity.synopsys.com
 
 steps:
 - task: JavaToolInstaller@0
@@ -36,6 +31,8 @@ steps:
       coverity.connect.project.name=$(Build.Repository.Name) \
       coverity.connect.stream.name=$(Build.Repository.Name)-$(Build.SourceBranchName) \
       coverity.connect.policy.view='Outstanding Issues'
+      # coverity.local: true
+      # coverity.install.directory: $(Agent.TempDirectory)/coverity
   env:
     COV_USER: $(COV_USER)
     COVERITY_PASSPHRASE: $(COVERITY_PASSPHRASE)
@@ -57,6 +54,8 @@ steps:
       azure.project.name=$(Build.Repository.Name) \
       azure.repository.branch.name=$(System.PullRequest.SourceBranch) \
       azure.repository.pull.number=$(System.PullRequest.PullRequestId)
+      # coverity.local: true
+      # coverity.install.directory: $(Agent.TempDirectory)/coverity
   env:
     COV_USER: $(COV_USER)
     COVERITY_PASSPHRASE: $(COVERITY_PASSPHRASE)

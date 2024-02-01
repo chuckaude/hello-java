@@ -27,5 +27,5 @@ steps:
 - task: SynopsysDetectTask@8
   displayName: 'Black Duck Scan'
   inputs:
-    BlackDuckService: poc329.blackduck.synopsys.com
+    BlackDuckService: poc357.blackduck.synopsys.com
     DetectArguments: '--detect.policy.check.fail.on.severities=BLOCKER'

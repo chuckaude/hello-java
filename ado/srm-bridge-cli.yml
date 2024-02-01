@@ -1,0 +1,50 @@
+# example pipeline for SRM scans using the Bridge CLI
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  - group: poc357.srm.synopsys.com
+
+steps:
+- task: JavaToolInstaller@0
+  displayName: 'Use Java 17'
+  inputs:
+    versionSpec: 17
+    jdkArchitectureOption: x64
+    jdkSourceOption: PreInstalled
+
+- task: Maven@4
+  displayName: 'Maven Build'
+  inputs:
+    options: '-B -DskipTests'
+
+- bash: |
+    curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d $(Agent.TempDirectory) bridge.zip && rm -f bridge.zip
+    $(Agent.TempDirectory)/synopsys-bridge --verbose --stage srm
+  env:
+    BRIDGE_SRM_URL: $(SRM_URL)
+    BRIDGE_SRM_APIKEY: $(SRM_APIKEY)
+    BRIDGE_SRM_ASSESSMENT_TYPES: 'SAST,SCA'
+    BRIDGE_SRM_PROJECT_NAME: chuckaude-$(Build.Repository.Name)
+    BRIDGE_SRM_BRANCH_NAME: $(Build.SourceBranchName)
+  displayName: 'SRM Scan'
+
+- task: ArchiveFiles@2
+  displayName: 'Copy Log Files'
+  condition: succeededOrFailed()
+  enabled: false
+  inputs:
+    rootFolderOrFile: .bridge
+    includeRootFolder: false
+    archiveFile: '$(Build.ArtifactStagingDirectory)/bridge-logs.zip'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Log Files'
+  condition: succeededOrFailed()
+  enabled: false
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'logs'

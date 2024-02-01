@@ -23,20 +23,7 @@ steps:
     options: '-B -DskipTests'
 
 - task: SynopsysSecurityScan@1
-  displayName: 'Polaris Full Scan'
-  condition: not(eq(variables['Build.Reason'], 'PullRequest'))
-  inputs:
-    scanType: polaris
-    bridge_polaris_serverUrl: '$(BRIDGE_POLARIS_SERVERURL)'
-    bridge_polaris_accesstoken: '$(BRIDGE_POLARIS_ACCESSTOKEN)'
-    bridge_polaris_assessment_types: 'SAST,SCA'
-    bridge_polaris_application_name: 'chuckaude-$(Build.Repository.Name)'
-    bridge_polaris_project_name: '$(Build.Repository.Name)'
-    bridge_polaris_branch_name: '$(Build.SourceBranchName)'
-
-- task: SynopsysSecurityScan@1
-  displayName: 'Polaris PR Scan'
-  condition: eq(variables['Build.Reason'], 'PullRequest')
+  displayName: 'Polaris Scan'
   inputs:
     scanType: polaris
     bridge_polaris_serverUrl: '$(BRIDGE_POLARIS_SERVERURL)'
@@ -45,9 +32,6 @@ steps:
     bridge_polaris_application_name: 'chuckaude-$(Build.Repository.Name)'
     bridge_polaris_project_name: '$(Build.Repository.Name)'
     bridge_polaris_branch_name: '$(Build.SourceBranchName)'
-    polaris_branch_parent_name: $(System.PullRequest.targetBranchName)
-    polaris_prComment_enabled: true
-    azure_token: $(System.AccessToken)
 
 - task: ArchiveFiles@2
   displayName: 'Copy Log Files'

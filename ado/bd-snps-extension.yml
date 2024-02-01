@@ -7,7 +7,7 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-  - group: poc329.blackduck.synopsys.com
+  - group: poc357.blackduck.synopsys.com
 
 steps:
 - task: JavaToolInstaller@0

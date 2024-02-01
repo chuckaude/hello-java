@@ -3,21 +3,11 @@
 trigger:
 - main
 
-#pool:
-#  vmImage: ubuntu-latest
-
 pool:
-  name: private-linux
-workspace:
-  clean: all
+  vmImage: ubuntu-latest
 
 variables:
-  - group: poc329.coverity.synopsys.com
-  - name: BRIDGE_COVERITY_LOCAL
-    value: true
-  # uncomment for a preinstalled analysis toolkit
-  - name: BRIDGE_COVERITY_INSTALL_DIRECTORY
-    value: /opt/coverity/analysis/2023.6.1
+  - group: poc357.coverity.synopsys.com
 
 steps:
 - task: JavaToolInstaller@0
@@ -43,6 +33,8 @@ steps:
     bridge_coverity_connect_project_name: '$(Build.Repository.Name)'
     bridge_coverity_connect_stream_name: '$(Build.Repository.Name)-$(Build.SourceBranchName)'
     bridge_coverity_connect_policy_view: 'Outstanding Issues'
+    # bridge_coverity_local: true
+    # bridge_coverity_install_directory: $(Agent.TempDirectory)/coverity
 
 - task: SynopsysSecurityScan@1
   displayName: 'Coverity PR Scan'
@@ -54,8 +46,10 @@ steps:
     bridge_coverity_connect_user_password: '$(COVERITY_PASSPHRASE)'
     bridge_coverity_connect_project_name: '$(Build.Repository.Name)'
     bridge_coverity_connect_stream_name: '$(Build.Repository.Name)-$(System.PullRequest.targetBranchName)'
-    bridge_coverity_automation_prcomment: true
+    bridge_coverity_automation_prComment: true
     azure_token: $(System.AccessToken)
+    # bridge_coverity_local: true
+    # bridge_coverity_install_directory: $(Agent.TempDirectory)/coverity
 
 - task: ArchiveFiles@2
   displayName: 'Copy Log Files'

@@ -7,12 +7,6 @@ pool:
 
 variables:
   - group: poc.polaris.synopsys.com
-  - name: BRIDGE_POLARIS_APPLICATION_NAME
-    value: 'chuckaude-$(Build.Repository.Name)'
-  - name: BRIDGE_POLARIS_PROJECT_NAME
-    value: '$(Build.Repository.Name)'
-  - name: BRIDGE_POLARIS_ASSESSMENT_TYPES
-    value: 'SAST,SCA'
 
 steps:
 - task: JavaToolInstaller@0
@@ -29,7 +23,11 @@ steps:
 
 - bash: |
     curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d $(Agent.TempDirectory) bridge.zip && rm -f bridge.zip
-    $(Agent.TempDirectory)/synopsys-bridge --verbose --stage polaris
+    $(Agent.TempDirectory)/synopsys-bridge --diagnostics --verbose --stage polaris \
+      polaris.assessment.types='SAST,SCA' \
+      polaris.application.name='chuckaude-$(Build.Repository.Name)' \
+      polaris.project.name='$(Build.Repository.Name)' \
+      polaris.branch.name=$(Build.SourceBranchName)
   env:
     BRIDGE_POLARIS_ACCESSTOKEN: $(BRIDGE_POLARIS_ACCESSTOKEN)
   displayName: 'Polaris Full Scan'
@@ -38,6 +36,11 @@ steps:
 - bash: |
     curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d $(Agent.TempDirectory) bridge.zip && rm -f bridge.zip
     $(Agent.TempDirectory)/synopsys-bridge --verbose --stage polaris \
+      polaris.assessment.types='SAST,SCA' \
+      polaris.application.name='chuckaude-$(Build.Repository.Name)' \
+      polaris.project.name='$(Build.Repository.Name)' \
+      polaris.branch.name=$(Build.SourceBranchName) \
+      polaris.branch.parent.name=$(System.PullRequest.targetBranchName) \
       polaris.prcomment.enabled=true \
       azure.organization.name=chuckaude \
       azure.repository.name=$(Build.Repository.Name) \
@@ -46,6 +49,7 @@ steps:
       azure.repository.pull.number=$(System.PullRequest.PullRequestId)
   env:
     BRIDGE_POLARIS_ACCESSTOKEN: $(BRIDGE_POLARIS_ACCESSTOKEN)
+    BRIDGE_AZURE_USER_TOKEN: $(System.AccessToken)
   displayName: 'Polaris PR Scan'
   condition: eq(variables['Build.Reason'], 'PullRequest')
 

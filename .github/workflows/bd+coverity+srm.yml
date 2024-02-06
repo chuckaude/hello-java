@@ -1,0 +1,88 @@
+# example workflow for standalone Black Duck, Coverity and SRM (Code DX) using GitHub Actions
+# - Black Duck and Coverity full scans on push to specified branches with upload to SRM
+# - Black Duck RAPID and Coverity Comparison scans on pull requests with PR comments enabled
+# https://github.com/marketplace/actions/synopsys-action
+# https://github.com/marketplace/actions/code-dx-analysis
+name: bd+coverity+srm
+on:
+  push:
+    branches: [ main, master, develop, stage, release ]
+  pull_request:
+    branches: [ main, master, develop, stage, release ]
+  workflow_dispatch:
+jobs:
+  synopsys:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Source
+      uses: actions/checkout@v4
+    - name: Setup Java JDK
+      uses: actions/setup-java@v4
+      with:
+        java-version: 17
+        distribution: microsoft
+        cache: maven
+    - name: Maven Build
+      run: mvn -B -DskipTests package
+    - name: Black Duck Full Scan
+      if: ${{ github.event_name != 'pull_request' }}
+      uses: synopsys-sig/synopsys-action@v1.7.0
+      env:
+        DETECT_PROJECT_NAME: ${{ github.event.repository.name }}
+        DETECT_PROJECT_VERSION_NAME: ${{ github.ref_name }}
+        DETECT_CODE_LOCATION_NAME: ${{ github.event.repository.name }}-${{ github.ref_name }}
+      with:
+        blackduck_url: ${{ vars.BLACKDUCK_URL }}
+        blackduck_token: ${{ secrets.BLACKDUCK_API_TOKEN }}
+        blackduck_scan_full: true
+        # blackduck_scan_failure_severities: 'BLOCKER'
+    - name: Black Duck PR Scan
+      if: ${{ github.event_name == 'pull_request' }}
+      uses: synopsys-sig/synopsys-action@v1.7.0
+      env:
+        DETECT_PROJECT_NAME: ${{ github.event.repository.name }}
+        DETECT_PROJECT_VERSION_NAME: ${{ github.base_ref }}
+        DETECT_CODE_LOCATION_NAME: ${{ github.event.repository.name }}-${{ github.base_ref }}
+      with:
+        blackduck_url: ${{ vars.BLACKDUCK_URL }}
+        blackduck_token: ${{ secrets.BLACKDUCK_API_TOKEN }}
+        blackduck_scan_full: false
+        blackduck_prComment_enabled: true
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Coverity Full Scan
+      if: ${{ github.event_name != 'pull_request' }}
+      uses: synopsys-sig/synopsys-action@v1.7.0
+      with:
+        coverity_url: ${{ vars.COVERITY_URL }}
+        coverity_user: ${{ secrets.COV_USER }}
+        coverity_passphrase: ${{ secrets.COVERITY_PASSPHRASE }}
+        coverity_project_name: ${{ github.event.repository.name }}
+        coverity_stream_name: ${{ github.event.repository.name }}-${{ github.ref_name }}
+        # coverity_policy_view: 'Outstanding Issues'
+    - name: Coverity PR Scan
+      if: ${{ github.event_name == 'pull_request' }}
+      uses: synopsys-sig/synopsys-action@v1.7.0
+      with:
+        coverity_url: ${{ vars.COVERITY_URL }}
+        coverity_user: ${{ secrets.COV_USER }}
+        coverity_passphrase: ${{ secrets.COVERITY_PASSPHRASE }}
+        coverity_project_name: ${{ github.event.repository.name }}
+        coverity_stream_name: ${{ github.event.repository.name }}-${{ github.base_ref }}
+        coverity_prComment_enabled: true
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+    - name: SRM Upload
+      if: ${{ github.event_name != 'pull_request' }}
+      uses: codedx/codedx-github-action@v1.1.1
+      with:
+        server-url: ${{ vars.SRM_URL }}/codedx
+        api-key: ${{ secrets.SRM_APIKEY }}
+        project-id: '4'     # ER CDX-1693 support project-name
+        # branch-name:      # ER CDX-1666 support branch-name
+        source-and-binaries-glob: './**'
+        wait-for-completion: false
+#    - name: Save Logs
+#      if: always()
+#      uses: actions/upload-artifact@v4
+#      with:
+#        name: bridge-logs
+#        path: ${{ github.workspace }}/.bridge

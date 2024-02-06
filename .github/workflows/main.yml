@@ -40,5 +40,5 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
          name: bridge-logs
-         path: ${{ github.workspace }}/.bridge
+         path: ${{ github.workspace }}/.bridge/**/*.json
           

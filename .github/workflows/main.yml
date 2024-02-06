@@ -29,12 +29,16 @@ jobs:
           polaris_project_name: "HelloJava"
           polaris_branch_name: "main"
           
-          ### SCANNING: Optional fields
-          # polaris_application_name: ${{ github.event.organization.name }}
-          # polaris_project_name: ${{ github.event.repository.name }}
-          
+         
           ### PULL REQUEST COMMENTS: Uncomment below to enable
           polaris_prComment_enabled: ${{ github.event_name == 'pull_request' && 'true' || 'false' }}
           # polaris_prComment_enabled: true 
           github_token: ${{ secrets.git_pat }} # Required when PR comments is enabled
+
+      - name: Save Logs
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+         name: bridge-logs
+         path: ${{ github.workspace }}/.bridge
           

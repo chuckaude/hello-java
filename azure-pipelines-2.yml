@@ -1,0 +1,29 @@
+# Starter pipeline
+
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- script: echo Hello, world!
+  displayName: 'Run a one-line script'
+- task: SynopsysSecurityScan@1
+  inputs:
+    scanType: 'polaris'
+    bridge_polaris_serverUrl: 'https://poc.polaris.synopsys.com'
+    bridge_polaris_accessToken: 'apf9q719j52cpdso23iookbodt72op9erd44mk45eujo9qvdorogppg4mh8ga1vi72ch3av6sgq16'
+    bridge_polaris_application_name: 'JWtest'
+    bridge_polaris_project_name: 'HelloJava'
+    bridge_polaris_assessment_types: 'sast,sca'
+    bridge_polaris_branch_name: 'main'
+
+- script: |
+    echo Add other tasks to build, test, and deploy your project.
+    echo See https://aka.ms/yaml
+  displayName: 'Run a multi-line script'

@@ -20,7 +20,7 @@ jobs:
           polaris_access_token: ${{ secrets.POLARIS_ACCESS_TOKEN }}
           polaris_assessment_types: "SCA,SAST"
           polaris_application_name: "JWtest"
-          polaris_project_name: "Hello-Java"
+          polaris_project_name: "HelloJava"
           polaris_branch_name: "main"
           
           ### SCANNING: Optional fields

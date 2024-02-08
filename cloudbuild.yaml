@@ -1,0 +1,64 @@
+steps:
+- name: 'maven:3-eclipse-temurin-17'
+  id: 'build'
+  entrypoint: 'mvn'
+  args: ['-B','-DskipTests','package']
+
+- name: 'maven:3-eclipse-temurin-17'
+  id: 'coverity'
+  waitFor: ['build']
+  env:
+  - 'BRIDGECLI_LINUX64=https://sig-repo.synopsys.com/artifactory/bds-integrations-release/com/synopsys/integration/synopsys-bridge/latest/synopsys-bridge-linux64.zip'
+  - 'BRIDGE_COVERITY_CONNECT_URL=https://poc357.coverity.synopsys.com'
+  - 'BRIDGE_COVERITY_CONNECT_PROJECT_NAME=$REPO_NAME'
+  - 'BRIDGE_COVERITY_CONNECT_STREAM_NAME=$BRANCH_NAME'
+  - 'BRIDGE_COVERITY_LOCAL=false'   # set to true for local analysis with full client
+  secretEnv: ['BRIDGE_COVERITY_CONNECT_USER_NAME','BRIDGE_COVERITY_CONNECT_USER_PASSWORD']
+  script: |
+    exit 0 # no disabled step option so use exit
+    apt-get -qq update && apt-get install -y unzip
+    curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d /tmp bridge.zip && rm -f bridge.zip
+    /tmp/synopsys-bridge --verbose --stage connect
+
+- name: 'maven:3-eclipse-temurin-17'
+  id: 'blackduck'
+  waitFor: ['build']
+  env:
+  - 'BRIDGECLI_LINUX64=https://sig-repo.synopsys.com/artifactory/bds-integrations-release/com/synopsys/integration/synopsys-bridge/latest/synopsys-bridge-linux64.zip'
+  - 'BRIDGE_BLACKDUCK_URL=https://poc357.blackduck.synopsys.com'
+  - 'DETECT_PROJECT_NAME=$REPO_NAME'
+  - 'DETECT_PROJECT_VERSION_NAME=$BRANCH_NAME'
+  - 'DETECT_CODE_LOCATION_NAME=$REPO_NAME-$BRANCH_NAME'
+  secretEnv: ['BRIDGE_BLACKDUCK_TOKEN']
+  script: |
+    exit 0 # no disabled step option so use exit
+    apt-get -qq update && apt-get install -y unzip
+    curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d /tmp bridge.zip && rm -f bridge.zip
+    /tmp/synopsys-bridge --verbose --stage blackduck
+
+- name: 'maven:3-eclipse-temurin-17'
+  id: 'polaris'
+  waitFor: ['build']
+  env:
+  - 'BRIDGECLI_LINUX64=https://sig-repo.synopsys.com/artifactory/bds-integrations-release/com/synopsys/integration/synopsys-bridge/latest/synopsys-bridge-linux64.zip'
+  - 'BRIDGE_POLARIS_SERVERURL=https://poc.polaris.synopsys.com'
+  - 'BRIDGE_POLARIS_ASSESSMENT_TYPES=SAST,SCA'
+  - 'BRIDGE_POLARIS_APPLICATION_NAME=chuckaude-$REPO_NAME'
+  - 'BRIDGE_POLARIS_PROJECT_NAME=$REPO_NAME'
+  - 'BRIDGE_POLARIS_BRANCH_NAME=$BRANCH_NAME'
+  secretEnv: ['BRIDGE_POLARIS_ACCESSTOKEN']
+  script: |
+    apt-get -qq update && apt-get install -y unzip
+    curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d /tmp bridge.zip && rm -f bridge.zip
+    /tmp/synopsys-bridge --verbose --stage polaris
+
+availableSecrets:
+  secretManager:
+  - versionName: 'projects/$PROJECT_ID/secrets/coverityUsername/versions/latest'
+    env: 'BRIDGE_COVERITY_CONNECT_USER_NAME'
+  - versionName: 'projects/$PROJECT_ID/secrets/coverityPassword/versions/latest'
+    env: 'BRIDGE_COVERITY_CONNECT_USER_PASSWORD'
+  - versionName: 'projects/$PROJECT_ID/secrets/blackduckApiToken/versions/latest'
+    env: 'BRIDGE_BLACKDUCK_TOKEN'
+  - versionName: 'projects/$PROJECT_ID/secrets/polarisAccessToken/versions/latest'
+    env: 'BRIDGE_POLARIS_ACCESSTOKEN'

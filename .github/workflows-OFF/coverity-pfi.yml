@@ -43,29 +43,29 @@ jobs:
     # download the full client and license from the Coverity server
     - name: Coverity Download
       run: |
-        curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE $COVERITY_URL/downloadFile.htm?fn=$TOOLKIT.tar.gz | tar -C $RUNNER_TEMP -xzf -
-        curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE -o $RUNNER_TEMP/$TOOLKIT/bin/license.dat $COVERITY_URL/downloadFile.htm?fn=license.dat
+        curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE $COVERITY_URL/downloadFile.htm?fn=$TOOLKIT.tar.gz | tar -C ${{ runner.temp }} -xzf -
+        curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE -o ${{ runner.temp }}/$TOOLKIT/bin/license.dat $COVERITY_URL/downloadFile.htm?fn=license.dat
 
     # single step scan, disabled to get more granular timing, see COVCLI-2238
     - name: Coverity Full Scan - Scan
       if: ${{ github.event_name != 'pull_request' && false }}
       run: |
-        $RUNNER_TEMP/$TOOLKIT/bin/coverity scan -o commit.connect.url=$COVERITY_URL -o commit.connect.stream=$COVERITY_STREAM
+        ${{ runner.temp }}/$TOOLKIT/bin/coverity scan -o commit.connect.url=$COVERITY_URL -o commit.connect.stream=$COVERITY_STREAM
 
     - name: Coverity Full Scan - Capture
       if: ${{ github.event_name != 'pull_request' }}
       run: |
-        $RUNNER_TEMP/$TOOLKIT/bin/coverity capture
+        ${{ runner.temp }}/$TOOLKIT/bin/coverity capture
 
     - name: Coverity Full Scan - Analyze
       if: ${{ github.event_name != 'pull_request' }}
       run: |
-        $RUNNER_TEMP/$TOOLKIT/bin/coverity analyze
+        ${{ runner.temp }}/$TOOLKIT/bin/coverity analyze
 
     - name: Coverity Full Scan - Commit
       if: ${{ github.event_name != 'pull_request' }}
       run: |
-        $RUNNER_TEMP/$TOOLKIT/bin/coverity commit -o commit.connect.url=$COVERITY_URL -o commit.connect.stream=$COVERITY_STREAM
+        ${{ runner.temp }}/$TOOLKIT/bin/coverity commit -o commit.connect.url=$COVERITY_URL -o commit.connect.stream=$COVERITY_STREAM
 
     # no-op quality-gate, just pretty print to console
     - name: Coverity Quality Gate
@@ -83,7 +83,7 @@ jobs:
     - name: Coverity PR Scan
       if: ${{ github.event_name == 'pull_request' && steps.changeset.outputs.added_modified != '' && false }}
       run: |
-        export PATH=$PATH:$RUNNER_TEMP/$TOOLKIT/bin
+        export PATH=$PATH:${{ runner.temp }}/$TOOLKIT/bin
         cov-run-desktop --dir idir --url $COVERITY_URL --stream $COVERITY_PROJECT-$GITHUB_BASE_REF --build mvn -B -DskipTests package
         cov-run-desktop --dir idir --url $COVERITY_URL --stream $COVERITY_PROJECT-$GITHUB_BASE_REF --present-in-reference false \
           --ignore-uncapturable-inputs true --exit1-if-defects true ${{ steps.changeset.outputs.added_modified }}

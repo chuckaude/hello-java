@@ -38,13 +38,13 @@ jobs:
     - name: Coverity Download
       if: ${{ steps.cache-coverity.outputs.cache-hit != 'true' }}
       run: |
-        curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE $COVERITY_URL/downloadFile.htm?fn=$COVERITY_TOOLKIT.tar.gz | tar -C $RUNNER_TEMP -xzf -
-        curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE -o $RUNNER_TEMP/$COVERITY_TOOLKIT/bin/license.dat $COVERITY_URL/downloadFile.htm?fn=license.dat
+        curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE $COVERITY_URL/downloadFile.htm?fn=$COVERITY_TOOLKIT.tar.gz | tar -C ${{ runner.temp }} -xzf -
+        curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE -o ${{ runner.temp }}/$COVERITY_TOOLKIT/bin/license.dat $COVERITY_URL/downloadFile.htm?fn=license.dat
     # use the Coverity CLI for full scans
     - name: Coverity Full Scan
       if: ${{ github.event_name != 'pull_request' }}
       run: |
-        $RUNNER_TEMP/$COVERITY_TOOLKIT/bin/coverity scan -o commit.connect.url=$COVERITY_URL -o commit.connect.stream=$COVERITY_STREAM
+        ${{ runner.temp }}/$COVERITY_TOOLKIT/bin/coverity scan -o commit.connect.url=$COVERITY_URL -o commit.connect.stream=$COVERITY_STREAM
     # use the Rest API views endpoint for a quality gate, for more details see:
     # https://community.synopsys.com/s/document-item?bundleId=coverity-docs&topicId=cov-platform-rest-api%2Ftopics%2Fretrieve_contents_of_specified_view.html
     - name: Coverity Quality Gate
@@ -61,13 +61,13 @@ jobs:
     #  if: ${{ github.event_name == 'pull_request' && steps.changeset.outputs.added_modified != '' }}
     #  run: |
     #    COVERITY_STREAM=${{ github.event.repository.name }}-${{ github.base_ref }}
-    #    $RUNNER_TEMP/$COVERITY_TOOLKIT/bin/coverity scan -o commit.connect.url=$COVERITY_URL -o commit.connect.stream=$COVERITY_STREAM -o commit.connect.comparison-report=report.json
+    #    ${{ runner.temp }}/$COVERITY_TOOLKIT/bin/coverity scan -o commit.connect.url=$COVERITY_URL -o commit.connect.stream=$COVERITY_STREAM -o commit.connect.comparison-report=report.json
     #    cat report.json | jq
     # use the cov-run-desktop for incremental scans
     - name: Coverity Incremental Scan
       if: ${{ github.event_name == 'pull_request' && steps.changeset.outputs.added_modified != '' }}
       run: |
-        export PATH=$PATH:$RUNNER_TEMP/$COVERITY_TOOLKIT/bin
+        export PATH=$PATH:${{ runner.temp }}/$COVERITY_TOOLKIT/bin
         COVERITY_STREAM=${{ github.event.repository.name }}-${{ github.base_ref }}
         cov-run-desktop --dir idir --url $COVERITY_URL --stream $COVERITY_STREAM --build mvn -B -DskipTests package
         cov-run-desktop --dir idir --url $COVERITY_URL --stream $COVERITY_STREAM --present-in-reference false \

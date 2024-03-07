@@ -29,8 +29,8 @@ jobs:
       env:
         COVERITY_STREAM: ${{ github.event.repository.name }}-${{ github.ref_name }}
       run: |
-        curl -fLsS $COVERITY_URL/api/v2/scans/downloads/$COVERITY_THIN_CLIENT | tar -C $RUNNER_TEMP -xzf -
-        $RUNNER_TEMP/bin/coverity --ticker-mode none scan -o analyze.location=connect -o commit.connect.url=$COVERITY_URL \
+        curl -fLsS $COVERITY_URL/api/v2/scans/downloads/$COVERITY_THIN_CLIENT | tar -C ${{ runner.temp }} -xzf -
+        ${{ runner.temp }}/bin/coverity --ticker-mode none scan -o analyze.location=connect -o commit.connect.url=$COVERITY_URL \
             -o commit.connect.project=$COVERITY_PROJECT -o commit.connect.stream=$COVERITY_STREAM
     - name: Coverity Quality Gate
       if: ${{ github.event_name != 'pull_request' }}
@@ -46,8 +46,8 @@ jobs:
       env:
         COVERITY_STREAM: ${{ github.event.repository.name }}-${{ github.base_ref }}
       run: |
-        curl -fLsS $COVERITY_URL/api/v2/scans/downloads/$COVERITY_THIN_CLIENT | tar -C $RUNNER_TEMP -xzf -
-        $RUNNER_TEMP/bin/coverity --ticker-mode none scan -o analyze.location=connect -o commit.connect.url=$COVERITY_URL \
+        curl -fLsS $COVERITY_URL/api/v2/scans/downloads/$COVERITY_THIN_CLIENT | tar -C ${{ runner.temp }} -xzf -
+        ${{ runner.temp }}/bin/coverity --ticker-mode none scan -o analyze.location=connect -o commit.connect.url=$COVERITY_URL \
             -o commit.connect.project=$COVERITY_PROJECT -o commit.connect.stream=$COVERITY_STREAM \
             -o commit.connect.comparison-report=comparison-report.json
         cat comparison-report.json | jq '.issues[] | select(.presentInReferenceSnapshot == false and (.impact == "Medium" or .impact == "High"))' > new-issues.json

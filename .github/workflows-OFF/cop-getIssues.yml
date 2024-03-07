@@ -24,8 +24,8 @@ jobs:
     - name: Polaris Scan
       run: |
         curl -fLOsS $POLARIS_SERVER_URL/api/tools/$POLARIS_ZIP
-        unzip -d $RUNNER_TEMP -jo $POLARIS_ZIP && rm -f $POLARIS_ZIP
-        $RUNNER_TEMP/polaris --co project.name=$POLARIS_PROJECT analyze -w
+        unzip -d ${{ runner.temp }} -jo $POLARIS_ZIP && rm -f $POLARIS_ZIP
+        ${{ runner.temp }}/polaris --co project.name=$POLARIS_PROJECT analyze -w
     - name: Polaris Quality Gate
       run: |
         curl -fLOsS https://www.chuckaude.com/repo/getIssues && chmod +x getIssues

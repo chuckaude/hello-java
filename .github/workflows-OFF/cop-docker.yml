@@ -25,7 +25,7 @@ jobs:
         git log -1 --format=%cd --date=iso-strict
         apt update && apt install -y unzip
         curl -fLOsS $POLARIS_SERVER_URL/api/tools/$POLARIS_ZIP
-        unzip -d $RUNNER_TEMP -jo $POLARIS_ZIP && rm -f $POLARIS_ZIP
-        $RUNNER_TEMP/polaris --co project.name=$POLARIS_PROJECT analyze -w
-        #$RUNNER_TEMP/polaris --co project.name=$POLARIS_PROJECT --co project.branch=${{ github.ref_name }} \
+        unzip -d ${{ runner.temp }} -jo $POLARIS_ZIP && rm -f $POLARIS_ZIP
+        ${{ runner.temp }}/polaris --co project.name=$POLARIS_PROJECT analyze -w
+        #${{ runner.temp }}/polaris --co project.name=$POLARIS_PROJECT --co project.branch=${{ github.ref_name }} \
         #  --co project.revision.name=${{ github.sha }} --co project.revision.date=$(git log -1 --format=%cd --date=iso-strict) analyze -w

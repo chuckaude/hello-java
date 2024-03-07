@@ -9,6 +9,10 @@ on:
 jobs:
   blackduck:
     runs-on: ubuntu-latest
+    env:
+      BRIDGE_BLACKDUCK_URL: ${{ vars.BLACKDUCK_URL }}
+      BRIDGE_BLACKDUCK_TOKEN: ${{ secrets.BLACKDUCK_API_TOKEN }}
+      BRIDGE_GITHUB_USER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
     - name: Checkout Source
       uses: actions/checkout@v4
@@ -27,19 +31,15 @@ jobs:
         DETECT_PROJECT_VERSION_NAME: ${{ github.ref_name }}
         DETECT_CODE_LOCATION_NAME: ${{ github.event.repository.name }}-${{ github.ref_name }}
       run: |
-        curl -fLsS -o bridge.zip ${{ vars.BRIDGECLI_LINUX64 }} && unzip -qo -d $RUNNER_TEMP bridge.zip && rm -f bridge.zip
-        $RUNNER_TEMP/synopsys-bridge --stage blackduck \
-            blackduck.url=${{ vars.BLACKDUCK_URL }} \
-            blackduck.token=${{ secrets.BLACKDUCK_API_TOKEN }} \
-            blackduck.project.id=${{ github.event.repository.name }} \
-            blackduck.project.version.id=${{ github.ref_name }} \
+        curl -fLsS -o bridge.zip ${{ vars.BRIDGECLI_LINUX64 }} && unzip -qo -d ${{ runner.temp }} bridge.zip && rm -f bridge.zip
+        ${{ runner.temp }}/synopsys-bridge --stage blackduck \
             blackduck.scan.full='true' \
             blackduck.scan.failure.severities='BLOCKER' \
             blackduck.fixpr.enabled='true' \
-            github.repository.branch.name=${{ github.ref_name }} \
-            github.repository.name=${{ github.event.repository.name }} \
+            blackduck.reports.sarif.create='true' \
             github.repository.owner.name=${{ github.repository_owner }} \
-            github.user.token=${{ secrets.GITHUB_TOKEN }}
+            github.repository.name=${{ github.event.repository.name }} \
+            github.repository.branch.name=${{ github.ref_name }}
     - name: Black Duck PR Scan
       if: ${{ github.event_name == 'pull_request' }}
       env:
@@ -47,19 +47,14 @@ jobs:
         DETECT_PROJECT_VERSION_NAME: ${{ github.base_ref }}
         DETECT_CODE_LOCATION_NAME: ${{ github.event.repository.name }}-${{ github.base_ref }}
       run: |
-        curl -fLsS -o bridge.zip ${{ vars.BRIDGECLI_LINUX64 }} && unzip -qo -d $RUNNER_TEMP bridge.zip && rm -f bridge.zip
-        $RUNNER_TEMP/synopsys-bridge --stage blackduck \
-            blackduck.url=${{ vars.BLACKDUCK_URL }} \
-            blackduck.token=${{ secrets.BLACKDUCK_API_TOKEN }} \
-            blackduck.project.id=${{ github.event.repository.name }} \
-            blackduck.project.version.id=${{ github.base_ref }} \
+        curl -fLsS -o bridge.zip ${{ vars.BRIDGECLI_LINUX64 }} && unzip -qo -d ${{ runner.temp }} bridge.zip && rm -f bridge.zip
+        ${{ runner.temp }}/synopsys-bridge --stage blackduck \
             blackduck.scan.full='false' \
             blackduck.automation.prcomment='true' \
-            github.repository.branch.name=${{ github.ref_name }} \
-            github.repository.name=${{ github.event.repository.name }} \
             github.repository.owner.name=${{ github.repository_owner }} \
-            github.repository.pull.number=${{ github.event.number }} \
-            github.user.token=${{ secrets.GITHUB_TOKEN }}
+            github.repository.name=${{ github.event.repository.name }} \
+            github.repository.branch.name=${{ github.ref_name }} \
+            github.repository.pull.number=${{ github.event.number }}
 #    - name: Save Logs
 #      if: always()
 #      uses: actions/upload-artifact@v4

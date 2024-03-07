@@ -22,8 +22,8 @@ jobs:
         POLARIS_ACCESS_TOKEN: ${{ secrets.POLARIS_ACCESS_TOKEN }}
       run: |
         curl -fLsS -o polaris.zip $POLARIS_SERVER_URL/api/tools/polaris_cli-linux64.zip
-        unzip -d $RUNNER_TEMP -jo polaris.zip && rm -f polaris.zip
-        $RUNNER_TEMP/polaris --co project.name=chuckaude-${{ github.event.repository.name }} analyze -w
+        unzip -d ${{ runner.temp }} -jo polaris.zip && rm -f polaris.zip
+        ${{ runner.temp }}/polaris --co project.name=chuckaude-${{ github.event.repository.name }} analyze -w
 #    - name: Save Logs
 #      if: always()
 #      uses: actions/upload-artifact@v4

@@ -35,12 +35,12 @@ jobs:
     - name: Coverity Download
       if: ${{ steps.cache-coverity.outputs.cache-hit != 'true' }}
       run: |
-        cd ${env:RUNNER_TEMP}
+        cd ${env:{{ runner.temp }}}
         $ZIPFILE=${env:COVERITY_TOOLKIT}+".zip"
         curl.exe -fLsS --user ${env:COV_USER}:${env:COVERITY_PASSPHRASE} -o $ZIPFILE ${env:COVERITY_URL}/downloadFile.htm?fn=$ZIPFILE
         unzip -q $ZIPFILE
         curl.exe -fLsS --user ${env:COV_USER}:${env:COVERITY_PASSPHRASE} -o ${env:COVERITY_TOOLKIT}/bin/license.dat ${env:COVERITY_URL}/downloadFile.htm?fn=license.dat
     - name: Coverity Scan
       run: |
-        $env:PATH += ";${env:RUNNER_TEMP}/${env:COVERITY_TOOLKIT}/bin"
+        $env:PATH += ";${env:{{ runner.temp }}}/${env:COVERITY_TOOLKIT}/bin"
         coverity scan -o commit.connect.url=${env:COVERITY_URL} -o commit.connect.project=${env:COVERITY_PROJECT} -o commit.connect.stream=${env:COVERITY_STREAM}

@@ -23,7 +23,7 @@ jobs:
     - name: Maven Build
       run: mvn -B -DskipTests package
     - name: Black Duck Scan
-      uses: synopsys-sig/synopsys-action@v1.5.0
+      uses: synopsys-sig/synopsys-action@v1.8.0
       env:
         DETECT_PROJECT_NAME: ${{ github.event.repository.name }}
         DETECT_PROJECT_VERSION_NAME: ${{ github.ref_name }}
@@ -62,8 +62,8 @@ jobs:
       if: ${{ github.event_name != 'pull_request' }}
       run: |
         curl -fLOsS $POLARIS_SERVER_URL/api/tools/$POLARIS_ZIP
-        unzip -d $RUNNER_TEMP -jo $POLARIS_ZIP && rm -f $POLARIS_ZIP
-        $RUNNER_TEMP/polaris --co project.name=$POLARIS_PROJECT analyze -w
+        unzip -d ${{ runner.temp }} -jo $POLARIS_ZIP && rm -f $POLARIS_ZIP
+        ${{ runner.temp }}/polaris --co project.name=$POLARIS_PROJECT analyze -w
         curl -fLOsS https://www.chuckaude.com/repo/getIssues && chmod +x getIssues
         ./getIssues --project $POLARIS_PROJECT --branch ${{ github.ref_name }} --severity high --exit1-if-issues
     - name: Get Pull Request Changeset
@@ -74,10 +74,10 @@ jobs:
       if: ${{ github.event_name == 'pull_request' && steps.changeset.outputs.added_modified != '' }}
       run: |
         curl -fLOsS $POLARIS_SERVER_URL/api/tools/$POLARIS_ZIP
-        unzip -d $RUNNER_TEMP -jo $POLARIS_ZIP && rm -f $POLARIS_ZIP
+        unzip -d ${{ runner.temp }} -jo $POLARIS_ZIP && rm -f $POLARIS_ZIP
         export POLARIS_FF_ENABLE_COVERITY_INCREMENTAL=true
         echo ${{ steps.changeset.outputs.added_modified }} | tee changeset.txt
-        $RUNNER_TEMP/polaris --co project.name=$POLARIS_PROJECT --co project.branch=$GITHUB_BASE_REF analyze -w --incremental changeset.txt
+        ${{ runner.temp }}/polaris --co project.name=$POLARIS_PROJECT --co project.branch=$GITHUB_BASE_REF analyze -w --incremental changeset.txt
         COUNT=$(cat .synopsys/polaris/data/coverity/*/idir/incremental-results/new-issues.json | jq '. | length')
         if [ $COUNT -ne 0 ]; then
           echo "$COUNT new issues detected, do something here"

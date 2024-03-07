@@ -16,6 +16,7 @@ jobs:
       BRIDGE_POLARIS_APPLICATION_NAME: chuckaude-${{ github.event.repository.name }}
       BRIDGE_POLARIS_PROJECT_NAME: ${{ github.event.repository.name }}
       BRIDGE_POLARIS_BRANCH_NAME: ${{ github.event.ref_name }}
+      BRIDGE_GITHUB_USER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
     - name: Checkout Source
       uses: actions/checkout@v4
@@ -28,20 +29,20 @@ jobs:
     - name: Polaris Full Scan
       if: ${{ github.event_name != 'pull_request' }}
       run: |
-        curl -fLsS -o bridge.zip ${{ vars.BRIDGECLI_LINUX64 }} && unzip -qo -d $RUNNER_TEMP bridge.zip && rm -f bridge.zip
-        $RUNNER_TEMP/synopsys-bridge --stage polaris
+        curl -fLsS -o bridge.zip ${{ vars.BRIDGECLI_LINUX64 }} && unzip -qo -d ${{ runner.temp }} bridge.zip && rm -f bridge.zip
+        ${{ runner.temp }}/synopsys-bridge --stage polaris \
+            polaris.reports.sarif.create='true'
     - name: Polaris PR Scan
       if: ${{ github.event_name == 'pull_request' }}
       run: |
-        curl -fLsS -o bridge.zip ${{ vars.BRIDGECLI_LINUX64 }} && unzip -qo -d $RUNNER_TEMP bridge.zip && rm -f bridge.zip
-        $RUNNER_TEMP/synopsys-bridge --stage polaris \
-            polaris.prcomment.enabled=true \
+        curl -fLsS -o bridge.zip ${{ vars.BRIDGECLI_LINUX64 }} && unzip -qo -d ${{ runner.temp }} bridge.zip && rm -f bridge.zip
+        ${{ runner.temp }}/synopsys-bridge --stage polaris \
+            polaris.prcomment.enabled='true' \
             polaris.branch.parent.name=${{ github.event.base_ref }} \
-            github.repository.branch.name=${{ github.ref_name }} \
-            github.repository.name=${{ github.event.repository.name }} \
             github.repository.owner.name=${{ github.repository_owner }} \
-            github.repository.pull.number=${{ github.event.number }} \
-            github.user.token=${{ secrets.GITHUB_TOKEN }}
+            github.repository.name=${{ github.event.repository.name }} \
+            github.repository.branch.name=${{ github.ref_name }} \
+            github.repository.pull.number=${{ github.event.number }}
 #    - name: Save Logs
 #      if: always()
 #      uses: actions/upload-artifact@v4

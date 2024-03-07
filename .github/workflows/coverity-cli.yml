@@ -26,14 +26,14 @@ jobs:
         cache: maven
     - name: Coverity Download
       run: |
-        curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE $COVERITY_URL/downloadFile.htm?fn=$COVERITY_TOOLKIT.tar.gz | tar -C $RUNNER_TEMP -xzf -
-        curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE -o $RUNNER_TEMP/$COVERITY_TOOLKIT/bin/license.dat $COVERITY_URL/downloadFile.htm?fn=license.dat
+        curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE $COVERITY_URL/downloadFile.htm?fn=$COVERITY_TOOLKIT.tar.gz | tar -C ${{ runner.temp }} -xzf -
+        curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE -o ${{ runner.temp }}/$COVERITY_TOOLKIT/bin/license.dat $COVERITY_URL/downloadFile.htm?fn=license.dat
     - name: Coverity Full Scan
       if: ${{ github.event_name != 'pull_request' }}
       env:
         COVERITY_STREAM: ${{ github.event.repository.name }}-${{ github.ref_name }}
       run: |
-        $RUNNER_TEMP/$COVERITY_TOOLKIT/bin/coverity --ticker-mode none scan -o commit.connect.url=$COVERITY_URL \
+        ${{ runner.temp }}/$COVERITY_TOOLKIT/bin/coverity --ticker-mode none scan -o commit.connect.url=$COVERITY_URL \
             -o commit.connect.project=$COVERITY_PROJECT -o commit.connect.stream=$COVERITY_STREAM
     - name: Coverity Quality Gate
       if: ${{ github.event_name != 'pull_request' }}
@@ -49,7 +49,7 @@ jobs:
       env:
         COVERITY_STREAM: ${{ github.event.repository.name }}-${{ github.base_ref }}
       run: |
-        $RUNNER_TEMP/$COVERITY_TOOLKIT/bin/coverity --ticker-mode none scan -o commit.connect.url=$COVERITY_URL \
+        ${{ runner.temp }}/$COVERITY_TOOLKIT/bin/coverity --ticker-mode none scan -o commit.connect.url=$COVERITY_URL \
             -o commit.connect.project=$COVERITY_PROJECT -o commit.connect.stream=$COVERITY_STREAM \
             -o commit.connect.comparison-report=comparison-report.json
         cat comparison-report.json | jq '.issues[] | select(.presentInReferenceSnapshot == false and (.impact == "Medium" or .impact == "High"))' > new-issues.json

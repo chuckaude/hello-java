@@ -11,7 +11,7 @@ jobs:
       BRIDGE_SRM_URL: ${{ vars.SRM_URL }}
       BRIDGE_SRM_APIKEY: ${{ secrets.SRM_APIKEY }}
       BRIDGE_SRM_ASSESSMENT_TYPES: 'SAST,SCA'
-      BRIDGE_SRM_PROJECT_NAME: chuckaude-${{ github.event.repository.name }}
+      BRIDGE_SRM_PROJECT_NAME: ${{ github.event.repository.name }}
       BRIDGE_SRM_BRANCH_NAME: ${{ github.event.ref_name }}
     steps:
     - name: Checkout Source
@@ -24,8 +24,8 @@ jobs:
         cache: maven
     - name: SRM Full Scan
       run: |
-        curl -fLsS -o bridge.zip ${{ vars.BRIDGECLI_LINUX64 }} && unzip -qo -d $RUNNER_TEMP bridge.zip && rm -f bridge.zip
-        $RUNNER_TEMP/synopsys-bridge --stage srm
+        curl -fLsS -o bridge.zip ${{ vars.BRIDGECLI_LINUX64 }} && unzip -qo -d ${{ runner.temp }} bridge.zip && rm -f bridge.zip
+        ${{ runner.temp }}/synopsys-bridge --stage srm
 #    - name: Save Logs
 #      if: always()
 #      uses: actions/upload-artifact@v4

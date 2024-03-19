@@ -18,7 +18,7 @@ jobs:
           java-version: 17
           distribution: microsoft
           cache: maven
-      - name: NEW Polaris Scan
+      - name: NEW Polaris Scan 1
         uses: synopsys-sig/synopsys-action@v1.7.0
         with:
           ### SCANNING: Required fields

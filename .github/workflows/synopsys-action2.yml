@@ -1,41 +1,39 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-name: Synopsys Security Testing
-
+# example workflow for Polaris scans using the Synopsys Action
+# https://github.com/marketplace/actions/synopsys-action
+name: polaris
 on:
   push:
-    # At this time, it is recommended to run Polaris only on pushes to main branches
-    # Pull request analysis will be supported by Polaris in the future
-    branches: [ "main" ]
-
+    branches: [ main, master, develop, stage, release ]
   pull_request:
-    branches: [ "main" ]
-
+    branches: [ main, master, develop, stage, release ]
+  workflow_dispatch:
 jobs:
-  build:
+  polaris:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Synopsys Action
-        uses: synopsys-sig/synopsys-action@v1.6.0
-        with:
-          #------------------------------------------COVERITY-----------------------------------------
-          coverity_url: ${{ secrets.COVERITY_URL }}
-          coverity_user: ${{ secrets.COVERITY_USER }}
-          coverity_passphrase: ${{ secrets.COVERITY_PASSPHRASE }}
-
-          #------------------------------------------BLACKDUCK----------------------------------------
-          blackduck_token: ${{ secrets.BLACKDUCK_API_TOKEN }}
-          blackduck_url: ${{ secrets.BLACKDUCK_URL }}
-
-          #------------------------------------------POLARIS------------------------------------------
-          polaris_server_url: ${{ secrets.POLARIS_SERVER_URL }}
-          polaris_access_token: ${{ secrets.POLARIS_ACCESS_TOKEN }}
-          polaris_assessment_types: "SCA,SAST"
-
-
+    - name: Checkout Source
+      uses: actions/checkout@v4
+    - name: Setup Java JDK
+      uses: actions/setup-java@v4
+      with:
+        java-version: 17
+        distribution: microsoft
+        cache: maven
+    - name: Polaris Scan 2
+      uses: synopsys-sig/synopsys-action@v1.8.0
+      with:
+        polaris_server_url: ${{ vars.POLARIS_SERVERURL }}
+        polaris_access_token: ${{ secrets.POLARIS_ACCESSTOKEN }}
+        polaris_assessment_types: 'SAST,SCA'
+        polaris_application_name: JWtest-${{ github.event.repository.name }}
+        polaris_project_name: ${{ github.event.repository.name }}
+        polaris_prComment_enabled: ${{ github.event_name == 'pull_request' && 'true' || 'false' }}
+        polaris_reports_sarif_create: ${{ github.event_name != 'pull_request' && 'true' || 'false' }}
+        polaris_upload_sarif_report: ${{ github.event_name != 'pull_request' && 'true' || 'false' }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+#    - name: Save Logs
+#      if: always()
+#      uses: actions/upload-artifact@v4
+#      with:
+#        name: bridge-logs
+#        path: ${{ github.workspace }}/.bridge

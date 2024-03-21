@@ -13,7 +13,7 @@ jobs:
       COVERITY_PASSPHRASE: ${{ secrets.COVERITY_PASSPHRASE }}
       COVERITY_PROJECT: ${{ github.event.repository.name }}
       COVERITY_STREAM: ${{ github.event.repository.name }}-${{ github.ref_name }}
-      COVERITY_TOOLKIT: cov-analysis-linux64-2023.6.0
+      COVERITY_TOOLKIT: cov-analysis-linux64-2023.12.2
     steps:
     - name: Checkout Source
       uses: actions/checkout@v4
@@ -35,8 +35,10 @@ jobs:
     - name: Coverity Download
       if: ${{ steps.cache-coverity.outputs.cache-hit != 'true' }}
       run: |
-        curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE $COVERITY_URL/downloadFile.htm?fn=$COVERITY_TOOLKIT.tar.gz | tar -C ${{ runner.temp }} -xzf -
-        curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE -o ${{ runner.temp }}/$COVERITY_TOOLKIT/bin/license.dat $COVERITY_URL/downloadFile.htm?fn=license.dat
+        curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE -o ${{ runner.temp }}/$COVERITY_TOOLKIT.sh $COVERITY_URL/downloadFile.htm?fn=$COVERITY_TOOLKIT.sh
+        curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE -o ${{ runner.temp }}/license.dat $COVERITY_URL/downloadFile.htm?fn=license.dat
+        bash ${{ runner.temp }}/$COVERITY_TOOLKIT.sh -q --installation.dir=${{ runner.temp }}/$COVERITY_TOOLKIT --component.sdk=false \
+          --license.agreement=agree --license.region=0 --license.type.choice=0 --license.cov.path=${{ runner.temp }}/license.dat
     - name: Coverity Scan
       run: |
         ${{ runner.temp }}/$COVERITY_TOOLKIT/bin/coverity scan -o commit.connect.url=$COVERITY_URL \

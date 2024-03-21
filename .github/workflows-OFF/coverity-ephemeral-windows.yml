@@ -13,7 +13,7 @@ jobs:
       COVERITY_PASSPHRASE: ${{ secrets.COVERITY_PASSPHRASE }}
       COVERITY_PROJECT: ${{ github.event.repository.name }}
       COVERITY_STREAM: ${{ github.event.repository.name }}-${{ github.ref_name }}
-      COVERITY_TOOLKIT: cov-analysis-win64-2023.6.0
+      COVERITY_TOOLKIT: cov-analysis-win64-2023.12.2
     steps:
     - name: Checkout Source
       uses: actions/checkout@v4
@@ -35,12 +35,13 @@ jobs:
     - name: Coverity Download
       if: ${{ steps.cache-coverity.outputs.cache-hit != 'true' }}
       run: |
-        cd ${env:{{ runner.temp }}}
-        $ZIPFILE=${env:COVERITY_TOOLKIT}+".zip"
-        curl.exe -fLsS --user ${env:COV_USER}:${env:COVERITY_PASSPHRASE} -o $ZIPFILE ${env:COVERITY_URL}/downloadFile.htm?fn=$ZIPFILE
-        unzip -q $ZIPFILE
-        curl.exe -fLsS --user ${env:COV_USER}:${env:COVERITY_PASSPHRASE} -o ${env:COVERITY_TOOLKIT}/bin/license.dat ${env:COVERITY_URL}/downloadFile.htm?fn=license.dat
+        $INSTALLER=${env:COVERITY_TOOLKIT}+".exe"
+        cd ${{ runner.temp }}
+        curl -fs --user ${env:COV_USER}:${env:COVERITY_PASSPHRASE} -o $INSTALLER ${env:COVERITY_URL}/downloadFile.htm?fn=$INSTALLER
+        curl -fs --user ${env:COV_USER}:${env:COVERITY_PASSPHRASE} -o license.dat ${env:COVERITY_URL}/downloadFile.htm?fn=license.dat
+        cmd /c start /wait $INSTALLER -q -console --installation.dir=${{ runner.temp }}/${env:COVERITY_TOOLKIT} --component.sdk=false `
+          --license.agreement=agree --license.region=0 --license.type.choice=0 --license.cov.path=${{ runner.temp }}/license.dat
     - name: Coverity Scan
       run: |
-        $env:PATH += ";${env:{{ runner.temp }}}/${env:COVERITY_TOOLKIT}/bin"
+        $env:PATH += ";${{ runner.temp }}/${env:COVERITY_TOOLKIT}/bin"
         coverity scan -o commit.connect.url=${env:COVERITY_URL} -o commit.connect.project=${env:COVERITY_PROJECT} -o commit.connect.stream=${env:COVERITY_STREAM}

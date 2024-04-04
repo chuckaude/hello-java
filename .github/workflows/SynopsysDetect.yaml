@@ -13,7 +13,7 @@ jobs:
       - name: Checkout Source
         uses: actions/checkout@v4
       - name: NEW Polaris Scan 1
-        uses: synopsys-sig/synopsys-action@v1.9.0
+        uses: synopsys-sig/synopsys-action@v1.8.0
         with:
           ### SCANNING: Required fields
           polaris_server_url: ${{ secrets.POLARIS_SERVER_URL }}
@@ -24,13 +24,14 @@ jobs:
               
          
           ### PULL REQUEST COMMENTS: Uncomment below to enable
-          polaris_prComment_enabled: ${{ github.event_name == 'pull_request' && 'true' || 'false' }}
+          #polaris_prComment_enabled: ${{ github.event_name == 'pull_request' && 'true' || 'false' }}
           github_token: ${{ secrets.git_pat }} # Required when PR comments is enabled
           #polaris_reports_sarif_create: ${{ github.event_name != 'pull_request' && 'true' || 'false' }}
           polaris_reports_sarif_severities: "CRITICAL,HIGH,MEDIUM,LOW"
           polaris_reports_sarif_groupSCAIssues: true
           polaris_reports_sarif_create: true
           polaris_upload_sarif_report: true
+          polaris_reports_sarif_issue_types: 'SCA, SAST' 
           # polaris_upload_sarif_report: ${{ github.event_name != 'pull_request' && 'true' || 'false' }}
         
 

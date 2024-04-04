@@ -25,7 +25,7 @@ jobs:
          
           ### PULL REQUEST COMMENTS: Uncomment below to enable
           #polaris_prComment_enabled: ${{ github.event_name == 'pull_request' && 'true' || 'false' }}
-          github_token: ${{ secrets.git_pat }} # Required when PR comments is enabled
+         # github_token: ${{ secrets.git_pat }} # Required when PR comments is enabled
           #polaris_reports_sarif_create: ${{ github.event_name != 'pull_request' && 'true' || 'false' }}
           polaris_reports_sarif_severities: "CRITICAL,HIGH,MEDIUM,LOW"
           polaris_reports_sarif_groupSCAIssues: true

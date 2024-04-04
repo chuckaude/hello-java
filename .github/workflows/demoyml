@@ -1,4 +1,4 @@
-name: CI-Polaris-
+name: CI-Polaris-Jose
 on:
   push:
     branches: [ main, master, develop, stage, release ]
@@ -11,7 +11,7 @@ jobs:
     runs-on: [ ubuntu-latest ]
     steps:
       - name: Checkout Source
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Polaris Scan
         uses: synopsys-sig/synopsys-action@v1.8.0
         with:
@@ -28,6 +28,10 @@ jobs:
           # polaris_prComment_enabled: true 
           # github_token: ${{ secrets.GITHUB_TOKEN }} # Required when PR comments is enabled
 
-          ### SARIF report parameters
-          #polaris_reports_sarif_create: true
-          #polaris_upload_sarif_report: true
+          polaris_reports_sarif_create: true  
+          # polaris_reports_sarif_file_path: '/Users/tmp/report.sarif.json' # File path (including file name) where SARIF report is created.
+          polaris_reports_sarif_severities: "CRITICAL,HIGH"
+          polaris_reports_sarif_groupSCAIssues: true 
+          polaris_reports_sarif_issue_types: 'SCA, SAST' 
+          polaris_upload_sarif_report: true 
+          github_token: ${{ secrets.GITHUB_TOKEN }} # Required when polaris_upload_sarif_report is set as true

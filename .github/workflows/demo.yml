@@ -1,41 +1,33 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-name: Synopsys Security Testing
-
+name: CI-Polaris-
 on:
   push:
-    # At this time, it is recommended to run Polaris only on pushes to main branches
-    # Pull request analysis will be supported by Polaris in the future
-    branches: [ "main" ]
-
+    branches: [ main, master, develop, stage, release ]
   pull_request:
-    branches: [ "main" ]
-
+    branches: [ main, master, develop, stage, release ]
+  workflow_dispatch:
+  
 jobs:
   build:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
+    runs-on: [ ubuntu-latest ]
     steps:
-      - name: Checkout
+      - name: Checkout Source
         uses: actions/checkout@v3
-      - name: Synopsys Action
-        uses: synopsys-sig/synopsys-action@v1.6.0
+      - name: Polaris Scan
+        uses: synopsys-sig/synopsys-action@v1.8.0
         with:
-          #------------------------------------------COVERITY-----------------------------------------
-          coverity_url: ${{ secrets.COVERITY_URL }}
-          coverity_user: ${{ secrets.COVERITY_USER }}
-          coverity_passphrase: ${{ secrets.COVERITY_PASSPHRASE }}
-
-          #------------------------------------------BLACKDUCK----------------------------------------
-          blackduck_token: ${{ secrets.BLACKDUCK_API_TOKEN }}
-          blackduck_url: ${{ secrets.BLACKDUCK_URL }}
-
-          #------------------------------------------POLARIS------------------------------------------
-          polaris_server_url: ${{ secrets.POLARIS_SERVER_URL }}
+          ### SCANNING: Required fields
+          polaris_server_url: ${{ vars.POLARIS_SERVERURL }}
           polaris_access_token: ${{ secrets.POLARIS_ACCESS_TOKEN }}
           polaris_assessment_types: "SCA,SAST"
+          
+          ### SCANNING: Optional fields
+          # polaris_application_name: ${{ github.event.repository.name }}
+          # polaris_project_name: ${{ github.event.repository.name }}
+          
+          ### PULL REQUEST COMMENTS: Uncomment below to enable
+          # polaris_prComment_enabled: true 
+          # github_token: ${{ secrets.GITHUB_TOKEN }} # Required when PR comments is enabled
 
-
+          ### SARIF report parameters
+          #polaris_reports_sarif_create: true
+          #polaris_upload_sarif_report: true

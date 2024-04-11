@@ -20,16 +20,16 @@ jobs:
         distribution: microsoft
         cache: maven
     - name: Polaris Scan
-      uses: synopsys-sig/synopsys-action@v1.8.0
+      uses: synopsys-sig/synopsys-action@v1.9.0
       with:
         polaris_server_url: ${{ vars.POLARIS_SERVERURL }}
         polaris_access_token: ${{ secrets.POLARIS_ACCESSTOKEN }}
         polaris_assessment_types: 'SAST,SCA'
         polaris_application_name: chuckaude-${{ github.event.repository.name }}
         polaris_project_name: ${{ github.event.repository.name }}
-        polaris_prComment_enabled: ${{ github.event_name == 'pull_request' && 'true' || 'false' }}
-        polaris_reports_sarif_create: ${{ github.event_name != 'pull_request' && 'true' || 'false' }}
-        polaris_upload_sarif_report: ${{ github.event_name != 'pull_request' && 'true' || 'false' }}
+        polaris_prComment_enabled: 'true'
+        polaris_reports_sarif_create: 'true'
+        polaris_upload_sarif_report: 'true'
         github_token: ${{ secrets.GITHUB_TOKEN }}
 #    - name: Save Logs
 #      if: always()

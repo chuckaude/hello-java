@@ -1,6 +1,7 @@
 # example pipeline for Coverity scans using the Bridge CLI
 trigger:
 - main
+- develop
 
 pool:
   vmImage: ubuntu-latest
@@ -24,42 +25,36 @@ steps:
 - bash: |
     set -ex
     curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d $(Agent.TempDirectory) bridge.zip && rm -f bridge.zip
-    $(Agent.TempDirectory)/synopsys-bridge --verbose --stage connect \
-      coverity.connect.url=$(COVERITY_URL) \
-      coverity.connect.user.name=$(COV_USER) \
-      coverity.connect.user.password=$(COVERITY_PASSPHRASE) \
-      coverity.connect.project.name=$(Build.Repository.Name) \
-      coverity.connect.stream.name=$(Build.Repository.Name)-$(Build.SourceBranchName) \
-      coverity.connect.policy.view='Outstanding Issues'
-      # coverity.local: true
-      # coverity.install.directory: $(Agent.TempDirectory)/coverity
+    $(Agent.TempDirectory)/synopsys-bridge --stage connect
   env:
-    COV_USER: $(COV_USER)
-    COVERITY_PASSPHRASE: $(COVERITY_PASSPHRASE)
+    BRIDGE_COVERITY_CONNECT_URL: $(COVERITY_URL)
+    BRIDGE_COVERITY_CONNECT_USER_NAME: $(COV_USER)
+    BRIDGE_COVERITY_CONNECT_USER_PASSWORD: $(COVERITY_PASSPHRASE)
+    BRIDGE_COVERITY_CONNECT_PROJECT_NAME: $(Build.Repository.Name)
+    BRIDGE_COVERITY_CONNECT_STREAM_NAME: $(Build.Repository.Name)-$(Build.SourceBranchName)
+    BRIDGE_COVERITY_CONNECT_POLICY_VIEW: 'Outstanding Issues'
+    # BRIDGE_COVERITY_LOCAL: true
   displayName: 'Coverity Full Scan'
   condition: not(eq(variables['Build.Reason'], 'PullRequest'))
 
 - bash: |
     set -ex
     curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d $(Agent.TempDirectory) bridge.zip && rm -f bridge.zip
-    $(Agent.TempDirectory)/synopsys-bridge --verbose --stage connect \
-      coverity.connect.url=$(COVERITY_URL) \
-      coverity.connect.user.name=$(COV_USER) \
-      coverity.connect.user.password=$(COVERITY_PASSPHRASE) \
-      coverity.connect.project.name=$(Build.Repository.Name) \
-      coverity.connect.stream.name=$(Build.Repository.Name)-$(System.PullRequest.targetBranchName) \
-      coverity.automation.prcomment=true \
-      azure.organization.name=chuckaude \
-      azure.repository.name=$(Build.Repository.Name) \
-      azure.project.name=$(Build.Repository.Name) \
-      azure.repository.branch.name=$(System.PullRequest.SourceBranch) \
-      azure.repository.pull.number=$(System.PullRequest.PullRequestId)
-      # coverity.local: true
-      # coverity.install.directory: $(Agent.TempDirectory)/coverity
+    $(Agent.TempDirectory)/synopsys-bridge --stage connect
   env:
-    COV_USER: $(COV_USER)
-    COVERITY_PASSPHRASE: $(COVERITY_PASSPHRASE)
+    BRIDGE_COVERITY_CONNECT_URL: $(COVERITY_URL)
+    BRIDGE_COVERITY_CONNECT_USER_NAME: $(COV_USER)
+    BRIDGE_COVERITY_CONNECT_USER_PASSWORD: $(COVERITY_PASSPHRASE)
+    BRIDGE_COVERITY_CONNECT_PROJECT_NAME: $(Build.Repository.Name)
+    BRIDGE_COVERITY_CONNECT_STREAM_NAME: $(Build.Repository.Name)-$(System.PullRequest.targetBranchName)
+    BRIDGE_COVERITY_AUTOMATION_PRCOMMENT: true
+    # BRIDGE_COVERITY_LOCAL: true
     BRIDGE_AZURE_USER_TOKEN: $(System.AccessToken)
+    BRIDGE_AZURE_ORGANIZATION_NAME: chuckaude
+    BRIDGE_AZURE_REPOSITORY_NAME: $(Build.Repository.Name)
+    BRIDGE_AZURE_PROJECT_NAME: $(Build.Repository.Name)
+    BRIDGE_AZURE_REPOSITORY_BRANCH_NAME: $(System.PullRequest.SourceBranch)
+    BRIDGE_AZURE_REPOSITORY_PULL_NUMBER: $(System.PullRequest.PullRequestId)
   displayName: 'Coverity PR Scan'
   condition: eq(variables['Build.Reason'], 'PullRequest')
 

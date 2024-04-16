@@ -1,6 +1,7 @@
 # example pipeline for Black Duck scans using the Bridge CLI
 trigger:
 - main
+- develop
 
 pool:
   vmImage: ubuntu-latest
@@ -24,13 +25,19 @@ steps:
 - bash: |
     set -ex
     curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d $(Agent.TempDirectory) bridge.zip && rm -f bridge.zip
-    $(Agent.TempDirectory)/synopsys-bridge --verbose --stage blackduck \
-      blackduck.url=$(BLACKDUCK_URL) \
-      blackduck.token=$(BLACKDUCK_API_TOKEN) \
-      blackduck.scan.full='true' \
-      blackduck.scan.failure.severities='BLOCKER'
+    $(Agent.TempDirectory)/synopsys-bridge --stage blackduck
   env:
-    BLACKDUCK_API_TOKEN: $(BLACKDUCK_API_TOKEN)
+    BRIDGE_BLACKDUCK_URL: $(BLACKDUCK_URL)
+    BRIDGE_BLACKDUCK_TOKEN: $(BLACKDUCK_API_TOKEN)
+    BRIDGE_BLACKDUCK_SCAN_FULL: true
+    BRIDGE_BLACKDUCK_SCAN_FAILURE_SEVERITIES: 'BLOCKER'
+    BRIDGE_BLACKDUCK_FIXPR_ENABLED: true
+    BRIDGE_BLACKDUCK_REPORTS_SARIF_CREATE: true
+    BRIDGE_AZURE_USER_TOKEN: $(System.AccessToken)
+    BRIDGE_AZURE_ORGANIZATION_NAME: chuckaude
+    BRIDGE_AZURE_REPOSITORY_NAME: $(Build.Repository.Name)
+    BRIDGE_AZURE_PROJECT_NAME: $(Build.Repository.Name)
+    BRIDGE_AZURE_REPOSITORY_BRANCH_NAME: $(Build.SourceBranchName)
     DETECT_PROJECT_NAME: $(Build.Repository.Name)
     DETECT_PROJECT_VERSION_NAME: $(Build.SourceBranchName)
     DETECT_CODE_LOCATION_NAME: $(Build.Repository.Name)-$(Build.SourceBranchName)
@@ -40,19 +47,18 @@ steps:
 - bash: |
     set -ex
     curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d $(Agent.TempDirectory) bridge.zip && rm -f bridge.zip
-    $(Agent.TempDirectory)/synopsys-bridge --verbose --stage blackduck \
-      blackduck.url=$(BLACKDUCK_URL) \
-      blackduck.token=$(BLACKDUCK_API_TOKEN) \
-      blackduck.scan.full='false' \
-      blackduck.automation.prcomment=true \
-      azure.organization.name=chuckaude \
-      azure.repository.name=$(Build.Repository.Name) \
-      azure.project.name=$(Build.Repository.Name) \
-      azure.repository.branch.name=$(System.PullRequest.SourceBranch) \
-      azure.repository.pull.number=$(System.PullRequest.PullRequestId)
+    $(Agent.TempDirectory)/synopsys-bridge --stage blackduck
   env:
-    BLACKDUCK_API_TOKEN: $(BLACKDUCK_API_TOKEN)
+    BRIDGE_BLACKDUCK_URL: $(BLACKDUCK_URL)
+    BRIDGE_BLACKDUCK_TOKEN: $(BLACKDUCK_API_TOKEN)
+    BRIDGE_BLACKDUCK_SCAN_FULL: false
+    BRIDGE_BLACKDUCK_AUTOMATION_PRCOMMENT: true
     BRIDGE_AZURE_USER_TOKEN: $(System.AccessToken)
+    BRIDGE_AZURE_ORGANIZATION_NAME: chuckaude
+    BRIDGE_AZURE_REPOSITORY_NAME: $(Build.Repository.Name)
+    BRIDGE_AZURE_PROJECT_NAME: $(Build.Repository.Name)
+    BRIDGE_AZURE_REPOSITORY_BRANCH_NAME: $(System.PullRequest.SourceBranch)
+    BRIDGE_AZURE_REPOSITORY_PULL_NUMBER: $(System.PullRequest.PullRequestId)
     DETECT_PROJECT_NAME: $(Build.Repository.Name)
     DETECT_PROJECT_VERSION_NAME: $(System.PullRequest.targetBranchName)
     DETECT_CODE_LOCATION_NAME: $(Build.Repository.Name)-$(System.PullRequest.targetBranchName)

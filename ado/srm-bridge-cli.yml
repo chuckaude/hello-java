@@ -1,6 +1,7 @@
 # example pipeline for SRM scans using the Bridge CLI
 trigger:
 - main
+- develop
 
 pool:
   vmImage: ubuntu-latest
@@ -23,7 +24,7 @@ steps:
 
 - bash: |
     curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d $(Agent.TempDirectory) bridge.zip && rm -f bridge.zip
-    $(Agent.TempDirectory)/synopsys-bridge --verbose --stage srm
+    $(Agent.TempDirectory)/synopsys-bridge --stage srm
   env:
     BRIDGE_SRM_URL: $(SRM_URL)
     BRIDGE_SRM_APIKEY: $(SRM_APIKEY)

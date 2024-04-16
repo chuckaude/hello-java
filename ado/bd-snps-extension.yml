@@ -2,6 +2,7 @@
 # https://marketplace.visualstudio.com/items?itemName=synopsys-security-scan.synopsys-security-scan
 trigger:
 - main
+- develop
 
 pool:
   vmImage: ubuntu-latest
@@ -30,11 +31,13 @@ steps:
     DETECT_PROJECT_VERSION_NAME: $(Build.SourceBranchName)
     DETECT_CODE_LOCATION_NAME: $(Build.Repository.Name)-$(Build.SourceBranchName)
   inputs:
-    scanType: blackduck
-    bridge_blackduck_url: '$(BLACKDUCK_URL)'
-    bridge_blackduck_token: '$(BLACKDUCK_API_TOKEN)'
-    bridge_blackduck_scan_full: true
-    bridge_blackduck_scan_failure_severities: 'BLOCKER'
+    BRIDGE_BLACKDUCK_URL: $(BLACKDUCK_URL)
+    BRIDGE_BLACKDUCK_TOKEN: $(BLACKDUCK_API_TOKEN)
+    BRIDGE_BLACKDUCK_SCAN_FULL: true
+    BRIDGE_BLACKDUCK_SCAN_FAILURE_SEVERITIES: 'BLOCKER'
+    BRIDGE_BLACKDUCK_FIXPR_ENABLED: true
+    BRIDGE_BLACKDUCK_REPORTS_SARIF_CREATE: true
+    AZURE_TOKEN: $(System.AccessToken)
 
 - task: SynopsysSecurityScan@1
   displayName: 'Black Duck PR Scan'
@@ -44,12 +47,11 @@ steps:
     DETECT_PROJECT_VERSION_NAME: $(System.PullRequest.targetBranchName)
     DETECT_CODE_LOCATION_NAME: $(Build.Repository.Name)-$(System.PullRequest.targetBranchName)
   inputs:
-    scanType: blackduck
-    bridge_blackduck_url: '$(BLACKDUCK_URL)'
-    bridge_blackduck_token: '$(BLACKDUCK_API_TOKEN)'
-    bridge_blackduck_scan_full: false
-    bridge_blackduck_automation_prcomment: true
-    azure_token: $(System.AccessToken)
+    BRIDGE_BLACKDUCK_URL: $(BLACKDUCK_URL)
+    BRIDGE_BLACKDUCK_TOKEN: $(BLACKDUCK_API_TOKEN)
+    BRIDGE_BLACKDUCK_SCAN_FULL: false
+    BRIDGE_BLACKDUCK_AUTOMATION_PRCOMMENT: true
+    AZURE_TOKEN: $(System.AccessToken)
 
 - task: ArchiveFiles@2
   displayName: 'Copy Log Files'

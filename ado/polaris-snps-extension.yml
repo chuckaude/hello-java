@@ -2,6 +2,7 @@
 # https://marketplace.visualstudio.com/items?itemName=synopsys-security-scan.synopsys-security-scan
 trigger:
 - main
+- develop
 
 pool:
   vmImage: ubuntu-latest
@@ -26,28 +27,27 @@ steps:
   displayName: 'Polaris Full Scan'
   condition: not(eq(variables['Build.Reason'], 'PullRequest'))
   inputs:
-    scanType: polaris
-    bridge_polaris_serverUrl: '$(BRIDGE_POLARIS_SERVERURL)'
-    bridge_polaris_accesstoken: '$(BRIDGE_POLARIS_ACCESSTOKEN)'
-    bridge_polaris_assessment_types: 'SAST,SCA'
-    bridge_polaris_application_name: 'chuckaude-$(Build.Repository.Name)'
-    bridge_polaris_project_name: '$(Build.Repository.Name)'
-    bridge_polaris_branch_name: '$(Build.SourceBranchName)'
+    BRIDGE_POLARIS_SERVERURL: $(BRIDGE_POLARIS_SERVERURL)
+    BRIDGE_POLARIS_ACCESSTOKEN: $(BRIDGE_POLARIS_ACCESSTOKEN)
+    BRIDGE_POLARIS_ASSESSMENT_TYPES: 'SAST,SCA'
+    BRIDGE_POLARIS_APPLICATION_NAME: chuckaude-$(Build.Repository.Name)
+    BRIDGE_POLARIS_PROJECT_NAME: $(Build.Repository.Name)
+    BRIDGE_POLARIS_BRANCH_NAME: $(Build.SourceBranchName)
+    BRIDGE_POLARIS_REPORTS_SARIF_CREATE: true
 
 - task: SynopsysSecurityScan@1
   displayName: 'Polaris PR Scan'
   condition: eq(variables['Build.Reason'], 'PullRequest')
   inputs:
-    scanType: polaris
-    bridge_polaris_serverUrl: '$(BRIDGE_POLARIS_SERVERURL)'
-    bridge_polaris_accessToken: '$(BRIDGE_POLARIS_ACCESSTOKEN)'
-    bridge_polaris_assessment_types: 'SAST,SCA'
-    bridge_polaris_application_name: 'chuckaude-$(Build.Repository.Name)'
-    bridge_polaris_project_name: '$(Build.Repository.Name)'
-    bridge_polaris_branch_name: '$(Build.SourceBranchName)'
-    polaris_branch_parent_name: $(System.PullRequest.targetBranchName)
-    polaris_prComment_enabled: true
-    azure_token: $(System.AccessToken)
+    BRIDGE_POLARIS_SERVERURL: $(BRIDGE_POLARIS_SERVERURL)
+    BRIDGE_POLARIS_ACCESSTOKEN: $(BRIDGE_POLARIS_ACCESSTOKEN)
+    BRIDGE_POLARIS_ASSESSMENT_TYPES: 'SAST,SCA'
+    BRIDGE_POLARIS_APPLICATION_NAME: chuckaude-$(Build.Repository.Name)
+    BRIDGE_POLARIS_PROJECT_NAME: $(Build.Repository.Name)
+    BRIDGE_POLARIS_BRANCH_NAME: $(Build.SourceBranchName)
+    BRIDGE_POLARIS_BRANCH_PARENT_NAME: $(System.PullRequest.targetBranchName)
+    BRIDGE_POLARIS_PRCOMMENT_ENABLED: true
+    AZURE_TOKEN: $(System.AccessToken)
 
 - task: ArchiveFiles@2
   displayName: 'Copy Log Files'

@@ -1,6 +1,7 @@
 # example pipeline for Polaris scans using the Bridge CLI
 trigger:
 - main
+- develop
 
 pool:
   vmImage: ubuntu-latest
@@ -23,33 +24,36 @@ steps:
 
 - bash: |
     curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d $(Agent.TempDirectory) bridge.zip && rm -f bridge.zip
-    $(Agent.TempDirectory)/synopsys-bridge --diagnostics --verbose --stage polaris \
-      polaris.assessment.types='SAST,SCA' \
-      polaris.application.name='chuckaude-$(Build.Repository.Name)' \
-      polaris.project.name='$(Build.Repository.Name)' \
-      polaris.branch.name=$(Build.SourceBranchName)
+    $(Agent.TempDirectory)/synopsys-bridge --stage polaris
   env:
+    BRIDGE_POLARIS_SERVERURL: $(BRIDGE_POLARIS_SERVERURL)
     BRIDGE_POLARIS_ACCESSTOKEN: $(BRIDGE_POLARIS_ACCESSTOKEN)
+    BRIDGE_POLARIS_ASSESSMENT_TYPES: 'SAST,SCA'
+    BRIDGE_POLARIS_APPLICATION_NAME: chuckaude-$(Build.Repository.Name)
+    BRIDGE_POLARIS_PROJECT_NAME: $(Build.Repository.Name)
+    BRIDGE_POLARIS_BRANCH_NAME: $(Build.SourceBranchName)
+    BRIDGE_POLARIS_REPORTS_SARIF_CREATE: true
   displayName: 'Polaris Full Scan'
   condition: not(eq(variables['Build.Reason'], 'PullRequest'))
 
 - bash: |
     curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d $(Agent.TempDirectory) bridge.zip && rm -f bridge.zip
-    $(Agent.TempDirectory)/synopsys-bridge --verbose --stage polaris \
-      polaris.assessment.types='SAST,SCA' \
-      polaris.application.name='chuckaude-$(Build.Repository.Name)' \
-      polaris.project.name='$(Build.Repository.Name)' \
-      polaris.branch.name=$(Build.SourceBranchName) \
-      polaris.branch.parent.name=$(System.PullRequest.targetBranchName) \
-      polaris.prcomment.enabled=true \
-      azure.organization.name=chuckaude \
-      azure.repository.name=$(Build.Repository.Name) \
-      azure.project.name=$(Build.Repository.Name) \
-      azure.repository.branch.name=$(System.PullRequest.SourceBranch) \
-      azure.repository.pull.number=$(System.PullRequest.PullRequestId)
+    $(Agent.TempDirectory)/synopsys-bridge --stage polaris
   env:
+    BRIDGE_POLARIS_SERVERURL: $(BRIDGE_POLARIS_SERVERURL)
     BRIDGE_POLARIS_ACCESSTOKEN: $(BRIDGE_POLARIS_ACCESSTOKEN)
+    BRIDGE_POLARIS_ASSESSMENT_TYPES: 'SAST,SCA'
+    BRIDGE_POLARIS_APPLICATION_NAME: chuckaude-$(Build.Repository.Name)
+    BRIDGE_POLARIS_PROJECT_NAME: $(Build.Repository.Name)
+    BRIDGE_POLARIS_BRANCH_NAME: $(Build.SourceBranchName)
+    BRIDGE_POLARIS_BRANCH_PARENT_NAME: $(System.PullRequest.targetBranchName)
+    BRIDGE_POLARIS_PRCOMMENT_ENABLED: true
     BRIDGE_AZURE_USER_TOKEN: $(System.AccessToken)
+    BRIDGE_AZURE_ORGANIZATION_NAME: chuckaude
+    BRIDGE_AZURE_REPOSITORY_NAME: $(Build.Repository.Name)
+    BRIDGE_AZURE_PROJECT_NAME: $(Build.Repository.Name)
+    BRIDGE_AZURE_REPOSITORY_BRANCH_NAME: $(System.PullRequest.SourceBranch)
+    BRIDGE_AZURE_REPOSITORY_PULL_NUMBER: $(System.PullRequest.PullRequestId)
   displayName: 'Polaris PR Scan'
   condition: eq(variables['Build.Reason'], 'PullRequest')
 

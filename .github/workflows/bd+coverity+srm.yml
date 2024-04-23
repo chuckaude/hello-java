@@ -1,8 +1,8 @@
 # example workflow for standalone Black Duck, Coverity and SRM (Code DX) using GitHub Actions
-# - Black Duck and Coverity full scans on push to specified branches with upload to SRM
-# - Black Duck RAPID and Coverity Comparison scans on pull requests with PR comments enabled
+# - Black Duck and Coverity full scans on push to specified branches with import into SRM
+# - Black Duck Rapid and Coverity Comparison scans on pull requests with PR comments enabled
 # https://github.com/marketplace/actions/synopsys-action
-# https://github.com/marketplace/actions/code-dx-analysis
+# https://github.com/marketplace/actions/srm-analysis
 name: bd+coverity+srm
 on:
   push:
@@ -70,16 +70,17 @@ jobs:
         coverity_stream_name: ${{ github.event.repository.name }}-${{ github.base_ref }}
         coverity_prComment_enabled: true
         github_token: ${{ secrets.GITHUB_TOKEN }}
-    - name: SRM Upload
+    - name: SRM Import
       if: ${{ github.event_name != 'pull_request' }}
-      uses: codedx/codedx-github-action@v1.1.1
+      uses: codedx/codedx-github-action@v1.2.0
       with:
         server-url: ${{ vars.SRM_URL }}/codedx
         api-key: ${{ secrets.SRM_APIKEY }}
-        project-id: "4;branch=${{ github.ref_name }}"   # ER CDX-1693 support project-name
-        # branch-name:                                  # ER CDX-1666 support branch-name
+        project-name: ${{ github.event.repository.name }}
+        base-branch-name: ${{ github.event.repository.default_branch }}
+        target-branch-name: ${{ github.ref_name }}
         source-and-binaries-glob: './**'
-        wait-for-completion: false
+        wait-for-completion: true
 #    - name: Save Logs
 #      if: always()
 #      uses: actions/upload-artifact@v4

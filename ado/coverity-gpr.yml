@@ -61,7 +61,7 @@ jobs:
       export CHANGE_SET=$(git --no-pager diff origin/$SYSTEM_PULLREQUEST_TARGETBRANCHNAME --name-only)
       export STREAM="$(COVERITY_PROJECT)-$SYSTEM_PULLREQUEST_TARGETBRANCHNAME"
       export PATH=$PATH:$COVERITY_TOOL_HOME/bin
-      set -x
+      set -ex
       cov-run-desktop --dir idir --url $(COVERITY_URL) --stream $STREAM --build mvn -B -DskipTests package
       cov-run-desktop --dir idir --url $(COVERITY_URL) --stream $STREAM --present-in-reference false --ignore-uncapturable-inputs true --exit1-if-defects true $CHANGE_SET
     env:

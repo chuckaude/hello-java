@@ -27,7 +27,7 @@ steps:
 
 - script: |
    export PATH=$PATH:$COVERITY_TOOL_HOME/bin
-   set -x
+   set -ex
    cov-format-errors --dir idir --json-output-v8 coverity-local-report.json
    $COVERITY_TOOL_HOME/node/bin/node $COVERITY_TOOL_HOME/SARIF/cov-format-sarif-for-github.js \
        --inputFile coverity-local-report.json --outputFile coverity-sarif-report.sarif --githubUrl https://dev.azure.com \

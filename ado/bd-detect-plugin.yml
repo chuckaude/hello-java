@@ -24,7 +24,7 @@ steps:
   inputs:
     options: '-B -DskipTests'
 
-- task: SynopsysDetectTask@8
+- task: SynopsysDetectTask@9
   displayName: 'Black Duck Scan'
   inputs:
     BlackDuckService: poc357.blackduck.synopsys.com

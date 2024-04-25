@@ -22,7 +22,7 @@ steps:
   inputs:
     scanType: 'blackduck'
     bridge_blackduck_url: 'https://poc304.blackduck.synopsys.com'
-    bridge_blackduck_token: 'MWY5YzhjYjgtYTViZS00YzZmLWE1NzctNWMwNTYxMDMxN2ZkOjczMzkzZjQ5LWZkZWQtNGEzNC04ZjA3LTVmMzllNmI4MDg1Mw'
+    bridge_blackduck_token: 'xxxxxxxxxxxmLWE1NzctNWMwNTYxMDMxN2ZkOjczMzkzZjQ5LWZkZWQtNGEzNC04ZjA3LTVmMzllNmI4MDg1Mw'
     bridge_blackduck_scan_full: true
 - bash: |
     curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d $(Agent.TempDirectory) bridge.zip && rm -f bridge.zip

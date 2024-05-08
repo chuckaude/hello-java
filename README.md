@@ -8,11 +8,12 @@ Build Commands
 - [build.gradle](build.gradle) - gradle clean assemble
 
 CI Integration Examples (configured for Maven)
-- [.circleci/config.yml](.circleci/config.yml) - Circle CI pipeline
-- [.github/workflows](.github/workflows) - example GitHub workflows
-- [.gitlab-ci.yml](.gitlab-ci.yml) - GitLab CI pipeline
-- [azure-pipelines](azure-pipelines) - example Azure DevOps pipelines
-- [bitbucket](bitbucket) - example Bitbucket pipelines
-- [jenkins](jenkins) - example Jenkins pipelines
-- [Jenkinsfile](Jenkinsfile) - Coverity on Jenkins with full + incr scans using GitHub Branch Source plugin
-- [polaris.yml](polaris.yml) - Polaris project configuration
+- [.circleci/config.yml](.circleci/config.yml) - CircleCI pipeline examples
+- [cloudbuild.yaml](cloudbuild.yaml) - Google Cloud Build pipeline examples
+- [coverity.yaml](coverity.yaml) - Coverity CLI configuration file
+- [.github/workflows](.github/workflows) - GitHub workflow examples
+- [.gitlab-ci.yml](.gitlab-ci.yml) - GitLab CI pipeline examples
+- [ado](ado) - Azure DevOps pipeline examples
+- [bitbucket](bitbucket) - Bitbucket pipeline examples
+- [jenkins](jenkins) - Jenkins pipeline examples
+- [polaris.yml](polaris.yml) - Coverity on Polaris configuration file

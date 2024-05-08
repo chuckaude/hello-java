@@ -12,21 +12,20 @@
   <inceptionYear>2019</inceptionYear>
   <organization>
     <name>Synopsys Software Integrity Group</name>
-	<url>https://www.synopsys.com/software-integrity.html</url>
+    <url>https://www.synopsys.com/software-integrity.html</url>
   </organization>
 
   <dependencies>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.13.2</version>
-      <scope>test</scope>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.5</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-slf4j-impl</artifactId>
+      <artifactId>log4j-core</artifactId>
       <version>2.14.1</version>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 

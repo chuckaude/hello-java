@@ -1,3 +1,5 @@
+// https://sig-product-docs.synopsys.com/bundle/coverity-docs/page/checker-ref/checkers/NO/null_returns.html
+
 public class NullReturnsExample {
     static int count = 0;
 

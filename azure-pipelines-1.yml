@@ -4,7 +4,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/java
 
 trigger:
-- master
+- main
 
 pool:
   vmImage: ubuntu-latest
@@ -24,4 +24,4 @@ steps:
 
 - task: CmdLine@2
   inputs:
-      script: 'bash <(curl -s -L https://detect.synopsys.com/detect8.sh) --blackduck.url=https://partner-demo.blackduck.synopsys.com --blackduck.api.token=OTc2NmM3M2EtY2U2NS00NWFhLTk1MzYtMjVhMTg0ODRjYzkxOjBlZTk0NzE3LWYzNWEtNDY1Ni1hNGEyLWY1MWI5NWU5NmIxYg== --detect.project.name=hello-java --detect.project.version.name=2 --detect.impact.analysis.enabled=true'
+      script: 'bash <(curl -s -L https://detect.synopsys.com/detect8.sh) --blackduck.url=https://partner-demo.blackduck.synopsys.com --blackduck.api.token=OTc2NmM3M2EtY2U2NS00NWFhLTk1MzYtMjVhMTg0ODRjYzkxOjBlZTk0NzE3LWYzNWEtNDY1Ni1hNGEyLWY1MWI5NWU5NmIxYg== --detect.project.name=hello-java --detect.project.version.name=2 --detect.impact.analysis.enabled=true --detect.impact.analysis.output.path= abc'

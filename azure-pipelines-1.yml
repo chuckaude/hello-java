@@ -24,4 +24,4 @@ steps:
 
 - task: CmdLine@2
   inputs:
-      script: 'bash <(curl -s -L https://detect.synopsys.com/detect7.sh) --blackduck.url=https://partner-demo.blackduck.synopsys.com --blackduck.api.token=OTc2NmM3M2EtY2U2NS00NWFhLTk1MzYtMjVhMTg0ODRjYzkxOjBlZTk0NzE3LWYzNWEtNDY1Ni1hNGEyLWY1MWI5NWU5NmIxYg== --detect.project.name=hello-java --detect.project.version.name=1'
+      script: 'bash <(curl -s -L https://detect.synopsys.com/detect8.sh) --blackduck.url=https://partner-demo.blackduck.synopsys.com --blackduck.api.token=OTc2NmM3M2EtY2U2NS00NWFhLTk1MzYtMjVhMTg0ODRjYzkxOjBlZTk0NzE3LWYzNWEtNDY1Ni1hNGEyLWY1MWI5NWU5NmIxYg== --detect.project.name=hello-java --detect.project.version.name=2'

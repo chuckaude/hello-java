@@ -24,14 +24,29 @@ steps:
     options: '-B -DskipTests'
 
 - task: SynopsysSecurityScan@1
-  displayName: 'Polaris Scan'
+  displayName: 'Polaris Full Scan'
+  condition: not(eq(variables['Build.Reason'], 'PullRequest'))
   inputs:
     BRIDGE_POLARIS_SERVERURL: $(POLARIS_SERVERURL)
     BRIDGE_POLARIS_ACCESSTOKEN: $(POLARIS_ACCESSTOKEN)
     BRIDGE_POLARIS_ASSESSMENT_TYPES: 'SAST,SCA'
     BRIDGE_POLARIS_APPLICATION_NAME: chuckaude-$(Build.Repository.Name)
-    BRIDGE_POLARIS_PRCOMMENT_ENABLED: true
+    BRIDGE_POLARIS_PROJECT_NAME: $(Build.Repository.Name)
+    BRIDGE_POLARIS_BRANCH_NAME: $(Build.SourceBranchName)
     BRIDGE_POLARIS_REPORTS_SARIF_CREATE: true
+
+- task: SynopsysSecurityScan@1
+  displayName: 'Polaris PR Scan'
+  condition: eq(variables['Build.Reason'], 'PullRequest')
+  inputs:
+    BRIDGE_POLARIS_SERVERURL: $(POLARIS_SERVERURL)
+    BRIDGE_POLARIS_ACCESSTOKEN: $(POLARIS_ACCESSTOKEN)
+    BRIDGE_POLARIS_ASSESSMENT_TYPES: 'SAST,SCA'
+    BRIDGE_POLARIS_APPLICATION_NAME: chuckaude-$(Build.Repository.Name)
+    BRIDGE_POLARIS_PROJECT_NAME: $(Build.Repository.Name)
+    BRIDGE_POLARIS_BRANCH_NAME: $(Build.SourceBranchName)
+    BRIDGE_POLARIS_BRANCH_PARENT_NAME: $(System.PullRequest.targetBranchName)
+    BRIDGE_POLARIS_PRCOMMENT_ENABLED: true
     AZURE_TOKEN: $(System.AccessToken)
 
 - task: ArchiveFiles@2

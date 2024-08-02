@@ -27,26 +27,28 @@ steps:
   displayName: 'Coverity Full Scan'
   condition: not(eq(variables['Build.Reason'], 'PullRequest'))
   inputs:
-    BRIDGE_COVERITY_CONNECT_URL: $(COVERITY_URL)
-    BRIDGE_COVERITY_CONNECT_USER_NAME: $(COV_USER)
-    BRIDGE_COVERITY_CONNECT_USER_PASSWORD: $(COVERITY_PASSPHRASE)
-    BRIDGE_COVERITY_CONNECT_PROJECT_NAME: $(Build.Repository.Name)
-    BRIDGE_COVERITY_CONNECT_STREAM_NAME: $(Build.Repository.Name)-$(Build.SourceBranchName)
-    BRIDGE_COVERITY_CONNECT_POLICY_VIEW: 'Outstanding Issues'
-    # BRIDGE_COVERITY_LOCAL: true
+    coverity_url: $(COVERITY_URL)
+    coverity_user: $(COV_USER)
+    coverity_passphrase: $(COVERITY_PASSPHRASE)
+    coverity_project_name: $(Build.Repository.Name)
+    coverity_stream_name: $(Build.Repository.Name)-$(Build.SourceBranchName)
+    coverity_policy_view: 'Outstanding Issues'
+    # coverity_local: true
+    # include_diagnostics: true
 
 - task: SynopsysSecurityScan@1
   displayName: 'Coverity PR Scan'
   condition: eq(variables['Build.Reason'], 'PullRequest')
   inputs:
-    BRIDGE_COVERITY_CONNECT_URL: $(COVERITY_URL)
-    BRIDGE_COVERITY_CONNECT_USER_NAME: $(COV_USER)
-    BRIDGE_COVERITY_CONNECT_USER_PASSWORD: $(COVERITY_PASSPHRASE)
-    BRIDGE_COVERITY_CONNECT_PROJECT_NAME: $(Build.Repository.Name)
-    BRIDGE_COVERITY_CONNECT_STREAM_NAME: $(Build.Repository.Name)-$(System.PullRequest.targetBranchName)
-    BRIDGE_COVERITY_AUTOMATION_PRCOMMENT: true
-    AZURE_TOKEN: $(System.AccessToken)
-    # BRIDGE_COVERITY_LOCAL: true
+    coverity_url: $(COVERITY_URL)
+    coverity_user: $(COV_USER)
+    coverity_passphrase: $(COVERITY_PASSPHRASE)
+    coverity_project_name: $(Build.Repository.Name)
+    coverity_stream_name: $(Build.Repository.Name)-$(System.PullRequest.targetBranchName)
+    coverity_prcomment_enabled: true
+    azure_token: $(System.AccessToken)
+    # coverity_local: true
+    # include_diagnostics: true
 
 - task: ArchiveFiles@2
   displayName: 'Copy Log Files'

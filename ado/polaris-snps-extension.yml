@@ -26,13 +26,14 @@ steps:
 - task: SynopsysSecurityScan@1
   displayName: 'Polaris Scan'
   inputs:
-    BRIDGE_POLARIS_SERVERURL: $(POLARIS_SERVERURL)
-    BRIDGE_POLARIS_ACCESSTOKEN: $(POLARIS_ACCESSTOKEN)
-    BRIDGE_POLARIS_ASSESSMENT_TYPES: 'SAST,SCA'
-    BRIDGE_POLARIS_APPLICATION_NAME: chuckaude-$(Build.Repository.Name)
-    BRIDGE_POLARIS_PRCOMMENT_ENABLED: true
-    BRIDGE_POLARIS_REPORTS_SARIF_CREATE: true
-    AZURE_TOKEN: $(System.AccessToken)
+    polaris_server_url: $(POLARIS_SERVERURL)
+    polaris_access_token: $(POLARIS_ACCESSTOKEN)
+    polaris_assessment_types: 'SAST,SCA'
+    polaris_application_name: chuckaude-$(Build.Repository.Name)
+    polaris_prcomment_enabled: true
+    polaris_reports_sarif_create: true
+    azure_token: $(System.AccessToken)
+    # include_diagnostics: true
 
 - task: ArchiveFiles@2
   displayName: 'Copy Log Files'

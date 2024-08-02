@@ -31,13 +31,14 @@ steps:
 - task: SynopsysSecurityScan@1
   displayName: 'Coverity Scan'
   inputs:
-    BRIDGE_COVERITY_CONNECT_URL: $(COVERITY_URL)
-    BRIDGE_COVERITY_CONNECT_USER_NAME: $(COV_USER)
-    BRIDGE_COVERITY_CONNECT_USER_PASSWORD: $(COVERITY_PASSPHRASE)
-    BRIDGE_COVERITY_CONNECT_POLICY_VIEW: $(COVERITY_VIEW)
-    BRIDGE_COVERITY_AUTOMATION_PRCOMMENT: true
-    AZURE_TOKEN: $(System.AccessToken)
-    # BRIDGE_COVERITY_LOCAL: true
+    coverity_url: $(COVERITY_URL)
+    coverity_user: $(COV_USER)
+    coverity_passphrase: $(COVERITY_PASSPHRASE)
+    coverity_policy_view: $(COVERITY_VIEW)
+    coverity_prcomment_enabled: true
+    azure_token: $(System.AccessToken)
+    # coverity_local: true
+    # include_diagnostics: true
 
 - task: ArchiveFiles@2
   displayName: 'Copy Log Files'

@@ -16,6 +16,7 @@ jobs:
       BRIDGE_GITHUB_REPOSITORY_OWNER_NAME: ${{ github.repository_owner }}
       BRIDGE_GITHUB_REPOSITORY_NAME: ${{ github.event.repository.name }}
       BRIDGE_GITHUB_REPOSITORY_BRANCH_NAME: ${{ github.ref_name }}
+      # INCLUDE_DIAGNOSTICS: 'true'
     steps:
     - name: Checkout Source
       uses: actions/checkout@v4

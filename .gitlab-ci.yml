@@ -48,6 +48,7 @@ bd-sig-template:
     BRIDGE_BLACKDUCK_REPORTS_SARIF_CREATE: 'true'
     BRIDGE_GITLAB_USER_TOKEN: $GITLAB_USER_TOKEN
     DETECT_PROJECT_NAME: $CI_PROJECT_NAME
+    # INCLUDE_DIAGNOSTICS: 'true'
   before_script:
     - apt-get -qq update && apt-get install -y curl unzip
   extends: .run-synopsys-tools
@@ -67,6 +68,7 @@ bd-sig-template:
     BRIDGE_GITLAB_REPOSITORY_BRANCH_NAME: $CI_COMMIT_REF_NAME
     BRIDGE_GITLAB_USER_TOKEN: $GITLAB_USER_TOKEN
     DETECT_PROJECT_NAME: $CI_PROJECT_NAME
+    # INCLUDE_DIAGNOSTICS: 'true'
   rules:
     - if: ($CI_COMMIT_REF_NAME =~ $SCAN_BRANCHES && $CI_PIPELINE_SOURCE != 'merge_request_event')
       variables:
@@ -104,7 +106,6 @@ bd-sig-template:
     DETECT_PROJECT_VERSION_NAME: $CI_COMMIT_REF_NAME
     DETECT_CODE_LOCATION_NAME: $CI_PROJECT_NAME-$CI_COMMIT_REF_NAME
   script:
-    - env | sort
     - curl -fLsS -o /tmp/detect9.sh https://detect.synopsys.com/detect9.sh && chmod +x /tmp/detect9.sh
     - /tmp/detect9.sh --detect.policy.check.fail.on.severities=BLOCKER
   #artifacts:
@@ -122,6 +123,7 @@ coverity-sig-template:
     BRIDGE_COVERITY_CONNECT_USER_PASSWORD: $COVERITY_PASSPHRASE
     BRIDGE_GITLAB_USER_TOKEN: $GITLAB_USER_TOKEN
     # BRIDGE_COVERITY_LOCAL: true
+    # INCLUDE_DIAGNOSTICS: 'true'
   rules:
     - if: ($CI_COMMIT_REF_NAME =~ $SCAN_BRANCHES && $CI_PIPELINE_SOURCE != 'merge_request_event')
       variables:
@@ -146,10 +148,11 @@ coverity-sig-template:
     BRIDGE_COVERITY_CONNECT_USER_NAME: $COV_USER
     BRIDGE_COVERITY_CONNECT_USER_PASSWORD: $COVERITY_PASSPHRASE
     BRIDGE_COVERITY_CONNECT_PROJECT_NAME: $CI_PROJECT_NAME
-    # BRIDGE_COVERITY_LOCAL: true
     BRIDGE_GITLAB_REPOSITORY_NAME: $CI_PROJECT_ID
     BRIDGE_GITLAB_REPOSITORY_BRANCH_NAME: $CI_COMMIT_REF_NAME
     BRIDGE_GITLAB_USER_TOKEN: $GITLAB_USER_TOKEN
+    # BRIDGE_COVERITY_LOCAL: true
+    # INCLUDE_DIAGNOSTICS: 'true'
   rules:
     - if: ($CI_COMMIT_REF_NAME =~ $SCAN_BRANCHES && $CI_PIPELINE_SOURCE != 'merge_request_event')
       variables:
@@ -289,6 +292,7 @@ polaris-sig-template:
     BRIDGE_POLARIS_PRCOMMENT_ENABLED: 'true'
     BRIDGE_POLARIS_REPORTS_SARIF_CREATE: 'true'
     BRIDGE_GITLAB_USER_TOKEN: $GITLAB_USER_TOKEN
+    # INCLUDE_DIAGNOSTICS: 'true'
   before_script:
     - apt-get -qq update && apt-get install -y curl unzip
   extends: .run-synopsys-tools
@@ -311,6 +315,7 @@ polaris-sig-template:
     BRIDGE_GITLAB_REPOSITORY_NAME: $CI_PROJECT_ID
     BRIDGE_GITLAB_REPOSITORY_BRANCH_NAME: $CI_COMMIT_REF_NAME
     BRIDGE_GITLAB_USER_TOKEN: $GITLAB_USER_TOKEN
+    # INCLUDE_DIAGNOSTICS: 'true'
   rules:
     - if: ($CI_COMMIT_REF_NAME =~ $SCAN_BRANCHES && $CI_PIPELINE_SOURCE != 'merge_request_event')
       variables:

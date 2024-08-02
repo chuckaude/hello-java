@@ -13,6 +13,7 @@ jobs:
       BRIDGE_SRM_ASSESSMENT_TYPES: 'SAST,SCA'
       BRIDGE_SRM_PROJECT_NAME: ${{ github.event.repository.name }}
       BRIDGE_SRM_BRANCH_NAME: ${{ github.event.ref_name }}
+      # INCLUDE_DIAGNOSTICS: 'true'
     steps:
     - name: Checkout Source
       uses: actions/checkout@v4

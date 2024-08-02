@@ -29,8 +29,9 @@ steps:
     BRIDGE_SRM_URL: $(SRM_URL)
     BRIDGE_SRM_APIKEY: $(SRM_APIKEY)
     BRIDGE_SRM_ASSESSMENT_TYPES: 'SAST,SCA'
-    BRIDGE_SRM_PROJECT_NAME: chuckaude-$(Build.Repository.Name)
+    BRIDGE_SRM_PROJECT_NAME: $(Build.Repository.Name)
     BRIDGE_SRM_BRANCH_NAME: $(Build.SourceBranchName)
+    # INCLUDE_DIAGNOSTICS: 'true'
   displayName: 'SRM Scan'
 
 - task: ArchiveFiles@2

@@ -34,6 +34,7 @@ steps:
     BRIDGE_COVERITY_CONNECT_STREAM_NAME: $(Build.Repository.Name)-$(Build.SourceBranchName)
     BRIDGE_COVERITY_CONNECT_POLICY_VIEW: 'Outstanding Issues'
     # BRIDGE_COVERITY_LOCAL: true
+    # INCLUDE_DIAGNOSTICS: 'true'
   displayName: 'Coverity Full Scan'
   condition: not(eq(variables['Build.Reason'], 'PullRequest'))
 
@@ -48,13 +49,14 @@ steps:
     BRIDGE_COVERITY_CONNECT_PROJECT_NAME: $(Build.Repository.Name)
     BRIDGE_COVERITY_CONNECT_STREAM_NAME: $(Build.Repository.Name)-$(System.PullRequest.targetBranchName)
     BRIDGE_COVERITY_AUTOMATION_PRCOMMENT: true
-    # BRIDGE_COVERITY_LOCAL: true
     BRIDGE_AZURE_USER_TOKEN: $(System.AccessToken)
     BRIDGE_AZURE_ORGANIZATION_NAME: chuckaude
     BRIDGE_AZURE_REPOSITORY_NAME: $(Build.Repository.Name)
     BRIDGE_AZURE_PROJECT_NAME: $(Build.Repository.Name)
     BRIDGE_AZURE_REPOSITORY_BRANCH_NAME: $(System.PullRequest.SourceBranch)
     BRIDGE_AZURE_REPOSITORY_PULL_NUMBER: $(System.PullRequest.PullRequestId)
+    # BRIDGE_COVERITY_LOCAL: true
+    # INCLUDE_DIAGNOSTICS: 'true'
   displayName: 'Coverity PR Scan'
   condition: eq(variables['Build.Reason'], 'PullRequest')
 

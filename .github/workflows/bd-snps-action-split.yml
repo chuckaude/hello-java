@@ -37,6 +37,7 @@ jobs:
         blackduck_reports_sarif_create: true
         blackduck_upload_sarif_report: true
         github_token: ${{ secrets.GITHUB_TOKEN }}
+        # include_diagnostics: true
     - name: Black Duck PR Scan
       if: ${{ github.event_name == 'pull_request' }}
       uses: synopsys-sig/synopsys-action@v1.11.0
@@ -50,6 +51,7 @@ jobs:
         blackduck_scan_full: false
         blackduck_prComment_enabled: true
         github_token: ${{ secrets.GITHUB_TOKEN }}
+        # include_diagnostics: true
 #    - name: Save Logs
 #      if: always()
 #      uses: actions/upload-artifact@v4

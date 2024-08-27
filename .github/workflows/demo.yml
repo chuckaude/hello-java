@@ -16,7 +16,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
            java-version: 17
-           distributin: microsoft
+           distribution: microsoft
            cache: maven
       - name: Polaris Scan
         uses: synopsys-sig/synopsys-action@v1.11.0

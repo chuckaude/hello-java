@@ -15,7 +15,7 @@ jobs:
       - name: Setup Java JDK
         uses: actions/setup-java@v4
         with:
-           java-version:17
+           java-version: 17
            distributin: microsoft
            cache: maven
       - name: Polaris Scan

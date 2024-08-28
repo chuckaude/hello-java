@@ -16,7 +16,7 @@ jobs:
         java-version: 17
         distribution: microsoft
         cache: maven
-    - name: Polaris Scan
+    - name: Coverity on Polaris Scan
       env:
         POLARIS_SERVER_URL: ${{ vars.POLARIS_SERVER_URL }}
         POLARIS_ACCESS_TOKEN: ${{ secrets.POLARIS_ACCESS_TOKEN }}

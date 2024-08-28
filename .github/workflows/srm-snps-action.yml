@@ -1,6 +1,6 @@
-# example workflow for Coverity scans using the Synopsys Action
+# example workflow for SRM scans using the Synopsys Action
 # https://github.com/marketplace/actions/synopsys-action
-name: coverity-snps-action
+name: srm-snps-action
 on:
   push:
     branches: [ main, master, develop, stage, release ]
@@ -8,7 +8,7 @@ on:
     branches: [ main, master, develop, stage, release ]
   workflow_dispatch:
 jobs:
-  coverity:
+  srm:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Source
@@ -19,16 +19,14 @@ jobs:
         java-version: 17
         distribution: microsoft
         cache: maven
-    - name: Coverity Scan
+    - name: SRM Scan
       uses: synopsys-sig/synopsys-action@v1.12.0
       with:
-        coverity_url: ${{ vars.COVERITY_URL }}
-        coverity_user: ${{ secrets.COV_USER }}
-        coverity_passphrase: ${{ secrets.COVERITY_PASSPHRASE }}
-        coverity_policy_view: ${{ github.event_name != 'pull_request' && 'Outstanding Issues' || '' }}
-        coverity_prComment_enabled: true
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        # coverity_local: true
+        srm_url: ${{ vars.SRM_URL }}
+        srm_apikey: ${{ secrets.SRM_APIKEY }}
+        srm_assessment_types: 'SAST,SCA'
+        srm_project_name: ${{ github.event.repository.name }}
+        srm_branch_name: ${{ github.event.ref_name }}
         # include_diagnostics: true
 #    - name: Save Logs
 #      if: always()

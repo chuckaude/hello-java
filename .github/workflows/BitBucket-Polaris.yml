@@ -11,7 +11,7 @@ jobs:
     runs-on: [ ubuntu-latest ]
     steps:
       - name: checkout-bitbucket
-        run: git clone https://bitbucket.org/jwpolaris/hello-java.git
+        run: git clone https://waizguy@bitbucket.org/jwpolaris/hello-java.git
       - name: Setup Java JDK
         uses: actions/setup-java@v4
         with:

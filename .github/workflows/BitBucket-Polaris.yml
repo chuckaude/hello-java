@@ -22,7 +22,6 @@ jobs:
         uses: synopsys-sig/synopsys-action@v1.11.0
         env:
           DETECT_DETECTOR_SEARCH_DEPTH: 10
-          detect.detector.search.depth: 5
         with:
           ### SCANNING: Required fields
           polaris_server_url: ${{ vars.POLARIS_SERVERURL }}

@@ -20,13 +20,15 @@ jobs:
            cache: maven
       - name: Polaris Scan
         uses: synopsys-sig/synopsys-action@v1.11.0
+        env:
+          DETECT_DETECTOR_SEARCH_DEPTH: 5
+          detect.detector.search.depth: 5
         with:
           ### SCANNING: Required fields
           polaris_server_url: ${{ vars.POLARIS_SERVERURL }}
           polaris_access_token: ${{ secrets.POLARIS_ACCESS_TOKEN }}
           polaris_assessment_types: "SCA"
-          DETECT_DETECTOR_SEARCH_DEPTH: 5
-          detect.detector.search.depth: 5
+          
           
           ### SCANNING: Optional fields
           polaris_application_name: AJW-${{ github.event.repository.name }}

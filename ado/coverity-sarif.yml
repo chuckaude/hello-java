@@ -1,42 +1,41 @@
+# example pipeline for Coverity scans using the Synopsys Security Scan extension for ADO
+# https://marketplace.visualstudio.com/items?itemName=synopsys-security-scan.synopsys-security-scan
+# and the SARIF SAST Scans Tab extension from Microsoft DevLabs
+# https://marketplace.visualstudio.com/items?itemName=sariftools.scans
 pool:
   name: private-linux
-
+variables:
+  - group: poc357.coverity.synopsys.com
+  - name: COVERITY_TOOL_HOME
+    value: /opt/coverity/analysis/2023.6.0
 workspace:
   clean: all
-
-variables:
-- name: COVERITY_TOOL_HOME
-  value: /opt/coverity/analysis/2023.6.0
-
 steps:
-- task: synopsys-coverity.synopsys-coverity-azure-devops.coverity-task.synopsys-coverity@1
+- task: Maven@4
+  displayName: 'Maven Build'
   inputs:
-    coverityService: 'coverity.chuckaude.com'
-    projectName: '$(Build.Repository.Name)'
-    streamName: '$(Build.Repository.Name)-$(Build.SourceBranchName)'
-    checkIssues: true
-    issueView: 'Outstanding Issues'
-    issueStatus: 'unstable'
-    buildCommand: 'mvn -B -DskipTests package'
-    customCommandArgs: true
-    covBuildArgs: '--fs-capture-search $(Build.SourcesDirectory)'
-    covAnalyzeArgs: '--ticker-mode none --strip-path $(Build.SourcesDirectory) --webapp-security'
-    covCommitArgs: '--ticker-mode none --description $(Build.BuildURI) --version $(Build.SourceVersion) --scm git'
-    allowUntrusted: true
+    options: '-B -DskipTests'
+- task: SynopsysSecurityScan@1
   displayName: 'Coverity Scan'
-
-- script: |
-   export PATH=$PATH:$COVERITY_TOOL_HOME/bin
-   set -ex
-   cov-format-errors --dir idir --json-output-v8 coverity-local-report.json
-   $COVERITY_TOOL_HOME/node/bin/node $COVERITY_TOOL_HOME/SARIF/cov-format-sarif-for-github.js \
-       --inputFile coverity-local-report.json --outputFile coverity-sarif-report.sarif --githubUrl https://dev.azure.com \
-       --repoName chuckaude/hello-java --checkoutPath chuckaude/hello-java $(Build.SourcesDirectory) $(Build.SourceVersion)
-   zip CodeAnalysisLogs.zip coverity-sarif-report.sarif
-  displayName: 'Create SARIF'
-
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact: CodeAnalysisLogs'
   inputs:
-    PathtoPublish: 'coverity-sarif-report.sarif'
+    coverity_url: $(COVERITY_URL)
+    coverity_user: $(COV_USER)
+    coverity_passphrase: $(COVERITY_PASSPHRASE)
+    coverity_policy_view: 'Outstanding Issues'
+    mark_build_status: 'SucceededWithIssues'
+    coverity_local: true
+    coverity_install_directory: $(COVERITY_TOOL_HOME)
+- script: |
+    set -ex
+    IDIR=$(find $(Build.SourcesDirectory)/.bridge -name idir)
+    $COVERITY_TOOL_HOME/bin/cov-format-errors --dir "$IDIR" --json-output-v10 issues.json
+    $COVERITY_TOOL_HOME/node/bin/node $COVERITY_TOOL_HOME/SARIF/cov-format-sarif-for-github.js \
+      --inputFile issues.json --outputFile coverity-report.sarif --githubUrl https://dev.azure.com \
+      --repoName chuckaude/hello-java --checkoutPath chuckaude/hello-java $(Build.SourcesDirectory) $(Build.SourceVersion)
+    zip CodeAnalysisLogs.zip coverity-report.sarif
+  displayName: 'Create SARIF Report'
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish SARIF Report'
+  inputs:
+    PathtoPublish: 'coverity-report.sarif'
     ArtifactName: CodeAnalysisLogs

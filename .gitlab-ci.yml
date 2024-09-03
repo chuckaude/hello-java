@@ -1,6 +1,6 @@
 include:
   - project: synopsys/synopsys-template
-    ref: v1.9.0
+    ref: v1.10.0
     file: templates/synopsys-template.yml
 
 stages:
@@ -11,6 +11,10 @@ stages:
 
 variables:
   SCAN_BRANCHES: "/^(main|master|develop|stage|release)$/"
+  MAVEN_OPTS: >-
+    -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository
+  MAVEN_CLI_OPTS: >-
+    --batch-mode
 
 cache:
   paths:
@@ -271,7 +275,7 @@ coverity-sig-template:
     - apt-get -qq update && apt-get install -y curl unzip
     - curl -fLOsS $POLARIS_SERVER_URL/api/tools/polaris_cli-linux64.zip
     - unzip -d /tmp -jo polaris_cli-linux64.zip && rm -f polaris_cli-linux64.zip
-    - /tmp/polaris --co project.name=chuckaude-$CI_PROJECT_NAME analyze -w
+    - /tmp/polaris --co project.name=$CI_PROJECT_NAMESPACE-$CI_PROJECT_NAME analyze -w
   #artifacts:
   #  name: "polaris-cli-logs"
   #  when: always
@@ -288,7 +292,7 @@ polaris-sig-template:
     BRIDGE_POLARIS_SERVERURL: $POLARIS_SERVERURL
     BRIDGE_POLARIS_ACCESSTOKEN: $POLARIS_ACCESSTOKEN
     BRIDGE_POLARIS_ASSESSMENT_TYPES: 'SAST,SCA'
-    BRIDGE_POLARIS_APPLICATION_NAME: chuckaude-$CI_PROJECT_NAME
+    BRIDGE_POLARIS_APPLICATION_NAME: $CI_PROJECT_NAMESPACE-$CI_PROJECT_NAME
     BRIDGE_POLARIS_PRCOMMENT_ENABLED: 'true'
     BRIDGE_POLARIS_REPORTS_SARIF_CREATE: 'true'
     BRIDGE_GITLAB_USER_TOKEN: $GITLAB_USER_TOKEN
@@ -309,7 +313,7 @@ polaris-sig-template:
     BRIDGE_POLARIS_SERVERURL: $POLARIS_SERVERURL
     BRIDGE_POLARIS_ACCESSTOKEN: $POLARIS_ACCESSTOKEN
     BRIDGE_POLARIS_ASSESSMENT_TYPES: 'SAST,SCA'
-    BRIDGE_POLARIS_APPLICATION_NAME: chuckaude-$CI_PROJECT_NAME
+    BRIDGE_POLARIS_APPLICATION_NAME: $CI_PROJECT_NAMESPACE-$CI_PROJECT_NAME
     BRIDGE_POLARIS_PROJECT_NAME: $CI_PROJECT_NAME
     BRIDGE_POLARIS_BRANCH_NAME: $CI_COMMIT_REF_NAME
     BRIDGE_GITLAB_REPOSITORY_NAME: $CI_PROJECT_ID
@@ -330,6 +334,48 @@ polaris-sig-template:
   script:
     - curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d /tmp bridge.zip && rm -f bridge.zip
     - /tmp/synopsys-bridge --stage polaris
+  #artifacts:
+  #  name: "bridge-logs"
+  #  when: always
+  #  paths:
+  #    - .bridge/
+  #  expire_in: 30 days
+
+srm-sig-template:
+  stage: security
+  rules:
+    - if: ($CI_COMMIT_REF_NAME =~ $SCAN_BRANCHES && $CI_PIPELINE_SOURCE != 'merge_request_event')
+  variables:
+    BRIDGE_SRM_URL: $SRM_URL
+    BRIDGE_SRM_APIKEY: $SRM_APIKEY
+    BRIDGE_SRM_ASSESSMENT_TYPES: 'SAST,SCA'
+    # INCLUDE_DIAGNOSTICS: 'true'
+  before_script:
+    - apt-get -qq update && apt-get install -y curl unzip
+  extends: .run-synopsys-tools
+  #artifacts:
+  #  name: "bridge-logs"
+  #  when: always
+  #  paths:
+  #    - .bridge/
+  #  expire_in: 30 days
+
+.srm-bridge-cli:
+  stage: security
+  rules:
+    - if: ($CI_COMMIT_REF_NAME =~ $SCAN_BRANCHES && $CI_PIPELINE_SOURCE != 'merge_request_event')
+  variables:
+    BRIDGE_SRM_URL: $SRM_URL
+    BRIDGE_SRM_APIKEY: $SRM_APIKEY
+    BRIDGE_SRM_ASSESSMENT_TYPES: 'SAST,SCA'
+    BRIDGE_SRM_PROJECT_NAME: $CI_PROJECT_NAME
+    BRIDGE_SRM_BRANCH_NAME: $CI_COMMIT_REF_NAME
+    # INCLUDE_DIAGNOSTICS: 'true'
+  before_script:
+    - apt-get -qq update && apt-get install -y curl unzip
+  script:
+    - curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d /tmp bridge.zip && rm -f bridge.zip
+    - /tmp/synopsys-bridge --stage srm
   #artifacts:
   #  name: "bridge-logs"
   #  when: always

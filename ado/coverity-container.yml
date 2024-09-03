@@ -1,15 +1,12 @@
 pool:
   vmImage: ubuntu-latest
-
 container:
   image: coverity-linux64-2023.6.0
   endpoint: acr-chuckaude
-
 variables:
 - group: coverity-aws.chuckaude.com
 - name: COVERITY_TOOL_HOME
   value: /opt/coverity/analysis/2023.6.0
-
 steps:
 - task: synopsys-coverity@1
   inputs:

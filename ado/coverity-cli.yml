@@ -2,15 +2,12 @@
 # https://marketplace.visualstudio.com/items?itemName=synopsys-coverity.synopsys-coverity-azure-devops
 trigger:
 - main
-
 pool:
   vmImage: ubuntu-latest
-
 variables:
 - group: coverity-aws.chuckaude.com
 - name: COVERITY_TOOL_HOME
   value: $(Agent.TempDirectory)/$(COVERITY_TOOLKIT)
-
 steps:
 - task: JavaToolInstaller@0
   displayName: 'Use Java 17'
@@ -18,12 +15,10 @@ steps:
     versionSpec: 17
     jdkArchitectureOption: x64
     jdkSourceOption: PreInstalled
-
 - task: Maven@4
   displayName: 'Maven Build'
   inputs:
     options: '-B -DskipTests'
-
 - bash: |
     curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE $COVERITY_URL/downloadFile.htm?fn=$COVERITY_TOOLKIT.tar.gz | tar -C $(Agent.TempDirectory) -xzf -
     curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE -o $COVERITY_TOOL_HOME/bin/license.dat $COVERITY_URL/downloadFile.htm?fn=license.dat
@@ -31,7 +26,6 @@ steps:
     COV_USER: $(COV_USER)
     COVERITY_PASSPHRASE: $(COVERITY_PASSPHRASE)
   displayName: 'Coverity Download'
-
 - task: synopsys-coverity@1
   displayName: 'Coverity Scan'
   inputs:
@@ -44,7 +38,6 @@ steps:
     issueStatus: 'unstable'
     coverityRunType: 'custom'
     customCoverityCommands: 'coverity scan -o commit.connect.url=$COVERITY_URL -o commit.connect.project=$COV_PROJECT -o commit.connect.stream=$COV_STREAM'
-
 - task: CopyFiles@2
   displayName: 'Copy Log Files'
   condition: succeededOrFailed()
@@ -55,7 +48,6 @@ steps:
       idir/output/analysis-log.txt
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
     flattenFolders: true
-
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Log Files'
   condition: succeededOrFailed()

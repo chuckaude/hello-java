@@ -2,7 +2,6 @@
 # https://marketplace.visualstudio.com/items?itemName=synopsys-polaris.synopsys-polaris
 pool:
   vmImage: ubuntu-latest
-
 steps:
 - task: JavaToolInstaller@0
   displayName: 'Use Java 17'
@@ -10,7 +9,6 @@ steps:
     versionSpec: 17
     jdkArchitectureOption: x64
     jdkSourceOption: PreInstalled
-
 - task: Maven@4
   displayName: 'Maven Build'
   inputs:
@@ -24,7 +22,6 @@ steps:
     # Note: waitForeIssues will fail the pipeline if ANY issues are detected, not very practical
     waitForIssues: false
     populateChangeSetFile: false
-
 - task: CopyFiles@2
   displayName: 'Copy Log Files'
   condition: succeededOrFailed()
@@ -35,7 +32,6 @@ steps:
       .synopsys/polaris/data/coverity/*/idir/build-log.txt
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
     flattenFolders: true
-
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Log Files'
   condition: succeededOrFailed()

@@ -3,15 +3,12 @@
 # https://marketplace.visualstudio.com/items?itemName=synopsys-polaris.synopsys-polaris
 trigger:
 - main
-
 pool:
   vmImage: ubuntu-latest
-
 variables:
   DETECT_PROJECT_NAME: $(Build.Repository.Name)
   DETECT_PROJECT_VERSION_NAME: $(Build.SourceBranchName)
   DETECT_CODE_LOCATION_NAME: $(Build.Repository.Name)-$(Build.SourceBranchName)
-
 steps:
 - task: JavaToolInstaller@0
   displayName: 'Use Java 17'
@@ -19,24 +16,20 @@ steps:
     versionSpec: 17
     jdkArchitectureOption: x64
     jdkSourceOption: PreInstalled
-
 - task: Maven@4
   displayName: 'Maven Build'
   inputs:
     options: '-B -DskipTests'
-
 - task: SynopsysDetectTask@7
   displayName: 'Black Duck Scan'
   inputs:
     BlackDuckService: poc357.blackduck.synopsys.com
     DetectArguments: '--detect.policy.check.fail.on.severities=BLOCKER'
-
 - task: SynopsysPolaris@1
   displayName: 'Coverity on Polaris Scan'
   inputs:
     polarisService: 'sipse.polaris.synopsys.com'
     polarisCommand: '--co project.name=$(Build.Repository.Name) analyze -w'
-
 - task: CopyFiles@2
   displayName: 'Copy Log Files'
   condition: succeededOrFailed()
@@ -47,7 +40,6 @@ steps:
       .synopsys/polaris/data/coverity/*/idir/build-log.txt
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
     flattenFolders: true
-
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Log Files'
   condition: succeededOrFailed()

@@ -1,14 +1,11 @@
 pool:
   name: private-windows
-
 workspace:
   clean: all
-
 variables:
 - group: coverity.chuckaude.com
 - name: COVERITY_TOOL_HOME
   value: c:/tools/coverity/analysis/2023.6.0
-
 steps:
 - script: |
     set PATH=%PATH%;%COVERITY_TOOL_HOME%/bin

@@ -2,13 +2,10 @@
 trigger:
 - main
 - develop
-
 pool:
   vmImage: ubuntu-latest
-
 variables:
   - group: poc357.coverity.synopsys.com
-
 steps:
 - task: JavaToolInstaller@0
   displayName: 'Use Java 17'
@@ -16,12 +13,10 @@ steps:
     versionSpec: 17
     jdkArchitectureOption: x64
     jdkSourceOption: PreInstalled
-
 - task: Maven@4
   displayName: 'Maven Build'
   inputs:
     options: '-B -DskipTests'
-
 - bash: |
     set -ex
     curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d $(Agent.TempDirectory) bridge.zip && rm -f bridge.zip
@@ -37,7 +32,6 @@ steps:
     # INCLUDE_DIAGNOSTICS: 'true'
   displayName: 'Coverity Full Scan'
   condition: not(eq(variables['Build.Reason'], 'PullRequest'))
-
 - bash: |
     set -ex
     curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d $(Agent.TempDirectory) bridge.zip && rm -f bridge.zip
@@ -59,7 +53,6 @@ steps:
     # INCLUDE_DIAGNOSTICS: 'true'
   displayName: 'Coverity PR Scan'
   condition: eq(variables['Build.Reason'], 'PullRequest')
-
 - task: ArchiveFiles@2
   displayName: 'Copy Log Files'
   condition: succeededOrFailed()
@@ -68,7 +61,6 @@ steps:
     rootFolderOrFile: .bridge
     includeRootFolder: false
     archiveFile: '$(Build.ArtifactStagingDirectory)/bridge-logs.zip'
-
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Log Files'
   condition: succeededOrFailed()

@@ -3,7 +3,6 @@
 # demonstrate POLARIS_HOME caching on ephemeral build agents
 pool:
   vmImage: ubuntu-latest
-
 steps:
 # designate POLARIS_HOME as something to cache, for more details see:
 # https://learn.microsoft.com/en-us/azure/devops/pipelines/release/caching
@@ -13,13 +12,11 @@ steps:
     key: 'POLARIS_HOME | "$(Agent.OS)"'
     path: $(Agent.ToolsDirectory)/.synopsys/polaris
     cacheHitVar: 'POLARIS_HOME_CACHEHIT'
-
 - task: SynopsysPolaris@1
   displayName: 'Polaris Scan'
   inputs:
     polarisService: sipse.polaris.synopsys.com
     polarisCommand: '--co project.name=chuckaude-$(Build.Repository.Name) analyze -w'
-
 - task: CopyFiles@2
   displayName: 'Copy Log Files'
   condition: succeededOrFailed()
@@ -30,7 +27,6 @@ steps:
       .synopsys/polaris/data/coverity/*/idir/build-log.txt
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
     flattenFolders: true
-
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Log Files'
   condition: succeededOrFailed()

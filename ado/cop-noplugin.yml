@@ -1,9 +1,7 @@
 pool:
   vmImage: ubuntu-latest
-
 variables:
   - group: sipse.polaris.synopsys.com
-
 steps:
 - task: JavaToolInstaller@0
   displayName: 'Use Java 17'
@@ -11,12 +9,10 @@ steps:
     versionSpec: 17
     jdkArchitectureOption: x64
     jdkSourceOption: PreInstalled
-
 - task: Maven@4
   displayName: 'Maven Build'
   inputs:
     options: '-B -DskipTests'
-
 - bash: |
     curl -fLOsS $(POLARIS_SERVER_URL)/api/tools/polaris_cli-linux64.zip
     unzip -d $(Agent.TempDirectory) -jo polaris_cli-linux64.zip && rm -f polaris_cli-linux64.zip
@@ -35,7 +31,6 @@ steps:
       .synopsys/polaris/data/coverity/*/idir/build-log.txt
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
     flattenFolders: true
-
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Log Files'
   condition: succeededOrFailed()

@@ -2,15 +2,12 @@
 # https://marketplace.visualstudio.com/items?itemName=synopsys-detect.synopsys-detect
 trigger:
 - main
-
 pool:
   vmImage: ubuntu-latest
-
 variables:
   DETECT_PROJECT_NAME: $(Build.Repository.Name)
   DETECT_PROJECT_VERSION_NAME: $(Build.SourceBranchName)
   DETECT_CODE_LOCATION_NAME: $(Build.Repository.Name)-$(Build.SourceBranchName)
-
 steps:
 - task: JavaToolInstaller@0
   displayName: 'Use Java 17'
@@ -18,12 +15,10 @@ steps:
     versionSpec: 17
     jdkArchitectureOption: x64
     jdkSourceOption: PreInstalled
-
 - task: Maven@4
   displayName: 'Maven Build'
   inputs:
     options: '-B -DskipTests'
-
 - task: SynopsysDetectTask@9
   displayName: 'Black Duck Scan'
   inputs:

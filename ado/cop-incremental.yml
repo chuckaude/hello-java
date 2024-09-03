@@ -2,10 +2,8 @@
 # https://marketplace.visualstudio.com/items?itemName=synopsys-polaris.synopsys-polaris
 pool:
   vmImage: ubuntu-latest
-
 variables:
   - group: sipse.polaris.synopsys.com
-
 steps:
 - task: JavaToolInstaller@0
   displayName: 'Use Java 17'
@@ -13,12 +11,10 @@ steps:
     versionSpec: 17
     jdkArchitectureOption: x64
     jdkSourceOption: PreInstalled
-
 - task: Maven@4
   displayName: 'Maven Build'
   inputs:
     options: '-B -DskipTests'
-
 - task: SynopsysPolaris@1
   displayName: 'Polaris Full Scan'
   condition: and(in(variables['Build.SourceBranchName'],'main','stage','release'),not(eq(variables['Build.Reason'],'PullRequest')))
@@ -28,7 +24,6 @@ steps:
     # Note: waitForeIssues will fail the pipeline if ANY issues are detected, not very practical, parse JSON or use API instead
     waitForIssues: false
     populateChangeSetFile: false
-
 - task: SynopsysPolaris@1
   displayName: 'Polaris Incremental Scan - Plugin'
   enabled: false
@@ -40,7 +35,6 @@ steps:
     waitForIssues: false
     # BUG: plugin fails to populate changeset on additional edits to a PR beyond the first
     populateChangeSetFile: true
-
 - bash: |
     set -ex
     curl -fLOsS $POLARIS_SERVER_URL/api/tools/polaris_cli-linux64.zip
@@ -57,7 +51,6 @@ steps:
   displayName: 'Polaris Incremental Scan - Noplugin'
   enabled: false
   condition: eq(variables['Build.Reason'],'PullRequest')
-
 - bash: |
     set -ex
     curl -fLOsS $POLARIS_SERVER_URL/api/tools/polaris_cli-linux64.zip

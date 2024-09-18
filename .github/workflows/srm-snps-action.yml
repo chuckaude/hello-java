@@ -20,7 +20,7 @@ jobs:
         distribution: microsoft
         cache: maven
     - name: SRM Scan
-      uses: synopsys-sig/synopsys-action@v1.12.0
+      uses: synopsys-sig/synopsys-action@v1.13.0
       with:
         srm_url: ${{ vars.SRM_URL }}
         srm_apikey: ${{ secrets.SRM_APIKEY }}
@@ -34,3 +34,4 @@ jobs:
 #      with:
 #        name: bridge-logs
 #        path: ${{ github.workspace }}/.bridge
+#        include-hidden-files: true

@@ -20,7 +20,7 @@ jobs:
         distribution: microsoft
         cache: maven
     - name: Polaris Scan
-      uses: synopsys-sig/synopsys-action@v1.12.0
+      uses: synopsys-sig/synopsys-action@v1.13.0
       with:
         polaris_server_url: ${{ vars.POLARIS_SERVERURL }}
         polaris_access_token: ${{ secrets.POLARIS_ACCESSTOKEN }}
@@ -37,3 +37,4 @@ jobs:
 #      with:
 #        name: bridge-logs
 #        path: ${{ github.workspace }}/.bridge
+#        include-hidden-files: true

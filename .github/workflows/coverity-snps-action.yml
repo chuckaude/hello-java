@@ -20,7 +20,7 @@ jobs:
         distribution: microsoft
         cache: maven
     - name: Coverity Scan
-      uses: synopsys-sig/synopsys-action@v1.12.0
+      uses: synopsys-sig/synopsys-action@v1.13.0
       with:
         coverity_url: ${{ vars.COVERITY_URL }}
         coverity_user: ${{ secrets.COV_USER }}
@@ -36,3 +36,4 @@ jobs:
 #      with:
 #        name: bridge-logs
 #        path: ${{ github.workspace }}/.bridge
+#        include-hidden-files: true

@@ -22,7 +22,7 @@ jobs:
     - name: Maven Build
       run: mvn -B -DskipTests package
     - name: Black Duck Scan
-      uses: synopsys-sig/synopsys-action@v1.12.0
+      uses: synopsys-sig/synopsys-action@v1.13.0
       env:
         DETECT_PROJECT_NAME: ${{ github.event.repository.name }}
       with:
@@ -41,3 +41,4 @@ jobs:
 #      with:
 #        name: bridge-logs
 #        path: ${{ github.workspace }}/.bridge
+#        include-hidden-files: true

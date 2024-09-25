@@ -1,0 +1,47 @@
+def GIT_REPO = 'https://github.com/chuckaude/hello-java.git'
+def BRANCH = 'main'
+def CONNECT = 'https://coverity.chuckaude.com:8443'
+def PROJECT = 'hello-java'
+def STREAM = "$PROJECT-$BRANCH"
+def CHECKERS = '--webapp-security --enable-callgraph-metrics'
+def BLDCMD = 'mvn -B package -DskipTests'
+
+pipeline {
+    agent { label 'linux64' }
+    tools {
+        maven 'maven-3.9'
+        jdk 'openjdk-17'
+    }
+    stages {
+        stage('checkout') {
+            steps {
+                cleanWs()
+                git url: "$GIT_REPO", branch: "$BRANCH", credentialsId: 'github-chuckaude'
+            }
+        }
+        stage('coverity') {
+            steps {
+                withCoverityEnvironment(coverityInstanceUrl: "$CONNECT", projectName: "$PROJECT", streamName: "$STREAM") {
+                    sh """
+                        export COVERITY_NO_LOG_ENVIRONMENT_VARIABLES=1
+                        cov-build --dir idir --fs-capture-search $WORKSPACE $BLDCMD
+                        cov-analyze --dir idir --ticker-mode none --strip-path $WORKSPACE $CHECKERS
+                        cov-commit-defects --dir idir --ticker-mode none --url $COV_URL --stream $COV_STREAM \
+                            --description $BUILD_TAG --version \$(git log -n 1 --pretty=format:%H)
+                    """
+                    script {
+                        count = coverityIssueCheck viewName: 'Newly Detected Issues', returnIssueCount: true
+                        if (count != 0) { unstable 'new issues detected' }
+                        count = coverityIssueCheck viewName: 'Outstanding Issues', returnIssueCount: true
+                    }
+                }
+            }
+        }
+    }
+    post {
+        always {
+            archiveArtifacts artifacts: 'idir/build-log.txt, idir/output/analysis-log.txt, idir/output/callgraph-metrics.csv'
+            cleanWs()
+        }
+    }
+}

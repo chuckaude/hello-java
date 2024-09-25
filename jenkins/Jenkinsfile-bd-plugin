@@ -1,4 +1,4 @@
-// example Jenkinsfile for Coverity scans using the Synopsys Security Scan Plugin
+// example Jenkinsfile for Black Duck scans using the Synopsys Security Scan Plugin
 // https://plugins.jenkins.io/synopsys-security-scan
 pipeline {
     agent { label 'linux64' }
@@ -7,6 +7,7 @@ pipeline {
         FULLSCAN = "${env.BRANCH_NAME ==~ /^(main|master|develop|stage|release)$/ ? 'true' : 'false'}"
         PRSCAN = "${env.CHANGE_TARGET ==~ /^(main|master|develop|stage|release)$/ ? 'true' : 'false'}"
         GITHUB_TOKEN = credentials('github-pat')
+        DETECT_PROJECT_NAME = "${env.REPO_NAME}"
     }
     tools {
         maven 'maven-3.9'
@@ -18,20 +19,18 @@ pipeline {
                 sh 'mvn -B package'
             }
         }
-        stage('Coverity') {
-            steps {
+        stage('Black Duck') {
             when {
                 anyOf {
                     environment name: 'FULLSCAN', value: 'true'
                     environment name: 'PRSCAN', value: 'true'
                 }
             }
-                synopsys_scan product: 'coverity',
-                    coverity_project_name: "$REPO_NAME",
-                    coverity_stream_name: "$REPO_NAME-$BRANCH_NAME",
-                    coverity_args: "-o commit.connect.description=$BUILD_TAG",
-                    coverity_policy_view: 'Outstanding Issues',
-                    coverity_prComment_enabled: true,
+            steps {
+                synopsys_scan product: 'blackduck',
+                    blackduck_scan_failure_severities: 'BLOCKER',
+                    blackduck_prComment_enabled: true,
+                    blackduck_reports_sarif_create: true,
                     mark_build_status: 'UNSTABLE',
                     github_token: "$GITHUB_TOKEN",
                     include_diagnostics: false
@@ -40,7 +39,7 @@ pipeline {
     }
     post {
         always {
-            archiveArtifacts allowEmptyArchive: true, artifacts: '.bridge/bridge.log, .bridge/*/idir/build-log.txt'
+            archiveArtifacts allowEmptyArchive: true, artifacts: '.bridge/bridge.log'
             //zip archive: true, dir: '.bridge', zipFile: 'bridge-logs.zip'
             cleanWs()
         }

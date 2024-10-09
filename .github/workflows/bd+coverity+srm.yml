@@ -72,7 +72,7 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
     - name: SRM Import
       if: ${{ github.event_name != 'pull_request' }}
-      uses: codedx/codedx-github-action@v1.2.0
+      uses: codedx/codedx-github-action@v1.2.1
       with:
         server-url: ${{ vars.SRM_URL }}/codedx
         api-key: ${{ secrets.SRM_APIKEY }}

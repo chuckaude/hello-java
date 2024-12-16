@@ -31,7 +31,7 @@ jobs:
       if: ${{ github.event_name != 'pull_request' }}
       run: |
         curl -fLsS -o bridge.zip ${{ vars.BRIDGECLI_LINUX64 }} && unzip -qo -d ${{ runner.temp }} bridge.zip && rm -f bridge.zip
-        ${{ runner.temp }}/synopsys-bridge --stage connect \
+        ${{ runner.temp }}/bridge-cli-bundle-linux64/bridge-cli --stage connect \
             coverity.connect.project.name=${{ github.event.repository.name }} \
             coverity.connect.stream.name=${{ github.event.repository.name }}-${{ github.ref_name }} \
             coverity.connect.policy.view='Outstanding Issues'
@@ -40,7 +40,7 @@ jobs:
       if: ${{ github.event_name == 'pull_request' }}
       run: |
         curl -fLsS -o bridge.zip ${{ vars.BRIDGECLI_LINUX64 }} && unzip -qo -d ${{ runner.temp }} bridge.zip && rm -f bridge.zip
-        ${{ runner.temp }}/synopsys-bridge --stage connect \
+        ${{ runner.temp }}/bridge-cli-bundle-linux64/bridge-cli --stage connect \
             coverity.connect.project.name=${{ github.event.repository.name }} \
             coverity.connect.stream.name=${{ github.event.repository.name }}-${{ github.base_ref }} \
             coverity.automation.prcomment=true \

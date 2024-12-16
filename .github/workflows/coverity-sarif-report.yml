@@ -1,5 +1,5 @@
-# example workflow for Coverity scans using the Synopsys Action
-# https://github.com/marketplace/actions/synopsys-action
+# example workflow for Coverity scans using the Black Duck Security Scan Action
+# https://github.com/marketplace/actions/black-duck-security-scan
 name: coverity-sarif-report
 on:
   push:
@@ -18,7 +18,7 @@ jobs:
         distribution: microsoft
         cache: maven
     - name: Coverity Full Scan
-      uses: synopsys-sig/synopsys-action@v1.13.0
+      uses: blackduck-inc/black-duck-security-scan@v2.0.0
       with:
         coverity_url: ${{ vars.COVERITY_URL }}
         coverity_user: ${{ secrets.COV_USER }}
@@ -33,7 +33,7 @@ jobs:
         COV_USER: ${{ secrets.COV_USER }}
         COVERITY_PASSPHRASE: ${{ secrets.COVERITY_PASSPHRASE }}
       run: |
-        COVERITY_TOOL_HOME=$HOME/.synopsys/bridge/tools/cov-analysis/*
+        COVERITY_TOOL_HOME=$HOME/.blackduck/bridge/tools/cov-analysis/*
         IDIR=$(find ${{ github.workspace }}/.bridge -name idir)
         $COVERITY_TOOL_HOME/bin/cov-format-errors --dir "$IDIR" --json-output-v10 issues.json
         $COVERITY_TOOL_HOME/node/bin/node $COVERITY_TOOL_HOME/SARIF/cov-format-sarif-for-github.js --inputFile issues.json --outputFile results.sarif \

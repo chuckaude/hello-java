@@ -26,7 +26,7 @@ jobs:
     - name: SRM Full Scan
       run: |
         curl -fLsS -o bridge.zip ${{ vars.BRIDGECLI_LINUX64 }} && unzip -qo -d ${{ runner.temp }} bridge.zip && rm -f bridge.zip
-        ${{ runner.temp }}/synopsys-bridge --stage srm
+        ${{ runner.temp }}/bridge-cli-bundle-linux64/bridge-cli --stage srm
 #    - name: Save Logs
 #      if: always()
 #      uses: actions/upload-artifact@v4

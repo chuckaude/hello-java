@@ -1,4 +1,4 @@
-# Black Duck using Synopsys Action and Coverity on Polaris with getIssues quality gate and full PR scans
+# Black Duck SCA using Black Duck Security Scan Action and Coverity on Polaris with getIssues quality gate and full PR scans
 name: BD + CoP
 
 on:
@@ -22,25 +22,25 @@ jobs:
         cache: maven
     - name: Maven Build
       run: mvn -B -DskipTests package
-    - name: Black Duck Scan
-      uses: synopsys-sig/synopsys-action@v1.8.0
+    - name: Black Duck SCA Scan
+      uses: blackduck-inc/black-duck-security-scan@v2.0.0
       env:
         DETECT_PROJECT_NAME: ${{ github.event.repository.name }}
         DETECT_PROJECT_VERSION_NAME: ${{ github.ref_name }}
         DETECT_CODE_LOCATION_NAME: ${{ github.event.repository.name }}-${{ github.ref_name }}
       with:
-        blackduck_url: ${{ vars.BLACKDUCK_URL }}
-        blackduck_apiToken: ${{ secrets.BLACKDUCK_API_TOKEN }}
+        blackducksca_url: ${{ vars.BLACKDUCK_URL }}
+        blackducksca_apiToken: ${{ secrets.BLACKDUCK_API_TOKEN }}
         # pushes will initiate a full INTELLIGENT scan and pull requests will initiate a RAPID scan
-        #blackduck_scan_full: false
+        #blackducksca_scan_full: false
         # create fix pull requests if vulnerabilities are reported (Node.js only)
-        #blackduck_automation_fixpr: false
-        # required parameter if blackduck_automation_fixpr is enabled
+        #blackducksca_automation_fixpr: false
+        # required parameter if blackducksca_automation_fixpr is enabled
         # make sure GITHUB_TOKEN has the appropriate permissions
         #github_token: ${{ secrets.GITHUB_TOKEN }}
         # comma delimited list of severities to break the build when detected
         # severities: ALL,NONE,BLOCKER,CRITICAL,MAJOR,MINOR,OK,TRIVIAL,UNSPECIFIED
-        blackduck_scan_failure_severities: "BLOCKER"
+        blackducksca_scan_failure_severities: "BLOCKER"
 
   coverity-on-polaris:
     runs-on: ubuntu-latest

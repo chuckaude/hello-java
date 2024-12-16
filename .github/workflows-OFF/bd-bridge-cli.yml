@@ -1,4 +1,4 @@
-# example workflow for Black Duck scans using the Bridge CLI
+# example workflow for Black Duck SCA scans using the Bridge CLI
 name: bd-bridge-cli
 on:
   push:
@@ -10,8 +10,8 @@ jobs:
   blackduck:
     runs-on: ubuntu-latest
     env:
-      BRIDGE_BLACKDUCK_URL: ${{ vars.BLACKDUCK_URL }}
-      BRIDGE_BLACKDUCK_TOKEN: ${{ secrets.BLACKDUCK_API_TOKEN }}
+      BRIDGE_BLACKDUCKSCA_URL: ${{ vars.BLACKDUCK_URL }}
+      BRIDGE_BLACKDUCKSCA_TOKEN: ${{ secrets.BLACKDUCK_API_TOKEN }}
       BRIDGE_GITHUB_USER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       BRIDGE_GITHUB_REPOSITORY_OWNER_NAME: ${{ github.repository_owner }}
       BRIDGE_GITHUB_REPOSITORY_NAME: ${{ github.event.repository.name }}
@@ -28,7 +28,7 @@ jobs:
         cache: maven
     - name: Maven Build
       run: mvn -B -DskipTests package
-    - name: Black Duck Full Scan
+    - name: Black Duck SCA Full Scan
       if: ${{ github.event_name != 'pull_request' }}
       env:
         DETECT_PROJECT_NAME: ${{ github.event.repository.name }}
@@ -36,12 +36,12 @@ jobs:
         DETECT_CODE_LOCATION_NAME: ${{ github.event.repository.name }}-${{ github.ref_name }}
       run: |
         curl -fLsS -o bridge.zip ${{ vars.BRIDGECLI_LINUX64 }} && unzip -qo -d ${{ runner.temp }} bridge.zip && rm -f bridge.zip
-        ${{ runner.temp }}/synopsys-bridge --stage blackduck \
-            blackduck.scan.full='true' \
-            blackduck.scan.failure.severities='BLOCKER' \
-            blackduck.fixpr.enabled='true' \
-            blackduck.reports.sarif.create='true'
-    - name: Black Duck PR Scan
+        ${{ runner.temp }}/bridge-cli-bundle-linux64/bridge-cli --stage blackducksca \
+            blackducksca.scan.full='true' \
+            blackducksca.scan.failure.severities='BLOCKER' \
+            blackducksca.fixpr.enabled='true' \
+            blackducksca.reports.sarif.create='true'
+    - name: Black Duck SCA PR Scan
       if: ${{ github.event_name == 'pull_request' }}
       env:
         DETECT_PROJECT_NAME: ${{ github.event.repository.name }}
@@ -49,9 +49,9 @@ jobs:
         DETECT_CODE_LOCATION_NAME: ${{ github.event.repository.name }}-${{ github.base_ref }}
       run: |
         curl -fLsS -o bridge.zip ${{ vars.BRIDGECLI_LINUX64 }} && unzip -qo -d ${{ runner.temp }} bridge.zip && rm -f bridge.zip
-        ${{ runner.temp }}/synopsys-bridge --stage blackduck \
-            blackduck.scan.full='false' \
-            blackduck.automation.prcomment='true' \
+        ${{ runner.temp }}/bridge-cli-bundle-linux64/bridge-cli --stage blackducksca \
+            blackducksca.scan.full='false' \
+            blackducksca.automation.prcomment='true' \
             github.repository.pull.number=${{ github.event.number }}
 #    - name: Save Logs
 #      if: always()

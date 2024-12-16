@@ -1,7 +1,7 @@
-# example workflow for standalone Black Duck, Coverity and SRM (Code DX) using GitHub Actions
+# example workflow for standalone Black Duck, Coverity and SRM using GitHub Actions
 # - Black Duck and Coverity full scans on push to specified branches with import into SRM
 # - Black Duck Rapid and Coverity Comparison scans on pull requests with PR comments enabled
-# https://github.com/marketplace/actions/synopsys-action
+# https://github.com/marketplace/actions/black-duck-security-scan
 # https://github.com/marketplace/actions/srm-analysis
 name: bd+coverity+srm
 on:
@@ -24,22 +24,22 @@ jobs:
         cache: maven
     - name: Maven Build
       run: mvn -B -DskipTests package
-    - name: Black Duck Scan
-      uses: synopsys-sig/synopsys-action@v1.13.0
+    - name: Black Duck SCA Scan
+      uses: blackduck-inc/black-duck-security-scan@v2.0.0
       env:
         DETECT_PROJECT_NAME: ${{ github.event.repository.name }}
       with:
-        blackduck_url: ${{ vars.BLACKDUCK_URL }}
-        blackduck_token: ${{ secrets.BLACKDUCK_API_TOKEN }}
-        # blackduck_scan_failure_severities: 'BLOCKER'
-        blackduck_fixpr_enabled: true
-        blackduck_prComment_enabled: true
-        blackduck_reports_sarif_create: true
-        blackduck_upload_sarif_report: true
+        blackducksca_url: ${{ vars.BLACKDUCK_URL }}
+        blackducksca_token: ${{ secrets.BLACKDUCK_API_TOKEN }}
+        # blackducksca_scan_failure_severities: 'BLOCKER'
+        blackducksca_fixpr_enabled: true
+        blackducksca_prComment_enabled: true
+        blackducksca_reports_sarif_create: true
+        blackducksca_upload_sarif_report: true
         github_token: ${{ secrets.GITHUB_TOKEN }}
         # include_diagnostics: true
-    - name: Coverity Scan
-      uses: synopsys-sig/synopsys-action@v1.13.0
+    - name: Coverity SAST Scan
+      uses: blackduck-inc/black-duck-security-scan@v2.0.0
       with:
         coverity_url: ${{ vars.COVERITY_URL }}
         coverity_user: ${{ secrets.COV_USER }}

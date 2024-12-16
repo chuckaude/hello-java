@@ -1,6 +1,6 @@
-# example workflow for Polaris scans using the Synopsys Action
-# https://github.com/marketplace/actions/synopsys-action
-name: polaris-snps-action
+# example workflow for SRM scans using the Black Duck Security Scan Action
+# https://github.com/marketplace/actions/black-duck-security-scan
+name: srm-ss-action
 on:
   push:
     branches: [ main, master, develop, stage, release ]
@@ -8,7 +8,7 @@ on:
     branches: [ main, master, develop, stage, release ]
   workflow_dispatch:
 jobs:
-  polaris:
+  srm:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Source
@@ -19,17 +19,14 @@ jobs:
         java-version: 17
         distribution: microsoft
         cache: maven
-    - name: Polaris Scan
-      uses: synopsys-sig/synopsys-action@v1.13.0
+    - name: SRM Scan
+      uses: blackduck-inc/black-duck-security-scan@v2.0.0
       with:
-        polaris_server_url: ${{ vars.POLARIS_SERVERURL }}
-        polaris_access_token: ${{ secrets.POLARIS_ACCESSTOKEN }}
-        polaris_assessment_types: 'SAST,SCA'
-        polaris_application_name: chuckaude-${{ github.event.repository.name }}
-        polaris_prComment_enabled: 'true'
-        polaris_reports_sarif_create: 'true'
-        polaris_upload_sarif_report: 'true'
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+        srm_url: ${{ vars.SRM_URL }}
+        srm_apikey: ${{ secrets.SRM_APIKEY }}
+        srm_assessment_types: 'SAST,SCA'
+        srm_project_name: ${{ github.event.repository.name }}
+        srm_branch_name: ${{ github.event.ref_name }}
         # include_diagnostics: true
 #    - name: Save Logs
 #      if: always()

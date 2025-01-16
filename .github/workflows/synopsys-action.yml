@@ -27,7 +27,7 @@ jobs:
           polaris_assessment_types: "SCA,SAST"
           polaris_application_name: "JWtest"
           polaris_project_name: "HelloJava"
-          polaris_branch_name: "main2"
+          polaris_branch_name: "main3"
           
          
           ### PULL REQUEST COMMENTS: Uncomment below to enable

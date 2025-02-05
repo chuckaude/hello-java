@@ -23,7 +23,7 @@ jobs:
       with:
         polaris_url: ${{ vars.POLARIS_SERVER_URL }}
         polaris_token: ${{ secrets.POLARIS_ACCESS_TOKEN }}
-        polaris_version: 2024.6.0
+        polaris_version: 2024.12.0
     - name: Coverity on Polaris Scan
       uses: synopsys-sig-community/polaris-analysis@main
       with:

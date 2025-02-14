@@ -93,7 +93,7 @@ bd-ss-template:
     - apt-get -qq update && apt-get install -y curl unzip
   script:
     - curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d /tmp bridge.zip && rm -f bridge.zip
-    - /tmp/synopsys-bridge --stage blackduck
+    - /tmp/bridge-cli-bundle-linux64/bridge-cli --stage blackducksca
   #artifacts:
   #  name: "bridge-logs"
   #  when: always
@@ -110,8 +110,8 @@ bd-ss-template:
     DETECT_PROJECT_VERSION_NAME: $CI_COMMIT_REF_NAME
     DETECT_CODE_LOCATION_NAME: $CI_PROJECT_NAME-$CI_COMMIT_REF_NAME
   script:
-    - curl -fLsS -o /tmp/detect9.sh https://detect.synopsys.com/detect9.sh && chmod +x /tmp/detect9.sh
-    - /tmp/detect9.sh --detect.policy.check.fail.on.severities=BLOCKER
+    - curl -fLsS -o /tmp/detect10.sh https://detect.blackduck.com/detect10.sh && chmod +x /tmp/detect10.sh
+    - /tmp/detect10.sh --detect.policy.check.fail.on.severities=BLOCKER
   #artifacts:
   #  name: "blackduck-logs"
   #  when: always
@@ -136,7 +136,7 @@ coverity-ss-template:
       variables:
         BRIDGE_COVERITY_AUTOMATION_PRCOMMENT: 'true'
   before_script:
-    - apt-get -qq update && apt-get install -y curl unzip
+    - apt-get -qq update && apt-get install -y curl unzip file
   extends: .run-black-duck-tools
   #artifacts:
   #  name: "bridge-logs"
@@ -168,10 +168,10 @@ coverity-ss-template:
         BRIDGE_COVERITY_AUTOMATION_PRCOMMENT: 'true'
         BRIDGE_GITLAB_REPOSITORY_PULL_NUMBER: $CI_MERGE_REQUEST_IID
   before_script:
-    - apt-get -qq update && apt-get install -y curl unzip
+    - apt-get -qq update && apt-get install -y curl unzip file
   script:
     - curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d /tmp bridge.zip && rm -f bridge.zip
-    - /tmp/synopsys-bridge --stage connect
+    - /tmp/bridge-cli-bundle-linux64/bridge-cli --stage connect
   #artifacts:
   #  name: "bridge-logs"
   #  when: always
@@ -186,6 +186,8 @@ coverity-ss-template:
   variables:
     COVERITY_PROJECT: $CI_PROJECT_NAME
     COVERITY_STREAM: $CI_PROJECT_NAME-$CI_COMMIT_REF_NAME
+  before_script:
+    - apt-get -qq update && apt-get install -y file
   script:
     - curl -fLsS $COVERITY_URL/api/v2/scans/downloads/$COVERITY_THIN_CLIENT | tar -C /tmp -xzf -
     - export COVERITY_CLI_CLOUD_ANALYSIS_ASYNC=false
@@ -206,6 +208,8 @@ coverity-ss-template:
   variables:
     COVERITY_PROJECT: $CI_PROJECT_NAME
     COVERITY_STREAM: $CI_PROJECT_NAME-$CI_COMMIT_REF_NAME
+  before_script:
+    - apt-get -qq update && apt-get install -y file
   script:
     - curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE $COVERITY_URL/downloadFile.htm?fn=$COVERITY_TOOLKIT.tar.gz | tar -C /tmp -xzf -
     - curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE -o /tmp/$COVERITY_TOOLKIT/bin/license.dat $COVERITY_URL/downloadFile.htm?fn=license.dat
@@ -271,8 +275,9 @@ coverity-ss-template:
   stage: security
   rules:
     - if: ($CI_COMMIT_REF_NAME =~ $SCAN_BRANCHES && $CI_PIPELINE_SOURCE != 'merge_request_event')
+  before_script:
+    - apt-get -qq update && apt-get install -y curl unzip file
   script:
-    - apt-get -qq update && apt-get install -y curl unzip
     - curl -fLOsS $POLARIS_SERVER_URL/api/tools/polaris_cli-linux64.zip
     - unzip -d /tmp -jo polaris_cli-linux64.zip && rm -f polaris_cli-linux64.zip
     - /tmp/polaris --co project.name=$CI_PROJECT_NAMESPACE-$CI_PROJECT_NAME analyze -w
@@ -298,7 +303,7 @@ polaris-ss-template:
     BRIDGE_GITLAB_USER_TOKEN: $GITLAB_USER_TOKEN
     # INCLUDE_DIAGNOSTICS: 'true'
   before_script:
-    - apt-get -qq update && apt-get install -y curl unzip
+    - apt-get -qq update && apt-get install -y curl unzip file
   extends: .run-black-duck-tools
   #artifacts:
   #  name: "bridge-logs"
@@ -330,10 +335,10 @@ polaris-ss-template:
         BRIDGE_POLARIS_PRCOMMENT_ENABLED: 'true'
         BRIDGE_GITLAB_REPOSITORY_PULL_NUMBER: $CI_MERGE_REQUEST_IID
   before_script:
-    - apt-get -qq update && apt-get install -y curl unzip
+    - apt-get -qq update && apt-get install -y curl unzip file
   script:
     - curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d /tmp bridge.zip && rm -f bridge.zip
-    - /tmp/synopsys-bridge --stage polaris
+    - /tmp/bridge-cli-bundle-linux64/bridge-cli --stage polaris
   #artifacts:
   #  name: "bridge-logs"
   #  when: always
@@ -343,15 +348,20 @@ polaris-ss-template:
 
 srm-ss-template:
   stage: security
-  rules:
-    - if: ($CI_COMMIT_REF_NAME =~ $SCAN_BRANCHES && $CI_PIPELINE_SOURCE != 'merge_request_event')
   variables:
     BRIDGE_SRM_URL: $SRM_URL
     BRIDGE_SRM_APIKEY: $SRM_APIKEY
     BRIDGE_SRM_ASSESSMENT_TYPES: 'SAST,SCA'
+    BRIDGE_SRM_PROJECT_NAME: $CI_PROJECT_NAME
+    BRIDGE_SRM_BRANCH_NAME: $CI_COMMIT_REF_NAME
     # INCLUDE_DIAGNOSTICS: 'true'
+  rules:
+    - if: ($CI_COMMIT_REF_NAME =~ $SCAN_BRANCHES && $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH)
+      variables:
+        BRIDGE_SRM_BRANCH_PARENT: $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_REF_NAME =~ $SCAN_BRANCHES
   before_script:
-    - apt-get -qq update && apt-get install -y curl unzip
+    - apt-get -qq update && apt-get install -y curl unzip file
   extends: .run-black-duck-tools
   #artifacts:
   #  name: "bridge-logs"
@@ -362,8 +372,6 @@ srm-ss-template:
 
 .srm-bridge-cli:
   stage: security
-  rules:
-    - if: ($CI_COMMIT_REF_NAME =~ $SCAN_BRANCHES && $CI_PIPELINE_SOURCE != 'merge_request_event')
   variables:
     BRIDGE_SRM_URL: $SRM_URL
     BRIDGE_SRM_APIKEY: $SRM_APIKEY
@@ -371,11 +379,16 @@ srm-ss-template:
     BRIDGE_SRM_PROJECT_NAME: $CI_PROJECT_NAME
     BRIDGE_SRM_BRANCH_NAME: $CI_COMMIT_REF_NAME
     # INCLUDE_DIAGNOSTICS: 'true'
+  rules:
+    - if: ($CI_COMMIT_REF_NAME =~ $SCAN_BRANCHES && $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH)
+      variables:
+        BRIDGE_SRM_BRANCH_PARENT: $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_REF_NAME =~ $SCAN_BRANCHES
   before_script:
-    - apt-get -qq update && apt-get install -y curl unzip
+    - apt-get -qq update && apt-get install -y curl unzip file
   script:
     - curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d /tmp bridge.zip && rm -f bridge.zip
-    - /tmp/synopsys-bridge --stage srm
+    - /tmp/bridge-cli-bundle-linux64/bridge-cli --stage srm
   #artifacts:
   #  name: "bridge-logs"
   #  when: always

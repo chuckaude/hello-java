@@ -41,7 +41,7 @@ jobs:
         export POLARIS_FF_ENABLE_COVERITY_INCREMENTAL=true
         echo ${{ steps.changeset.outputs.added_modified }} | tee changeset.txt
         ${{ runner.temp }}/polaris --co project.name=$POLARIS_PROJECT --co project.branch=${{ github.base_ref }} analyze -w --incremental changeset.txt
-        COUNT=$(cat .synopsys/polaris/data/coverity/*/idir/incremental-results/new-issues.json | jq '. | length')
+        COUNT=$(cat .blackduck/polaris/data/coverity/*/idir/incremental-results/new-issues.json | jq '. | length')
         if [ $COUNT -ne 0 ]; then
           echo "$COUNT new issues detected, do something here"
         fi

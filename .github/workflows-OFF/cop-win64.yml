@@ -30,4 +30,4 @@ jobs:
 #      uses: actions/upload-artifact@v4
 #      with:
 #        name: polaris-cli-logs
-#        path: ${{ github.workspace }}/.synopsys
+#        path: ${{ github.workspace }}/.blackduck

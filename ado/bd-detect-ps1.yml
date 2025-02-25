@@ -1,0 +1,23 @@
+# example workflow for Black Duck SCA scans using the Detect CLI
+# https://documentation.blackduck.com/bundle/detect/page/runningdetect/basics/runningscript.html
+pool:
+  vmImage: windows-latest
+variables:
+  - group: poc222.blackduck.synopsys.com
+steps:
+- task: JavaToolInstaller@0
+  displayName: 'Use Java 17'
+  inputs:
+    versionSpec: 17
+    jdkArchitectureOption: x64
+    jdkSourceOption: PreInstalled
+- task: Maven@4
+  displayName: 'Maven pom.xml'
+  inputs:
+    options: '-B -DskipTests'
+  enabled: false
+- powershell: |
+    powershell "[Net.ServicePointManager]::SecurityProtocol = 'tls12'; irm https://detect.blackduck.com/detect10.ps1?$(Get-Random) | iex; detect" --blackduck.url=$env:BLACKDUCK_URL --blackduck.api.token=$env:BLACKDUCK_API_TOKEN --detect.policy.check.fail.on.severities=BLOCKER
+  displayName: 'Black Duck SCA Scan'
+  env:
+    BLACKDUCK_API_TOKEN: $(BLACKDUCK_API_TOKEN)

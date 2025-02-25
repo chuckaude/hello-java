@@ -5,7 +5,7 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 variables:
-- group: coverity-aws.chuckaude.com
+- group: poc222.coverity.synopsys.com
 - name: COVERITY_TOOL_HOME
   value: $(Agent.TempDirectory)/$(COVERITY_TOOLKIT)
 steps:
@@ -29,7 +29,7 @@ steps:
 - task: synopsys-coverity@1
   displayName: 'Coverity Scan'
   inputs:
-    coverityService: 'coverity-aws.chuckaude.com'
+    coverityService: 'poc222.coverity.synopsys.com'
     allowUntrusted: true
     projectName: '$(Build.Repository.Name)'
     streamName: '$(Build.Repository.Name)-$(Build.SourceBranchName)'

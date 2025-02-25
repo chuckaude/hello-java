@@ -19,7 +19,7 @@ steps:
     $(Agent.TempDirectory)/polaris --co project.name=chuckaude-$(Build.Repository.Name) analyze -w
   env:
     POLARIS_ACCESS_TOKEN: $(POLARIS_ACCESS_TOKEN)
-  displayName: 'Polaris Scan'
+  displayName: 'Coverity on Polaris Scan'
   
 - task: CopyFiles@2
   displayName: 'Copy Log Files'
@@ -27,8 +27,8 @@ steps:
   enabled: false
   inputs:
     Contents: |
-      .synopsys/polaris/configuration/synopsys.yml
-      .synopsys/polaris/data/coverity/*/idir/build-log.txt
+      .blackduck/polaris/configuration/resolved-polaris.yml
+      .blackduck/polaris/data/coverity/*/idir/build-log.txt
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
     flattenFolders: true
 - task: PublishBuildArtifacts@1

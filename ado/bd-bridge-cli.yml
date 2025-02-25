@@ -1,11 +1,11 @@
-# example pipeline for Black Duck scans using the Bridge CLI
+# example pipeline for Black Duck SCA scans using the Bridge CLI
 trigger:
 - main
 - develop
 pool:
   vmImage: ubuntu-latest
 variables:
-  - group: poc357.blackduck.synopsys.com
+  - group: poc222.blackduck.synopsys.com
 steps:
 - task: JavaToolInstaller@0
   displayName: 'Use Java 17'
@@ -20,14 +20,14 @@ steps:
 - bash: |
     set -ex
     curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d $(Agent.TempDirectory) bridge.zip && rm -f bridge.zip
-    $(Agent.TempDirectory)/synopsys-bridge --stage blackduck
+    $(Agent.TempDirectory)/bridge-cli-bundle-linux64/bridge-cli --stage blackducksca
   env:
-    BRIDGE_BLACKDUCK_URL: $(BLACKDUCK_URL)
-    BRIDGE_BLACKDUCK_TOKEN: $(BLACKDUCK_API_TOKEN)
-    BRIDGE_BLACKDUCK_SCAN_FULL: true
-    BRIDGE_BLACKDUCK_SCAN_FAILURE_SEVERITIES: 'BLOCKER'
-    BRIDGE_BLACKDUCK_FIXPR_ENABLED: true
-    BRIDGE_BLACKDUCK_REPORTS_SARIF_CREATE: true
+    BRIDGE_BLACKDUCKSCA_URL: $(BLACKDUCK_URL)
+    BRIDGE_BLACKDUCKSCA_TOKEN: $(BLACKDUCK_API_TOKEN)
+    BRIDGE_BLACKDUCKSCA_SCAN_FULL: true
+    BRIDGE_BLACKDUCKSCA_SCAN_FAILURE_SEVERITIES: 'BLOCKER'
+    BRIDGE_BLACKDUCKSCA_FIXPR_ENABLED: true
+    BRIDGE_BLACKDUCKSCA_REPORTS_SARIF_CREATE: true
     BRIDGE_AZURE_USER_TOKEN: $(System.AccessToken)
     BRIDGE_AZURE_ORGANIZATION_NAME: chuckaude
     BRIDGE_AZURE_REPOSITORY_NAME: $(Build.Repository.Name)
@@ -42,12 +42,12 @@ steps:
 - bash: |
     set -ex
     curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d $(Agent.TempDirectory) bridge.zip && rm -f bridge.zip
-    $(Agent.TempDirectory)/synopsys-bridge --stage blackduck
+    $(Agent.TempDirectory)/bridge-cli-bundle-linux64/bridge-cli --stage blackducksca
   env:
-    BRIDGE_BLACKDUCK_URL: $(BLACKDUCK_URL)
-    BRIDGE_BLACKDUCK_TOKEN: $(BLACKDUCK_API_TOKEN)
-    BRIDGE_BLACKDUCK_SCAN_FULL: false
-    BRIDGE_BLACKDUCK_AUTOMATION_PRCOMMENT: true
+    BRIDGE_BLACKDUCKSCA_URL: $(BLACKDUCK_URL)
+    BRIDGE_BLACKDUCKSCA_TOKEN: $(BLACKDUCK_API_TOKEN)
+    BRIDGE_BLACKDUCKSCA_SCAN_FULL: false
+    BRIDGE_BLACKDUCKSCA_AUTOMATION_PRCOMMENT: true
     BRIDGE_AZURE_USER_TOKEN: $(System.AccessToken)
     BRIDGE_AZURE_ORGANIZATION_NAME: chuckaude
     BRIDGE_AZURE_REPOSITORY_NAME: $(Build.Repository.Name)

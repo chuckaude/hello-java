@@ -1,14 +1,12 @@
-# example pipeline for Coverity scans using the Synopsys Coverity extension and the Coverity CLI
-# https://marketplace.visualstudio.com/items?itemName=synopsys-coverity.synopsys-coverity-azure-devops
 # demonstrate COVERITY_TOOL_HOME caching on ephemeral build agents
 trigger:
 - main
 pool:
   vmImage: ubuntu-latest
 variables:
-- group: coverity-aws.chuckaude.com
+- group: poc222.coverity.synopsys.com
 - name: COVERITY_TOOLKIT
-  value: cov-analysis-linux64-2023.6.0
+  value: cov-analysis-linux64-2024.12.0
 - name: COVERITY_TOOL_HOME
   value: $(Agent.TempDirectory)/$(COVERITY_TOOLKIT)
 steps:

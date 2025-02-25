@@ -1,12 +1,12 @@
-# example pipeline for Black Duck scans using the Synopsys Security Scan extension for ADO
-# https://marketplace.visualstudio.com/items?itemName=synopsys-security-scan.synopsys-security-scan
+# example pipeline for Black Duck SCA scans using the Black Duck Security Scan Extension for ADO
+# https://marketplace.visualstudio.com/items?itemName=blackduck.blackduck-security-scan
 trigger:
 - main
 - develop
 pool:
   vmImage: ubuntu-latest
 variables:
-  - group: poc357.blackduck.synopsys.com
+  - group: poc222.blackduck.synopsys.com
 steps:
 - task: JavaToolInstaller@0
   displayName: 'Use Java 17'
@@ -18,17 +18,17 @@ steps:
   displayName: 'Maven Build'
   inputs:
     options: '-B -DskipTests'
-- task: SynopsysSecurityScan@1
-  displayName: 'Black Duck Scan'
+- task: BlackDuckSecurityScan@2
+  displayName: 'Black Duck SCA Scan'
   env:
     DETECT_PROJECT_NAME: $(Build.Repository.Name)
   inputs:
-    blackduck_url: $(BLACKDUCK_URL)
-    blackduck_token: $(BLACKDUCK_API_TOKEN)
-    blackduck_scan_failure_severities: 'BLOCKER'
-    blackduck_fixpr_enabled: true
-    blackduck_prcomment_enabled: true
-    blackduck_reports_sarif_create: true
+    blackducksca_url: $(BLACKDUCK_URL)
+    blackducksca_token: $(BLACKDUCK_API_TOKEN)
+    blackducksca_scan_failure_severities: 'BLOCKER'
+    blackducksca_fixpr_enabled: true
+    blackducksca_prcomment_enabled: true
+    blackducksca_reports_sarif_create: true
     azure_token: $(System.AccessToken)
     mark_build_status: 'SucceededWithIssues'
     # include_diagnostics: true

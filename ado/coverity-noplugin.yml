@@ -3,9 +3,9 @@ pool:
 workspace:
   clean: all
 variables:
-- group: coverity.chuckaude.com
+- group: poc222.coverity.synopsys.com
 - name: COVERITY_TOOL_HOME
-  value: c:/tools/coverity/analysis/2023.6.0
+  value: c:/tools/coverity/analysis/2024.12.0
 steps:
 - script: |
     set PATH=%PATH%;%COVERITY_TOOL_HOME%/bin

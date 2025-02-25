@@ -1,13 +1,13 @@
-# example pipeline for Coverity scans using the Synopsys Security Scan extension for ADO
-# https://marketplace.visualstudio.com/items?itemName=synopsys-security-scan.synopsys-security-scan
+# example pipeline for Coverity scans using the Black Duck Security Scan Extension for ADO
+# https://marketplace.visualstudio.com/items?itemName=blackduck.blackduck-security-scan
 # and the SARIF SAST Scans Tab extension from Microsoft DevLabs
 # https://marketplace.visualstudio.com/items?itemName=sariftools.scans
 pool:
   name: private-linux
 variables:
-  - group: poc357.coverity.synopsys.com
+  - group: poc222.coverity.synopsys.com
   - name: COVERITY_TOOL_HOME
-    value: /opt/coverity/analysis/2023.6.0
+    value: /opt/coverity/analysis/2024.12.0
 workspace:
   clean: all
 steps:
@@ -15,7 +15,7 @@ steps:
   displayName: 'Maven Build'
   inputs:
     options: '-B -DskipTests'
-- task: SynopsysSecurityScan@1
+- task: BlackDuckSecurityScan@2
   displayName: 'Coverity Scan'
   inputs:
     coverity_url: $(COVERITY_URL)

@@ -1,5 +1,5 @@
-# example pipeline for Polaris scans using the Synopsys Coverity on Polaris extension
-# https://marketplace.visualstudio.com/items?itemName=synopsys-polaris.synopsys-polaris
+# example pipeline for Polaris scans using the Coverity on Polaris extension
+# https://marketplace.visualstudio.com/items?itemName=blackduck.blackduck-coverity-on-polaris
 pool:
   vmImage: ubuntu-latest
 steps:
@@ -14,7 +14,7 @@ steps:
   inputs:
     options: '-B -DskipTests'
  
-- task: SynopsysPolaris@1
+- task: BlackduckCoverityOnPolaris@2
   displayName: 'Coverity on Polaris Scan'
   inputs:
     polarisService: 'sipse.polaris.synopsys.com'
@@ -28,8 +28,8 @@ steps:
   enabled: false
   inputs:
     Contents: |
-      .synopsys/polaris/configuration/synopsys.yml
-      .synopsys/polaris/data/coverity/*/idir/build-log.txt
+      .blackduck/polaris/configuration/resolved-polaris.yml
+      .blackduck/polaris/data/coverity/*/idir/build-log.txt
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
     flattenFolders: true
 - task: PublishBuildArtifacts@1

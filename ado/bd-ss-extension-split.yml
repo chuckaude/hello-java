@@ -1,12 +1,12 @@
-# example pipeline for Black Duck scans using the Synopsys Security Scan extension for ADO
-# https://marketplace.visualstudio.com/items?itemName=synopsys-security-scan.synopsys-security-scan
+# example pipeline for Black Duck SCA scans using the Black Duck Security Scan Extension for ADO
+# https://marketplace.visualstudio.com/items?itemName=blackduck.blackduck-security-scan
 trigger:
 - main
 - develop
 pool:
   vmImage: ubuntu-latest
 variables:
-  - group: poc357.blackduck.synopsys.com
+  - group: poc222.blackduck.synopsys.com
 steps:
 - task: JavaToolInstaller@0
   displayName: 'Use Java 17'
@@ -18,7 +18,7 @@ steps:
   displayName: 'Maven Build'
   inputs:
     options: '-B -DskipTests'
-- task: SynopsysSecurityScan@1
+- task: BlackDuckSecurityScan@2
   displayName: 'Black Duck Full Scan'
   condition: not(eq(variables['Build.Reason'], 'PullRequest'))
   env:
@@ -26,15 +26,15 @@ steps:
     DETECT_PROJECT_VERSION_NAME: $(Build.SourceBranchName)
     DETECT_CODE_LOCATION_NAME: $(Build.Repository.Name)-$(Build.SourceBranchName)
   inputs:
-    blackduck_url: $(BLACKDUCK_URL)
-    blackduck_token: $(BLACKDUCK_API_TOKEN)
-    blackduck_scan_full: true
-    blackduck_scan_failure_severities: 'BLOCKER'
-    blackduck_fixpr_enabled: true
-    blackduck_reports_sarif_create: true
+    blackducksca_url: $(BLACKDUCK_URL)
+    blackducksca_token: $(BLACKDUCK_API_TOKEN)
+    blackducksca_scan_full: true
+    blackducksca_scan_failure_severities: 'BLOCKER'
+    blackducksca_fixpr_enabled: true
+    blackducksca_reports_sarif_create: true
     azure_token: $(System.AccessToken)
     # include_diagnostics: true
-- task: SynopsysSecurityScan@1
+- task: BlackDuckSecurityScan@2
   displayName: 'Black Duck PR Scan'
   condition: eq(variables['Build.Reason'], 'PullRequest')
   env:
@@ -42,10 +42,10 @@ steps:
     DETECT_PROJECT_VERSION_NAME: $(System.PullRequest.targetBranchName)
     DETECT_CODE_LOCATION_NAME: $(Build.Repository.Name)-$(System.PullRequest.targetBranchName)
   inputs:
-    blackduck_url: $(BLACKDUCK_URL)
-    blackduck_token: $(BLACKDUCK_API_TOKEN)
-    blackduck_scan_full: false
-    blackduck_prcomment_enabled: true
+    blackducksca_url: $(BLACKDUCK_URL)
+    blackducksca_token: $(BLACKDUCK_API_TOKEN)
+    blackducksca_scan_full: false
+    blackducksca_prcomment_enabled: true
     azure_token: $(System.AccessToken)
     # include_diagnostics: true
 - task: ArchiveFiles@2

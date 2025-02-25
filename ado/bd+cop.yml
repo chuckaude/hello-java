@@ -1,6 +1,6 @@
-# example pipeline for Black Duck & Coverity on Polaris scans using the Synopsys Detect & Coverity on Polaris extensions
-# https://marketplace.visualstudio.com/items?itemName=synopsys-detect.synopsys-detect
-# https://marketplace.visualstudio.com/items?itemName=synopsys-polaris.synopsys-polaris
+# example pipeline for Black Duck & Coverity on Polaris scans using the Detect & Coverity on Polaris extensions
+# https://marketplace.visualstudio.com/items?itemName=blackduck.blackduck-detect
+# https://marketplace.visualstudio.com/items?itemName=blackduck.blackduck-coverity-on-polaris
 trigger:
 - main
 pool:
@@ -20,12 +20,12 @@ steps:
   displayName: 'Maven Build'
   inputs:
     options: '-B -DskipTests'
-- task: SynopsysDetectTask@7
-  displayName: 'Black Duck Scan'
+- task: BlackDuckDetectTask@10
+  displayName: 'Black Duck SCA Scan'
   inputs:
-    BlackDuckService: poc357.blackduck.synopsys.com
+    BlackDuckScaService: poc222.blackduck.synopsys.com
     DetectArguments: '--detect.policy.check.fail.on.severities=BLOCKER'
-- task: SynopsysPolaris@1
+- task: BlackduckCoverityOnPolaris@2
   displayName: 'Coverity on Polaris Scan'
   inputs:
     polarisService: 'sipse.polaris.synopsys.com'
@@ -36,8 +36,8 @@ steps:
   enabled: false
   inputs:
     Contents: |
-      .synopsys/polaris/configuration/synopsys.yml
-      .synopsys/polaris/data/coverity/*/idir/build-log.txt
+      .blackduck/polaris/configuration/resolved-polaris.yml
+      .blackduck/polaris/data/coverity/*/idir/build-log.txt
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
     flattenFolders: true
 - task: PublishBuildArtifacts@1

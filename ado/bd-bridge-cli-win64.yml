@@ -1,12 +1,11 @@
-# example pipeline for SRM scans using the Synopsys Security Scan extension for ADO
-# https://marketplace.visualstudio.com/items?itemName=synopsys-security-scan.synopsys-security-scan
+# example pipeline for Black Duck SCA scans using the Bridge CLI
 trigger:
 - main
 - develop
 pool:
-  vmImage: ubuntu-latest
+  vmImage: windows-latest
 variables:
-  - group: poc357.srm.synopsys.com
+  - group: poc222.blackduck.synopsys.com
 steps:
 - task: JavaToolInstaller@0
   displayName: 'Use Java 17'
@@ -18,13 +17,18 @@ steps:
   displayName: 'Maven Build'
   inputs:
     options: '-B -DskipTests'
-- task: SynopsysSecurityScan@1
-  displayName: 'SRM Scan'
-  inputs:
-    srm_url: $(SRM_URL)
-    srm_apikey: $(SRM_APIKEY)
-    srm_assessment_types: 'SAST,SCA'
-    # include_diagnostics: true
+- powershell: |
+    Invoke-WebRequest -Uri $env:BRIDGECLI_WIN64 -OutFile bridge.zip
+    Expand-Archive -Path bridge.zip -DestinationPath $(Agent.TempDirectory) -Force
+    Remove-Item -Path bridge.zip -Force
+    $(Agent.TempDirectory)/bridge-cli-bundle-win64/bridge-cli --stage blackducksca
+  env:
+    BRIDGE_BLACKDUCKSCA_URL: $(BLACKDUCK_URL)
+    BRIDGE_BLACKDUCKSCA_TOKEN: $(BLACKDUCK_API_TOKEN)
+    # BRIDGE_DETECT_ARGS: --spring.config.location=""
+    # INCLUDE_DIAGNOSTICS: 'true'
+  displayName: 'Black Duck SCA Scan'
+  condition: not(eq(variables['Build.Reason'], 'PullRequest'))
 - task: ArchiveFiles@2
   displayName: 'Copy Log Files'
   condition: succeededOrFailed()

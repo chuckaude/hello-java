@@ -5,7 +5,7 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 variables:
-  - group: poc357.coverity.synopsys.com
+  - group: poc222.coverity.synopsys.com
 steps:
 - task: JavaToolInstaller@0
   displayName: 'Use Java 17'
@@ -20,7 +20,7 @@ steps:
 - bash: |
     set -ex
     curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d $(Agent.TempDirectory) bridge.zip && rm -f bridge.zip
-    $(Agent.TempDirectory)/synopsys-bridge --stage connect
+    $(Agent.TempDirectory)/bridge-cli-bundle-linux64/bridge-cli --stage connect
   env:
     BRIDGE_COVERITY_CONNECT_URL: $(COVERITY_URL)
     BRIDGE_COVERITY_CONNECT_USER_NAME: $(COV_USER)
@@ -35,7 +35,7 @@ steps:
 - bash: |
     set -ex
     curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d $(Agent.TempDirectory) bridge.zip && rm -f bridge.zip
-    $(Agent.TempDirectory)/synopsys-bridge --stage connect
+    $(Agent.TempDirectory)/bridge-cli-bundle-linux64/bridge-cli --stage connect
   env:
     BRIDGE_COVERITY_CONNECT_URL: $(COVERITY_URL)
     BRIDGE_COVERITY_CONNECT_USER_NAME: $(COV_USER)

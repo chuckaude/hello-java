@@ -1,4 +1,5 @@
-# example pipeline for SRM scans using the Bridge CLI
+# example pipeline for SRM scans using the Black Duck Security Scan Extension for ADO
+# https://marketplace.visualstudio.com/items?itemName=blackduck.blackduck-security-scan
 trigger:
 - main
 - develop
@@ -17,17 +18,13 @@ steps:
   displayName: 'Maven Build'
   inputs:
     options: '-B -DskipTests'
-- bash: |
-    curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d $(Agent.TempDirectory) bridge.zip && rm -f bridge.zip
-    $(Agent.TempDirectory)/bridge-cli-bundle-linux64/bridge-cli --stage srm
-  env:
-    BRIDGE_SRM_URL: $(SRM_URL)
-    BRIDGE_SRM_APIKEY: $(SRM_APIKEY)
-    BRIDGE_SRM_ASSESSMENT_TYPES: 'SAST,SCA'
-    BRIDGE_SRM_PROJECT_NAME: $(Build.Repository.Name)
-    BRIDGE_SRM_BRANCH_NAME: $(Build.SourceBranchName)
-    # INCLUDE_DIAGNOSTICS: 'true'
+- task: BlackDuckSecurityScan@2
   displayName: 'SRM Scan'
+  inputs:
+    srm_url: $(SRM_URL)
+    srm_apikey: $(SRM_APIKEY)
+    srm_assessment_types: 'SAST,SCA'
+    # include_diagnostics: true
 - task: ArchiveFiles@2
   displayName: 'Copy Log Files'
   condition: succeededOrFailed()

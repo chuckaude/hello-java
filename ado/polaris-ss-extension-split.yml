@@ -1,12 +1,12 @@
-# example pipeline for Polaris scans using the Synopsys Security Scan extension for ADO
-# https://marketplace.visualstudio.com/items?itemName=synopsys-security-scan.synopsys-security-scan
+# example pipeline for Polaris scans using the Black Duck Security Scan Extension for ADO
+# https://marketplace.visualstudio.com/items?itemName=blackduck.blackduck-security-scan
 trigger:
 - main
 - develop
 pool:
   vmImage: ubuntu-latest
 variables:
-  - group: poc.polaris.synopsys.com
+  - group: poc.polaris.blackduck.com
 steps:
 - task: JavaToolInstaller@0
   displayName: 'Use Java 17'
@@ -18,17 +18,31 @@ steps:
   displayName: 'Maven Build'
   inputs:
     options: '-B -DskipTests'
-- task: SynopsysSecurityScan@1
-  displayName: 'Polaris Scan'
+- task: BlackDuckSecurityScan@2
+  displayName: 'Polaris Full Scan'
+  condition: not(eq(variables['Build.Reason'], 'PullRequest'))
   inputs:
     polaris_server_url: $(POLARIS_SERVERURL)
     polaris_access_token: $(POLARIS_ACCESSTOKEN)
     polaris_assessment_types: 'SAST,SCA'
     polaris_application_name: chuckaude-$(Build.Repository.Name)
-    polaris_prcomment_enabled: true
+    polaris_project_name: $(Build.Repository.Name)
+    polaris_branch_name: $(Build.SourceBranchName)
     polaris_reports_sarif_create: true
+    # include_diagnostics: true
+- task: BlackDuckSecurityScan@2
+  displayName: 'Polaris PR Scan'
+  condition: eq(variables['Build.Reason'], 'PullRequest')
+  inputs:
+    polaris_server_url: $(POLARIS_SERVERURL)
+    polaris_access_token: $(POLARIS_ACCESSTOKEN)
+    polaris_assessment_types: 'SAST,SCA'
+    polaris_application_name: chuckaude-$(Build.Repository.Name)
+    polaris_project_name: $(Build.Repository.Name)
+    polaris_branch_name: $(Build.SourceBranchName)
+    polaris_branch_parent_name: $(System.PullRequest.targetBranchName)
+    polaris_prcomment_enabled: true
     azure_token: $(System.AccessToken)
-    mark_build_status: 'SucceededWithIssues'
     # include_diagnostics: true
 - task: ArchiveFiles@2
   displayName: 'Copy Log Files'

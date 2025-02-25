@@ -1,0 +1,50 @@
+# example pipeline for Polaris scans using the Bridge CLI
+trigger:
+- main
+- develop
+pool:
+  vmImage: windows-latest
+variables:
+  - group: poc.polaris.blackduck.com
+steps:
+- task: JavaToolInstaller@0
+  displayName: 'Use Java 17'
+  inputs:
+    versionSpec: 17
+    jdkArchitectureOption: x64
+    jdkSourceOption: PreInstalled
+- task: Maven@4
+  displayName: 'Maven Build'
+  inputs:
+    options: '-B -DskipTests'
+- powershell: |
+    Invoke-WebRequest -Uri $env:BRIDGECLI_WIN64 -OutFile bridge.zip
+    Expand-Archive -Path bridge.zip -DestinationPath $(Agent.TempDirectory) -Force
+    Remove-Item -Path bridge.zip -Force
+    $(Agent.TempDirectory)/bridge-cli-bundle-win64/bridge-cli --stage polaris
+  env:
+    BRIDGE_POLARIS_SERVERURL: $(POLARIS_SERVERURL)
+    BRIDGE_POLARIS_ACCESSTOKEN: $(POLARIS_ACCESSTOKEN)
+    BRIDGE_POLARIS_ASSESSMENT_TYPES: 'SAST,SCA'
+    BRIDGE_POLARIS_APPLICATION_NAME: chuckaude-$(Build.Repository.Name)
+    BRIDGE_POLARIS_PROJECT_NAME: $(Build.Repository.Name)
+    BRIDGE_POLARIS_BRANCH_NAME: $(Build.SourceBranchName)
+    BRIDGE_POLARIS_REPORTS_SARIF_CREATE: true
+    # INCLUDE_DIAGNOSTICS: 'true'
+  displayName: 'Polaris Full Scan'
+  condition: not(eq(variables['Build.Reason'], 'PullRequest'))
+- task: ArchiveFiles@2
+  displayName: 'Copy Log Files'
+  condition: succeededOrFailed()
+  enabled: false
+  inputs:
+    rootFolderOrFile: .bridge
+    includeRootFolder: false
+    archiveFile: '$(Build.ArtifactStagingDirectory)/bridge-logs.zip'
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Log Files'
+  condition: succeededOrFailed()
+  enabled: false
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'logs'

@@ -1,5 +1,5 @@
 // example Jenkinsfile for Polaris scans using the Bridge CLI
-// https://sig-product-docs.synopsys.com/bundle/bridge/page/documentation/c_overview.html
+// https://documentation.blackduck.com/bundle/bridge/page/documentation/c_overview.html
 pipeline {
     agent { label 'linux64' }
     environment {
@@ -7,9 +7,9 @@ pipeline {
         REPO_NAME = "${env.GIT_URL.tokenize('/.')[-2]}"
         FULLSCAN = "${env.BRANCH_NAME ==~ /^(main|master|develop|stage|release)$/ ? 'true' : 'false'}"
         PRSCAN = "${env.CHANGE_TARGET ==~ /^(main|master|develop|stage|release)$/ ? 'true' : 'false'}"
-        BRIDGECLI_LINUX64 = 'https://sig-repo.synopsys.com/artifactory/bds-integrations-release/com/synopsys/integration/synopsys-bridge/latest/synopsys-bridge-linux64.zip'
-        BRIDGE_POLARIS_SERVERURL = 'https://poc.polaris.synopsys.com'
-        BRIDGE_POLARIS_ACCESSTOKEN = credentials('poc.polaris.synopsys.com')
+        BRIDGECLI_LINUX64 = 'https://repo.blackduck.com/artifactory/bds-integrations-release/com/blackduck/integration/bridge/binaries/bridge-cli-bundle/latest/bridge-cli-bundle-linux64.zip'
+        BRIDGE_POLARIS_SERVERURL = 'https://poc.polaris.blackduck.com'
+        BRIDGE_POLARIS_ACCESSTOKEN = credentials('poc.polaris.blackduck.com')
         BRIDGE_POLARIS_APPLICATION_NAME = "chuckaude-${env.REPO_NAME}"
         BRIDGE_POLARIS_PROJECT_NAME = "${env.REPO_NAME}"
         BRIDGE_POLARIS_BRANCH_NAME = "$BRANCH_NAME"
@@ -32,7 +32,7 @@ pipeline {
                 script {
                     status = sh returnStatus: true, script: '''
                         curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d $WORKSPACE_TMP bridge.zip && rm -f bridge.zip
-                        $WORKSPACE_TMP/synopsys-bridge --verbose --stage polaris \
+                        $WORKSPACE_TMP/bridge-cli-bundle-linux64/bridge-cli --stage polaris \
                             polaris.reports.sarif.create=true
                     '''
                     if (status == 8) { unstable 'policy violation' }
@@ -46,7 +46,7 @@ pipeline {
                 script {
                     status = sh returnStatus: true, script: '''
                         curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d $WORKSPACE_TMP bridge.zip && rm -f bridge.zip
-                        $WORKSPACE_TMP/synopsys-bridge --verbose --stage polaris \
+                        $WORKSPACE_TMP/bridge-cli-bundle-linux64/bridge-cli --stage polaris \
                             polaris.prcomment.enabled=true \
                             polaris.branch.parent.name=$CHANGE_TARGET \
                             github.repository.name=$REPO_NAME \

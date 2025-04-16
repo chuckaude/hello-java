@@ -1,4 +1,4 @@
-// https://sig-product-docs.synopsys.com/bundle/coverity-docs/page/checker-ref/checkers/FGH/forward_null.html
+// https://documentation.blackduck.com/bundle/coverity-docs/page/checker-ref/checkers/FGH/forward_null.html
 
 public class ForwardNullExample {
     public static Object callA() {

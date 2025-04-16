@@ -25,7 +25,7 @@ jobs:
     - name: Maven Build
       run: mvn -B -DskipTests package
     - name: Black Duck SCA Scan
-      uses: blackduck-inc/black-duck-security-scan@v2.0.0
+      uses: blackduck-inc/black-duck-security-scan@v2.1.1
       env:
         DETECT_PROJECT_NAME: ${{ github.event.repository.name }}
       with:
@@ -39,7 +39,7 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         # include_diagnostics: true
     - name: Coverity SAST Scan
-      uses: blackduck-inc/black-duck-security-scan@v2.0.0
+      uses: blackduck-inc/black-duck-security-scan@v2.1.1
       with:
         coverity_url: ${{ vars.COVERITY_URL }}
         coverity_user: ${{ secrets.COV_USER }}
@@ -52,7 +52,7 @@ jobs:
       if: ${{ github.event_name != 'pull_request' }}
       uses: codedx/codedx-github-action@v1.3.0
       with:
-        server-url: ${{ vars.SRM_URL }}/codedx
+        server-url: ${{ vars.SRM_URL }}/srm
         api-key: ${{ secrets.SRM_APIKEY }}
         auto-create-project: true
         project-name: ${{ github.event.repository.name }}

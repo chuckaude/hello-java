@@ -20,7 +20,7 @@ jobs:
         distribution: microsoft
         cache: maven
     - name: SRM Scan
-      uses: blackduck-inc/black-duck-security-scan@v2.0.0
+      uses: blackduck-inc/black-duck-security-scan@v2.1.1
       with:
         srm_url: ${{ vars.SRM_URL }}
         srm_apikey: ${{ secrets.SRM_APIKEY }}

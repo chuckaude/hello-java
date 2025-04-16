@@ -20,7 +20,7 @@ jobs:
         distribution: microsoft
         cache: maven
     - name: Coverity Scan
-      uses: blackduck-inc/black-duck-security-scan@v2.0.0
+      uses: blackduck-inc/black-duck-security-scan@v2.1.1
       with:
         coverity_url: ${{ vars.COVERITY_URL }}
         coverity_user: ${{ secrets.COV_USER }}

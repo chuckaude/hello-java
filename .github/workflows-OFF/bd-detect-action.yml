@@ -16,8 +16,8 @@ jobs:
     - name: Setup Java JDK
       uses: actions/setup-java@v4
       with:
-        java-version: 17
-        distribution: microsoft
+        java-version: 21
+        distribution: temurin
         cache: maven
     - name: Maven Build
       run: mvn -B -DskipTests package

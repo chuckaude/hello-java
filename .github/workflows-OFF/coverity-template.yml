@@ -15,8 +15,8 @@ jobs:
     - name: Setup Java JDK
       uses: actions/setup-java@v4
       with:
-        java-version: 17
-        distribution: microsoft
+        java-version: 21
+        distribution: temurin
         cache: maven
     - uses: synopsys-sig-community/synopsys-github-templates/coverity@main
       with:

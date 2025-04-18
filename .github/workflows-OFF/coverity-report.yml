@@ -23,8 +23,8 @@ jobs:
     - name: Setup Java JDK
       uses: actions/setup-java@v4
       with:
-        java-version: 17
-        distribution: microsoft
+        java-version: 21
+        distribution: temurin
         cache: maven
     # designate the Coverity toolkit as something to cache, for more details see:
     # https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows

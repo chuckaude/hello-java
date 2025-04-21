@@ -21,7 +21,7 @@ cache:
     - .m2/repository/
     - target/
 
-image: maven:3-eclipse-temurin-17
+image: maven:3-eclipse-temurin-21
 
 build:
   stage: build
@@ -136,7 +136,7 @@ coverity-ss-template:
       variables:
         BRIDGE_COVERITY_AUTOMATION_PRCOMMENT: 'true'
   before_script:
-    - apt-get -qq update && apt-get install -y curl unzip file
+    - apt-get -qq update && apt-get install -y curl file unzip
   extends: .run-black-duck-tools
   #artifacts:
   #  name: "bridge-logs"
@@ -168,7 +168,7 @@ coverity-ss-template:
         BRIDGE_COVERITY_AUTOMATION_PRCOMMENT: 'true'
         BRIDGE_GITLAB_REPOSITORY_PULL_NUMBER: $CI_MERGE_REQUEST_IID
   before_script:
-    - apt-get -qq update && apt-get install -y curl unzip file
+    - apt-get -qq update && apt-get install -y curl file unzip
   script:
     - curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d /tmp bridge.zip && rm -f bridge.zip
     - /tmp/bridge-cli-bundle-linux64/bridge-cli --stage connect
@@ -276,7 +276,7 @@ coverity-ss-template:
   rules:
     - if: ($CI_COMMIT_REF_NAME =~ $SCAN_BRANCHES && $CI_PIPELINE_SOURCE != 'merge_request_event')
   before_script:
-    - apt-get -qq update && apt-get install -y curl unzip file
+    - apt-get -qq update && apt-get install -y curl file unzip
   script:
     - curl -fLOsS $POLARIS_SERVER_URL/api/tools/polaris_cli-linux64.zip
     - unzip -d /tmp -jo polaris_cli-linux64.zip && rm -f polaris_cli-linux64.zip
@@ -285,7 +285,7 @@ coverity-ss-template:
   #  name: "polaris-cli-logs"
   #  when: always
   #  paths:
-  #    - .synopsys/
+  #    - .blackduck/
   #  expire_in: 30 days
 
 polaris-ss-template:
@@ -303,7 +303,7 @@ polaris-ss-template:
     BRIDGE_GITLAB_USER_TOKEN: $GITLAB_USER_TOKEN
     # INCLUDE_DIAGNOSTICS: 'true'
   before_script:
-    - apt-get -qq update && apt-get install -y curl unzip file
+    - apt-get -qq update && apt-get install -y curl file unzip
   extends: .run-black-duck-tools
   #artifacts:
   #  name: "bridge-logs"
@@ -335,7 +335,7 @@ polaris-ss-template:
         BRIDGE_POLARIS_PRCOMMENT_ENABLED: 'true'
         BRIDGE_GITLAB_REPOSITORY_PULL_NUMBER: $CI_MERGE_REQUEST_IID
   before_script:
-    - apt-get -qq update && apt-get install -y curl unzip file
+    - apt-get -qq update && apt-get install -y curl file unzip
   script:
     - curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d /tmp bridge.zip && rm -f bridge.zip
     - /tmp/bridge-cli-bundle-linux64/bridge-cli --stage polaris
@@ -361,7 +361,7 @@ srm-ss-template:
         BRIDGE_SRM_BRANCH_PARENT: $CI_DEFAULT_BRANCH
     - if: $CI_COMMIT_REF_NAME =~ $SCAN_BRANCHES
   before_script:
-    - apt-get -qq update && apt-get install -y curl unzip file
+    - apt-get -qq update && apt-get install -y curl file unzip
   extends: .run-black-duck-tools
   #artifacts:
   #  name: "bridge-logs"
@@ -385,7 +385,7 @@ srm-ss-template:
         BRIDGE_SRM_BRANCH_PARENT: $CI_DEFAULT_BRANCH
     - if: $CI_COMMIT_REF_NAME =~ $SCAN_BRANCHES
   before_script:
-    - apt-get -qq update && apt-get install -y curl unzip file
+    - apt-get -qq update && apt-get install -y curl file unzip
   script:
     - curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d /tmp bridge.zip && rm -f bridge.zip
     - /tmp/bridge-cli-bundle-linux64/bridge-cli --stage srm

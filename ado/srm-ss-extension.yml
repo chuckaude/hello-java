@@ -9,9 +9,9 @@ variables:
   - group: poc222.srm.synopsys.com
 steps:
 - task: JavaToolInstaller@0
-  displayName: 'Use Java 17'
+  displayName: 'Install JDK'
   inputs:
-    versionSpec: 17
+    versionSpec: 21
     jdkArchitectureOption: x64
     jdkSourceOption: PreInstalled
 - task: Maven@4

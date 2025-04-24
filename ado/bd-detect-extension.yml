@@ -1,7 +1,5 @@
-# example workflow for Black Duck scans using the Synopsys Detect extension
-# https://marketplace.visualstudio.com/items?itemName=synopsys-detect.synopsys-detect
-trigger:
-- main
+# example workflow for Black Duck SCA scans using the Black Duck Detect extension
+# https://marketplace.visualstudio.com/items?itemName=blackduck.blackduck-detect
 pool:
   vmImage: ubuntu-latest
 variables:
@@ -10,17 +8,17 @@ variables:
   DETECT_CODE_LOCATION_NAME: $(Build.Repository.Name)-$(Build.SourceBranchName)
 steps:
 - task: JavaToolInstaller@0
-  displayName: 'Use Java 17'
+  displayName: 'Install JDK'
   inputs:
-    versionSpec: 17
+    versionSpec: 21
     jdkArchitectureOption: x64
     jdkSourceOption: PreInstalled
 - task: Maven@4
   displayName: 'Maven Build'
   inputs:
     options: '-B -DskipTests'
-- task: SynopsysDetectTask@9
-  displayName: 'Black Duck Scan'
+- task: BlackDuckDetectTask@10
+  displayName: 'Black Duck SCA Scan'
   inputs:
-    BlackDuckService: poc357.blackduck.synopsys.com
+    BlackDuckScaService: poc222.blackduck.synopsys.com
     DetectArguments: '--detect.policy.check.fail.on.severities=BLOCKER'

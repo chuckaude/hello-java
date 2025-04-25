@@ -1,5 +1,5 @@
-// example Jenkinsfile for SRM Integrated scans using the Synopsys Security Scan Plugin
-// https://plugins.jenkins.io/synopsys-security-scan
+// example Jenkinsfile for SRM Integrated scans using the Black Duck Security Scan Plugin
+// https://plugins.jenkins.io/blackduck-security-scan
 pipeline {
     agent { label 'linux64' }
     environment {
@@ -26,7 +26,7 @@ pipeline {
                 }
             }
             steps {
-                synopsys_scan product: 'srm',
+                security_scan product: 'srm',
                     srm_assessment_types: 'SAST,SCA',
                     srm_project_name: "$REPO_NAME",
                     srm_branch_name: "$BRANCH_NAME"

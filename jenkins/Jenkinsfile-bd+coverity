@@ -13,7 +13,7 @@ pipeline {
         // extract REPO_NAME from GIT_URL
         REPO_NAME = "${env.GIT_URL.tokenize('/.')[-2]}"
         // Coverity Connect server
-        CONNECT = 'https://poc329.coverity.synopsys.com'
+        CONNECT = 'https://coverity.field-test.blackduck.com'
         COVERITY_TOOL_HOME = "$JENKINS_HOME/tools/cov-analysis-linux64-2023.3.2"
         COVERITY_NO_LOG_ENVIRONMENT_VARIABLES = '1'
     }
@@ -44,7 +44,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            status = synopsys_detect detectProperties: "--detect.policy.check.fail.on.severities=BLOCKER", returnStatus: true
+                            status = blackduck_detect detectProperties: "--detect.policy.check.fail.on.severities=BLOCKER", returnStatus: true
                             if (status == 3) { unstable 'Policy Violation' }
                             else if (status != 0) { error 'Detect Failure' }
                         }
@@ -59,7 +59,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            status = synopsys_detect detectProperties: "--detect.blackduck.scan.mode=RAPID", returnStatus: true
+                            status = blackduck_detect detectProperties: "--detect.blackduck.scan.mode=RAPID", returnStatus: true
                             if (status == 3) { unstable 'Policy Violation' }
                             else if (status != 0) { error 'Detect Failure' }
                         }

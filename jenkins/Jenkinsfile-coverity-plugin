@@ -1,5 +1,5 @@
-// example Jenkinsfile for Coverity scans using the Synopsys Security Scan Plugin
-// https://plugins.jenkins.io/synopsys-security-scan
+// example Jenkinsfile for Coverity scans using the Black Duck Security Scan Plugin
+// https://plugins.jenkins.io/blackduck-security-scan
 pipeline {
     agent { label 'linux64' }
     environment {
@@ -26,7 +26,7 @@ pipeline {
                 }
             }
             steps {
-                synopsys_scan product: 'coverity',
+                security_scan product: 'coverity',
                     coverity_project_name: "$REPO_NAME",
                     coverity_stream_name: "$REPO_NAME-$BRANCH_NAME",
                     coverity_args: "-o commit.connect.description=$BUILD_TAG",

@@ -1,5 +1,5 @@
 // example Jenkinsfile for Black Duck scans using the Bridge CLI
-// https://sig-product-docs.synopsys.com/bundle/bridge/page/documentation/c_overview.html
+// https://documentation.blackduck.com/bundle/bridge/page/documentation/c_overview.html
 pipeline {
     agent { label 'linux64' }
     environment {
@@ -7,9 +7,9 @@ pipeline {
         REPO_NAME = "${env.GIT_URL.tokenize('/.')[-2]}"
         FULLSCAN = "${env.BRANCH_NAME ==~ /^(main|master|develop|stage|release)$/ ? 'true' : 'false'}"
         PRSCAN = "${env.CHANGE_TARGET ==~ /^(main|master|develop|stage|release)$/ ? 'true' : 'false'}"
-        BRIDGECLI_LINUX64 = 'https://sig-repo.synopsys.com/artifactory/bds-integrations-release/com/synopsys/integration/synopsys-bridge/latest/synopsys-bridge-linux64.zip'
-        BRIDGE_BLACKDUCK_URL = 'https://poc357.blackduck.synopsys.com'
-        BRIDGE_BLACKDUCK_TOKEN = credentials('poc357.blackduck.synopsys.com')
+        BRIDGECLI_LINUX64 = 'https://repo.blackduck.com/artifactory/bds-integrations-release/com/blackduck/integration/bridge/binaries/bridge-cli-bundle/latest/bridge-cli-bundle-linux64.zip'
+        BRIDGE_BLACKDUCK_URL = 'https://sca.field-test.blackduck.com'
+        BRIDGE_BLACKDUCK_TOKEN = credentials('sca.field-test.blackduck.com')
         DETECT_PROJECT_NAME = "${env.REPO_NAME}"
         GITHUB_TOKEN = credentials('github-pat')
     }
@@ -29,11 +29,11 @@ pipeline {
                 script {
                     status = sh returnStatus: true, script: '''
                         curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d $WORKSPACE_TMP bridge.zip && rm -f bridge.zip
-                        $WORKSPACE_TMP/synopsys-bridge --verbose --stage blackduck \
-                            blackduck.scan.full=true \
-                            blackduck.scan.failure.severities='BLOCKER' \
-                            blackduck.fixpr.enabled=true \
-                            blackduck.reports.sarif.create=true \
+                        $WORKSPACE_TMP/bridge-cli-bundle-linux64/bridge-cli --stage blackducksca \
+                            blackducksca.scan.full=true \
+                            blackducksca.scan.failure.severities='BLOCKER' \
+                            blackducksca.fixpr.enabled=true \
+                            blackducksca.reports.sarif.create=true \
                             github.repository.name=$REPO_NAME \
                             github.repository.branch.name=$BRANCH_NAME \
                             github.repository.owner.name=$ORG_NAME \
@@ -50,9 +50,9 @@ pipeline {
                 script {
                     status = sh returnStatus: true, script: '''
                         curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d $WORKSPACE_TMP bridge.zip && rm -f bridge.zip
-                        $WORKSPACE_TMP/synopsys-bridge --verbose --stage blackduck \
-                            blackduck.scan.full=false \
-                            blackduck.automation.prcomment=true \
+                        $WORKSPACE_TMP/bridge-cli-bundle-linux64/bridge-cli --stage blackducksca \
+                            blackducksca.scan.full=false \
+                            blackducksca.automation.prcomment=true \
                             github.repository.name=$REPO_NAME \
                             github.repository.branch.name=$BRANCH_NAME \
                             github.repository.owner.name=$ORG_NAME \

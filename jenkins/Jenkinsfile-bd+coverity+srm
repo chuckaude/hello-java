@@ -1,7 +1,7 @@
 // example Jenkinsfile for standalone Black Duck, Coverity and SRM (Code DX) using Jenkins Plugins
 // - Black Duck and Coverity full scans on push to specified branches with import into SRM
 // - Black Duck Rapid and Coverity Comparison scans on pull requests with PR comments enabled
-// https://plugins.jenkins.io/synopsys-security-scan/
+// https://plugins.jenkins.io/blackduck-security-scan/
 // https://plugins.jenkins.io/codedx
 pipeline {
     agent { label 'linux64' }
@@ -35,7 +35,7 @@ pipeline {
                 }
             }
             steps {
-                synopsys_scan product: 'coverity',
+                security_scan product: 'coverity',
                     coverity_project_name: "$REPO_NAME",
                     coverity_stream_name: "$REPO_NAME-$BRANCH_NAME",
                     coverity_args: "-o commit.connect.description=$BUILD_TAG",
@@ -54,10 +54,10 @@ pipeline {
                 }
             }
             steps {
-                synopsys_scan product: 'blackduck',
-                    blackduck_scan_failure_severities: 'BLOCKER',
-                    blackduck_prComment_enabled: true,
-                    blackduck_reports_sarif_create: true,
+                security_scan product: 'blackducksca',
+                    blackducksca_scan_failure_severities: 'BLOCKER',
+                    blackducksca_prComment_enabled: true,
+                    blackducksca_reports_sarif_create: true,
                     mark_build_status: 'UNSTABLE',
                     github_token: "$GITHUB_TOKEN",
                     include_diagnostics: false
@@ -70,7 +70,7 @@ pipeline {
                     $class: 'CodeDxPublisher',
                     url: "$SRM_URL",
                     selfSignedCertificateFingerprint: '',
-                    keyCredentialId: 'poc357.srm.synopsys.com',
+                    keyCredentialId: 'srm.field-test.blackduck.com',
                     // no support for project name, see ER CDX-4074
                     projectId: '25',
                     baseBranchName: 'main',

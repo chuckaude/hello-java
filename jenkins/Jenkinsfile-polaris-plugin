@@ -1,5 +1,5 @@
-// example Jenkinsfile for Polaris scans using the Synopsys Security Scan Plugin
-// https://plugins.jenkins.io/synopsys-security-scan
+// example Jenkinsfile for Polaris scans using the Black Duck Security Scan Plugin
+// https://plugins.jenkins.io/blackduck-security-scan
 pipeline {
     agent { label 'linux64' }
     environment {
@@ -26,7 +26,7 @@ pipeline {
                 }
             }
             steps {
-                synopsys_scan product: 'polaris',
+                security_scan product: 'polaris',
                     polaris_assessment_types: 'SAST,SCA',
                     polaris_application_name: "chuckaude-$REPO_NAME",
                     polaris_project_name: "$REPO_NAME",

@@ -1,5 +1,5 @@
 // example Jenkinsfile for Coverity scans using the Bridge CLI
-// https://sig-product-docs.synopsys.com/bundle/bridge/page/documentation/c_overview.html
+// https://documentation.blackduck.com/bundle/bridge/page/documentation/c_overview.html
 pipeline {
     agent { label 'linux64' }
     environment {
@@ -7,8 +7,8 @@ pipeline {
         REPO_NAME = "${env.GIT_URL.tokenize('/.')[-2]}"
         FULLSCAN = "${env.BRANCH_NAME ==~ /^(main|master|develop|stage|release)$/ ? 'true' : 'false'}"
         PRSCAN = "${env.CHANGE_TARGET ==~ /^(main|master|develop|stage|release)$/ ? 'true' : 'false'}"
-        BRIDGECLI_LINUX64 = 'https://sig-repo.synopsys.com/artifactory/bds-integrations-release/com/synopsys/integration/synopsys-bridge/latest/synopsys-bridge-linux64.zip'
-        BRIDGE_COVERITY_CONNECT_URL = 'https://poc357.coverity.synopsys.com'
+        BRIDGECLI_LINUX64 = 'https://repo.blackduck.com/artifactory/bds-integrations-release/com/blackduck/integration/bridge/binaries/bridge-cli-bundle/latest/bridge-cli-bundle-linux64.zip'
+        BRIDGE_COVERITY_CONNECT_URL = 'https://coverity.field-test.blackduck.com'
         COVERITY_CREDENTIALS = credentials('coverity-committer')
         BRIDGE_COVERITY_CONNECT_USER_NAME = "${env.COVERITY_CREDENTIALS_USR}"
         BRIDGE_COVERITY_CONNECT_USER_PASSWORD = "${env.COVERITY_CREDENTIALS_PSW}"
@@ -30,7 +30,7 @@ pipeline {
                 script {
                     status = sh returnStatus: true, script: '''
                         curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d $WORKSPACE_TMP bridge.zip && rm -f bridge.zip
-                        $WORKSPACE_TMP/synopsys-bridge --verbose --stage connect \
+                        $WORKSPACE_TMP/bridge-cli-bundle-linux64/bridge-cli --stage connect \
                             coverity.connect.project.name=$REPO_NAME \
                             coverity.connect.stream.name=$REPO_NAME-$BRANCH_NAME \
                             coverity.connect.policy.view='Outstanding Issues' \
@@ -47,7 +47,7 @@ pipeline {
                 script {
                     status = sh returnStatus: true, script: '''
                         curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d $WORKSPACE_TMP bridge.zip && rm -f bridge.zip
-                        $WORKSPACE_TMP/synopsys-bridge --verbose --stage connect \
+                        $WORKSPACE_TMP/bridge-cli-bundle-linux64/bridge-cli --stage connect \
                             coverity.connect.project.name=$REPO_NAME \
                             coverity.connect.stream.name=$REPO_NAME-$CHANGE_TARGET \
                             coverity.automation.prcomment=true \

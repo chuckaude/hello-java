@@ -29,7 +29,7 @@ pipeline {
             parallel {
                 stage('Black Duck') {
                     steps {
-                        synopsys_detect "--detect.project.name=$PROJECT --detect.project.version.name=$BRANCH_NAME"
+                        blackduck_detect "--detect.project.name=$PROJECT --detect.project.version.name=$BRANCH_NAME"
                     }
                 }
                 stage('Coverity Full Scan') {

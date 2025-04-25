@@ -7,11 +7,11 @@ pipeline {
     agent {
         docker {
             image 'maven:3-eclipse-temurin-21'
-            args '-v $HOME/.m2:/home/build/.m2 -v $HOME/.synopsys:/home/build/.synopsys'
+            args '-v $HOME/.m2:/home/build/.m2 -v $HOME/.blackduck:/home/build/.blackduck'
         }
     }
     environment {
-        POLARIS_HOME = '/home/build/.synopsys'
+        POLARIS_HOME = '/home/build/.blackduck'
         JAVA_TOOL_OPTIONS = '-Duser.home=/home/build'
     }
     stages {
@@ -34,7 +34,7 @@ pipeline {
     }
     post {
         always {
-            archiveArtifacts artifacts: '.synopsys/polaris/configuration/synopsys.yml, .synopsys/polaris/data/coverity/*/idir/build-log.txt'
+            archiveArtifacts artifacts: '.blackduck/polaris/configuration/resolved-polaris.yml, .blackduck/polaris/data/coverity/*/idir/build-log.txt'
             cleanWs()
         }
     }

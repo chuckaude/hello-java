@@ -50,7 +50,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            status = synopsys_detect detectProperties: "--detect.policy.check.fail.on.severities=BLOCKER", returnStatus: true
+                            status = blackduck_detect detectProperties: "--detect.policy.check.fail.on.severities=BLOCKER", returnStatus: true
                             if (status == 3) { unstable 'Policy Violation' }
                             else if (status != 0) { error 'Detect Failure' }
                         }
@@ -65,7 +65,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            status = synopsys_detect detectProperties: "--detect.blackduck.scan.mode=RAPID", returnStatus: true
+                            status = blackduck_detect detectProperties: "--detect.blackduck.scan.mode=RAPID", returnStatus: true
                             if (status == 3) { unstable 'Policy Violation' }
                             else if (status != 0) { error 'Detect Failure' }
                         }

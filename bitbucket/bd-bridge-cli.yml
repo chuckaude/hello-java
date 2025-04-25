@@ -1,0 +1,71 @@
+image: maven:3-eclipse-temurin-21
+pipelines:
+  branches:
+    '{main,master,develop,stage,release}':
+      - step:
+          name: Build
+          caches:
+            - maven
+          script:
+            - mvn -B -DskipTests package
+      - step:
+          name: Black Duck Full Scan
+          caches:
+            - maven
+          script:
+            - apt update && apt install -y curl unzip
+            - curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d /tmp bridge.zip && rm -f bridge.zip
+            - export DETECT_PROJECT_NAME=$BITBUCKET_REPO_SLUG
+            - export DETECT_PROJECT_VERSION_NAME=$BITBUCKET_BRANCH
+            - export DETECT_CODE_LOCATION_NAME=$BITBUCKET_REPO_SLUG-$BITBUCKET_BRANCH
+            - /tmp/bridge-cli-bundle-linux64/bridge-cli --stage blackducksca
+                blackducksca.scan.full='true'
+                blackducksca.scan.failure.severities='BLOCKER'
+                blackducksca.fixpr.enabled='true'
+                blackducksca.reports.sarif.create='true'
+                bitbucket.workspace.id=$BITBUCKET_WORKSPACE
+                bitbucket.project.repository.name=$BITBUCKET_REPO_SLUG
+                bitbucket.project.repository.branch.name=$BITBUCKET_BRANCH
+  pull-requests:
+    '**':
+      - step:
+          name: Build
+          caches:
+            - maven
+          script:
+            - mvn -B -DskipTests package
+      - step:
+          name: Black Duck PR Scan
+          caches:
+            - maven
+          script:
+            - if [[ ! "${BITBUCKET_PR_DESTINATION_BRANCH}" =~ (main|master|develop|stage|release) ]]; then exit; fi
+            - apt update && apt install -y curl unzip
+            - curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d /tmp bridge.zip && rm -f bridge.zip
+            - export DETECT_PROJECT_NAME=$BITBUCKET_REPO_SLUG
+            - export DETECT_PROJECT_VERSION_NAME=$BITBUCKET_PR_DESTINATION_BRANCH
+            - export DETECT_CODE_LOCATION_NAME=$BITBUCKET_REPO_SLUG-$BITBUCKET_PR_DESTINATION_BRANCH
+            - /tmp/bridge-cli-bundle-linux64/bridge-cli --stage blackducksca
+                blackducksca.scan.full='false'
+                blackducksca.scan.failure.severities='BLOCKER'
+                blackducksca.automation.prcomment='true'
+                bitbucket.workspace.id=$BITBUCKET_WORKSPACE
+                bitbucket.project.repository.name=$BITBUCKET_REPO_SLUG
+                bitbucket.project.repository.pull.number=$BITBUCKET_PR_ID
+  default:
+    - parallel:
+      - step:
+          name: Build and Test
+          caches:
+            - maven
+          script:
+            - mvn -B verify --file pom.xml
+          after-script:
+              # Collect checkstyle results, if any, and convert to Bitbucket Code Insights.
+            - pipe: atlassian/checkstyle-report:0.3.0
+      - step:
+          name: Security Scan
+          script:
+            # Run a security scan for sensitive data.
+            # See more security tools at https://bitbucket.org/product/features/pipelines/integrations?&category=security
+            - pipe: atlassian/git-secrets-scan:0.5.1

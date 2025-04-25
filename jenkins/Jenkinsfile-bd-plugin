@@ -1,5 +1,5 @@
-// example Jenkinsfile for Black Duck scans using the Black Duck Security Scan Plugin
-// https://plugins.jenkins.io/blackduck-security-scan
+// example Jenkinsfile for Black Duck scans using the Synopsys Security Scan Plugin
+// https://plugins.jenkins.io/synopsys-security-scan
 pipeline {
     agent { label 'linux64' }
     environment {
@@ -10,8 +10,8 @@ pipeline {
         DETECT_PROJECT_NAME = "${env.REPO_NAME}"
     }
     tools {
-        maven 'maven-3.9'
-        jdk 'openjdk-17'
+        maven 'maven-3'
+        jdk 'openjdk-21'
     }
     stages {
         stage('Build') {
@@ -27,10 +27,10 @@ pipeline {
                 }
             }
             steps {
-                security_scan product: 'blackducksca',
-                    blackduckscasca_scan_failure_severities: 'BLOCKER',
-                    blackduckscasca_prComment_enabled: true,
-                    blackduckscasca_reports_sarif_create: true,
+                synopsys_scan product: 'blackduck',
+                    blackduck_scan_failure_severities: 'BLOCKER',
+                    blackduck_prComment_enabled: true,
+                    blackduck_reports_sarif_create: true,
                     mark_build_status: 'UNSTABLE',
                     github_token: "$GITHUB_TOKEN",
                     include_diagnostics: false

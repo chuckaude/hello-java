@@ -9,7 +9,7 @@ def BLDCMD = 'mvn -B package -DskipTests'
 pipeline {
     agent {
         docker {
-            image 'maven:latest'
+            image 'maven:3-eclipse-temurin-21'
             args '-v $HOME/.m2:/home/build/.m2 -v /opt/coverity/analysis:/opt/coverity/analysis -v $HOME/.coverity:/home/build/.coverity'
         }
     }

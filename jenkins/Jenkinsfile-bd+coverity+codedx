@@ -24,8 +24,8 @@ pipeline {
         REPO_NAME = "${env.GIT_URL.tokenize('/.')[-2]}"
     }
     tools {
-        maven 'maven-3.9'
-        jdk 'openjdk-17'
+        maven 'maven-3'
+        jdk 'openjdk-21'
     }
     stages {
         stage('Build') {

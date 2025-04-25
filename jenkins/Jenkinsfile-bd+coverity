@@ -18,8 +18,8 @@ pipeline {
         COVERITY_NO_LOG_ENVIRONMENT_VARIABLES = '1'
     }
     tools {
-        maven 'maven-3.9'
-        jdk 'openjdk-11'
+        maven 'maven-3'
+        jdk 'openjdk-21'
     }
     stages {
         stage('Build') {

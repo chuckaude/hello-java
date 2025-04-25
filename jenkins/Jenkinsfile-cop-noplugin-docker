@@ -6,7 +6,7 @@ def BLDCMD = 'mvn -B package -DskipTests'
 pipeline {
     agent {
         docker {
-            image 'maven:3-jdk-11'
+            image 'maven:3-eclipse-temurin-21'
             args '-v $HOME/.m2:/home/build/.m2 -v $HOME/.synopsys:/home/build/.synopsys'
         }
     }

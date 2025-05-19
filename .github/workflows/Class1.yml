@@ -42,9 +42,9 @@ jobs:
             polaris_server_url: ${{ secrets.POLARIS_SERVER_URL }}
             polaris_access_token: ${{ secrets.POLARIS_ACCESS_TOKEN }}
             polaris_assessment_types: "SCA,SAST"
-            polaris_application_name: "JWtest"
+            polaris_application_name: "JoseWaizman2"
             polaris_project_name: "hello-java"
-            polaris_branch_name: "main"
+            polaris_branch_name: "jw-13"
     # Flag to enable pull request comments based on Polaris scan result
             #polaris_prComment_enabled: # optional
     # List of severities for which the PR Comments should be created

@@ -62,16 +62,17 @@ jobs:
     coverity_args: # optional
     # If provided, Black Duck Security Action will download specific version of coverity thin client to use.
     bridge_coverity_version: # optional
+    polaris_server_url: ${{ secrets.POLARIS_SERVER_URL }}
+    polaris_access_token: ${{ secrets.POLARIS_ACCESS_TOKEN }}
+    polaris_assessment_types: "SCA,SAST"
+    polaris_application_name: "JWtest"
+    polaris_project_name: "hello-java"
+    polaris_branch_name: "main"
     # Polaris Access Token
-    polaris_access_token: # optional
     # Polaris Application Name
-    polaris_application_name: # optional
     # Polaris Project Name
-    polaris_project_name: # optional
     # Polaris Assess Types SAST/SCA
-    polaris_assessment_types: # optional
     # Polaris Server URL
-    polaris_server_url: # optional
     # Flag to enable pull request comments based on Polaris scan result
     polaris_prComment_enabled: # optional
     # List of severities for which the PR Comments should be created

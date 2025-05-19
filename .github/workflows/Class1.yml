@@ -10,9 +10,9 @@ name: Java CI with Maven
 
 on:
   push:
-    branches: [ "main", "jw" ]
+    branches: [ "main", "jw*.*" ]
   pull_request:
-    branches: [ "main", "jw" ]
+    branches: [ "main", "jw*.*" ]
 
 jobs:
   build:
@@ -28,5 +28,169 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: Black Duck Security Scan
-      uses: blackduck-inc/black-duck-security-scan@v2.0.0 
+      uses: blackduck-inc/black-duck-security-scan@v2.1.1
+      with:
+    # Coverity url
+    coverity_url: # optional
+    # Coverity user name
+    coverity_user: # optional
+    # Coverity password
+    coverity_passphrase: # optional
+    # Coverity Project Name
+    coverity_project_name: # optional
+    # Coverity Stream Name
+    coverity_stream_name: # optional
+    # Coverity Install Directory
+    coverity_install_directory: # optional
+    # Coverity Policy View
+    coverity_policy_view: # optional
+    # Flag to enable/disable to run coverity scan locally.
+    coverity_local: # optional
+    # If provided, Black Duck Security Action will download specific version of coverity thin client to use.
+    coverity_version: # optional
+    # Flag to enable pull request comments for new issues found in the Coverity scan
+    coverity_prComment_enabled: # optional
+    # Specifies if the workflow should wait for the analysis to complete. Default value: true. If set to false, post merge workflows like PR comment, Fix PR, SARIF etc will not be applicable.
+    coverity_waitForScan: # optional
+    # Build command for Coverity
+    coverity_build_command: # optional
+    # Clean command for Coverity
+    coverity_clean_command: # optional
+    # Coverity config file path (.yaml/.yml/.json)
+    coverity_config_path: # optional
+    # Additional Coverity Arguments separated by space
+    coverity_args: # optional
+    # If provided, Black Duck Security Action will download specific version of coverity thin client to use.
+    bridge_coverity_version: # optional
+    # Polaris Access Token
+    polaris_access_token: # optional
+    # Polaris Application Name
+    polaris_application_name: # optional
+    # Polaris Project Name
+    polaris_project_name: # optional
+    # Polaris Assess Types SAST/SCA
+    polaris_assessment_types: # optional
+    # Polaris Server URL
+    polaris_server_url: # optional
+    # Flag to enable pull request comments based on Polaris scan result
+    polaris_prComment_enabled: # optional
+    # List of severities for which the PR Comments should be created
+    polaris_prComment_severities: # optional
+    # Polaris Triage
+    polaris_triage: # optional
+    # Polaris branch name
+    polaris_branch_name: # optional
+    # Polaris parent branch name
+    polaris_branch_parent_name: # optional
+    # Polaris test type to trigger signature scan or package manager scan
+    polaris_test_sca_type: # optional
+    # Flag to enable/disable Polaris SARIF report generation
+    polaris_reports_sarif_create: # optional
+    # File path including file name where Polaris SARIF report should be created
+    polaris_reports_sarif_file_path: # optional
+    # Indicates what SAST/SCA issues severity categories to include in Polaris SARIF file report
+    polaris_reports_sarif_severities: # optional
+    # Flag to enable/disable Component-Version grouping for SCA Issues in Polaris SARIF report rules section
+    polaris_reports_sarif_groupSCAIssues: # optional
+    # Enum to indicate which assessment issues type to include in Polaris SARIF file report
+    polaris_reports_sarif_issue_types: # optional
+    # Flag to enable/disable uploading of Polaris SARIF report to GitHub Advanced Security
+    polaris_upload_sarif_report: # optional
+    # Specifies if the workflow should wait for the analysis to complete. Default value: true. If set to false, post merge workflows like PR comment, Fix PR, SARIF etc will not be applicable.
+    polaris_waitForScan: # optional
+    # The test mode type of this scan
+    polaris_assessment_mode: # optional
+    # The project source directory. Defaults to repository root directory. Set this to specify a custom folder that is other than repository root
+    project_directory: # optional
+    # The zipped source file path. It overrides the project directory setting
+    project_source_archive: # optional
+    # Flag indicating whether to preserve symlinks in the source zip
+    project_source_preserveSymLinks: # optional
+    # A list of git ignore pattern strings that indicate the files need to be excluded from the zip file
+    project_source_excludes: # optional
+    # Bridge CLI Install Directory
+    bridgecli_install_directory: # optional
+    # URL to download bridge from
+    bridgecli_download_url: # optional
+    # URL for blackduck hub
+    blackducksca_url: # optional
+    # API token to access blackduck
+    blackducksca_token: # optional
+    # Directory to find or install detect
+    detect_install_directory: # optional
+    # Scan Mode. (true for intelligent scan & false for rapid scan)
+    blackducksca_scan_full: # optional
+    # If provided, Black Duck will break the build if any issues produced match one of the given severities
+    blackducksca_scan_failure_severities: # optional
+    # If set as true, separate Fix PRs will be created if vulnerability is found after scan
+    blackducksca_fixpr_enabled: # optional
+    # Maximum number of Pull Requests to be created that violate policies
+    blackducksca_fixpr_maxCount: # optional
+    # If provided, Fix PRs will be created only for given severities
+    blackducksca_fixpr_filter_severities: # optional
+    # Flag to enable long term upgrade guidance
+    blackducksca_fixpr_useUpgradeGuidance: # optional
+    # If provided, Black Duck Security Action will configure the version of Bridge
+    bridgecli_download_version: # optional
+    # Flag to enable pull request comments for new issues found in the Black Duck scan
+    blackducksca_prComment_enabled: # optional
+    # Flag to enable/disable Black Duck SARIF report generation
+    blackducksca_reports_sarif_create: # optional
+    # File path including file name where Black Duck SARIF report should be created
+    blackducksca_reports_sarif_file_path: # optional
+    # Indicates what SAST/SCA issues severity categories to include in Black Duck SARIF file report
+    blackducksca_reports_sarif_severities: # optional
+    # Flag to enable/disable Component-Version grouping for SCA Issues in Black Duck SARIF report rules section
+    blackducksca_reports_sarif_groupSCAIssues: # optional
+    # Flag to enable/disable uploading of Black Duck SARIF report to GitHub Advanced Security
+    blackducksca_upload_sarif_report: # optional
+    # Specifies if the workflow should wait for the analysis to complete. Default value: true. If set to false, post merge workflows like PR comment, Fix PR, SARIF etc will not be applicable.
+    blackducksca_waitForScan: # optional
+    # Number indicating the search depth in the source directory
+    detect_search_depth: # optional
+    # Additional Black Duck Arguments separated by space
+    detect_args: # optional
+    # Black Duck config file path (.properties/.yml)
+    detect_config_path: # optional
+    # To enable creation of badges on the GitHub repository
+    blackducksca_policy_badges_create: # optional
+    # To limit number of badges to be displayed on the GitHub repository
+    blackducksca_policy_badges_maxCount: # optional
+    # SRM Url
+    srm_url: # optional
+    # SRM Api Key
+    srm_apikey: # optional
+    # SRM Assessment Types
+    srm_assessment_types: # optional
+    # SRM project name
+    srm_project_name: # optional
+    # SRM branch name
+    srm_branch_name: # optional
+    # SRM branch Id
+    srm_project_id: # optional
+    # SRM branch parent
+    srm_branch_parent: # optional
+    # Specifies if the workflow should wait for the analysis to complete. Default value: true. If set to false, post merge workflows like PR comment, Fix PR, SARIF etc will not be applicable.
+    srm_waitForScan: # optional
+    # Coverity execution path
+    coverity_execution_path: # optional
+    # Black Duck execution path
+    detect_execution_path: # optional
+    # Github token to be used for git related rest operation
+    github_token: # optional
+    # To include diagnostics info and export as zip
+    include_diagnostics: # optional
+    # Number of days to keep the diagnostics files downloadable
+    diagnostics_retention_days: # optional
+    # If provided, Black Duck Security Action will be using local network to download and execute bridge .
+    bridge_network_airgap: # optional
+    # If provided, Black Duck Security Action will be using local network to download and execute bridge .
+    network_airgap: # optional
+    # To enable creation of badges on the GitHub repository for polaris
+    polaris_policy_badges_create: # optional
+    # To limit number of badges to be displayed on the GitHub repository for polaris
+    polaris_policy_badges_maxCount: # optional
+    # Specify the build status if policy violating issues are found.
+    mark_build_status: # optional, default is failure
+          
       

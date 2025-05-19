@@ -1,9 +1,9 @@
 name: CI-Polaris-Basic 
 on:
   push:
-    branches: [ main, master, develop, stage, release,jw*.* ]
+    branches: [ main, master, develop, release,jw*.* ]
   pull_request:
-    branches: [ main, master, develop, stage, release, jw*.* ]
+    branches: [ main, master, develop, release, jw*.* ]
   workflow_dispatch:
   
 jobs:

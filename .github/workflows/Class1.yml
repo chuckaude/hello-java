@@ -79,8 +79,6 @@ jobs:
     polaris_prComment_severities: # optional
     # Polaris Triage
     polaris_triage: # optional
-    # Polaris branch name
-    polaris_branch_name: # optional
     # Polaris parent branch name
     polaris_branch_parent_name: # optional
     # Polaris test type to trigger signature scan or package manager scan

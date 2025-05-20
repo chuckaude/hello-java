@@ -84,14 +84,14 @@ jobs:
           # Github token to be used for git related rest operation
             # github_token: # optional
           # To include diagnostics info and export as zip
-            include_diagnostics: yes
+            include_diagnostics: no
           # Number of days to keep the diagnostics files downloadable
             #diagnostics_retention_days: # optional
           # To enable creation of badges on the GitHub repository for polaris
-            # polaris_policy_badges_create: # optional
+            polaris_policy_badges_create: yes
           # To limit number of badges to be displayed on the GitHub repository for polaris
             # polaris_policy_badges_maxCount: # optional
           # Specify the build status if policy violating issues are found.
-            # mark_build_status: # optional, default is failure
+            mark_build_status: pass
                 
         

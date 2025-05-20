@@ -47,6 +47,7 @@ jobs:
             polaris_branch_name: "jw-13"
     # Flag to enable pull request comments based on Polaris scan result
             polaris_prComment_enabled: "true"
+            github_token: ${{ secrets.GITHUB_TOKEN }}
     # List of severities for which the PR Comments should be created
             polaris_prComment_severities: "CRITICAL,HIGH,MEDIUM,LOW"
     # Polaris parent branch name

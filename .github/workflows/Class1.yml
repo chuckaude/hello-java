@@ -48,21 +48,21 @@ jobs:
     # Flag to enable pull request comments based on Polaris scan result
             polaris_prComment_enabled: "true"
     # List of severities for which the PR Comments should be created
-            polaris_prComment_severities: "MEDIUM"
+            polaris_prComment_severities: "CRITICAL,HIGH,MEDIUM,LOW"
     # Polaris parent branch name
             polaris_branch_parent_name: main
     # Polaris test type to trigger signature scan or package manager scan
-            polaris_test_sca_type: 'SCA-SIGNATURE'
+            polaris_test_sca_type: "SCA-SIGNATURE"
             # Flag to enable/disable Polaris SARIF report generation
             polaris_reports_sarif_create: yes
             # File path including file name where Polaris SARIF report should be created
             # polaris_reports_sarif_file_path: # optional
             # Indicates what SAST/SCA issues severity categories to include in Polaris SARIF file report
-            polaris_reports_sarif_severities: 'CRITICAL,HIGH,MEDIUM,LOW'
+            polaris_reports_sarif_severities: "CRITICAL,HIGH,MEDIUM,LOW"
             # Flag to enable/disable Component-Version grouping for SCA Issues in Polaris SARIF report rules section
             # polaris_reports_sarif_groupSCAIssues: # optional
     # Enum to indicate which assessment issues type to include in Polaris SARIF file report
-            # polaris_reports_sarif_issue_types: 'SAST,SCA'
+            # polaris_reports_sarif_issue_types: "SAST,SCA"
         # Flag to enable/disable uploading of Polaris SARIF report to GitHub Advanced Security
             polaris_upload_sarif_report: yes
         # Specifies if the workflow should wait for the analysis to complete. Default value: true. If set to false, post merge workflows like PR comment, Fix PR, SARIF etc will not be applicable.

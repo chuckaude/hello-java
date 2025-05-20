@@ -54,17 +54,17 @@ jobs:
     # Polaris test type to trigger signature scan or package manager scan
             # polaris_test_sca_type: # optional
             # Flag to enable/disable Polaris SARIF report generation
-            # polaris_reports_sarif_create: # optional
+            polaris_reports_sarif_create: yes
             # File path including file name where Polaris SARIF report should be created
             # polaris_reports_sarif_file_path: # optional
             # Indicates what SAST/SCA issues severity categories to include in Polaris SARIF file report
-            # polaris_reports_sarif_severities: # optional
+            polaris_reports_sarif_severities: MEDIUM
             # Flag to enable/disable Component-Version grouping for SCA Issues in Polaris SARIF report rules section
             # polaris_reports_sarif_groupSCAIssues: # optional
     # Enum to indicate which assessment issues type to include in Polaris SARIF file report
-            # polaris_reports_sarif_issue_types: # optional
+            # polaris_reports_sarif_issue_types: MEDIUM
         # Flag to enable/disable uploading of Polaris SARIF report to GitHub Advanced Security
-            # polaris_upload_sarif_report: yes
+            polaris_upload_sarif_report: yes
         # Specifies if the workflow should wait for the analysis to complete. Default value: true. If set to false, post merge workflows like PR comment, Fix PR, SARIF etc will not be applicable.
             # polaris_waitForScan: # optional
           # The test mode type of this scan

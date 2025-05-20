@@ -46,11 +46,11 @@ jobs:
             polaris_project_name: "hello-java"
             polaris_branch_name: "jw-13"
     # Flag to enable pull request comments based on Polaris scan result
-            #polaris_prComment_enabled: # optional
+            polaris_prComment_enabled: true
     # List of severities for which the PR Comments should be created
-           # polaris_prComment_severities: # optional
+            polaris_prComment_severities: Medium
     # Polaris parent branch name
-            # polaris_branch_parent_name: # optional
+            polaris_branch_parent_name: main
     # Polaris test type to trigger signature scan or package manager scan
             # polaris_test_sca_type: # optional
             # Flag to enable/disable Polaris SARIF report generation

@@ -29,7 +29,7 @@
     <dependency>
       <groupId>https://github.com/openssl/openssl</groupId>
       <artifactId>openssl</artifactId>
-      <version>2.3.4</version>
+      <version>2.3.3</version>
     </dependency>
   </dependencies>
 </project>

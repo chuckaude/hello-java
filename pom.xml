@@ -26,5 +26,10 @@
       <artifactId>httpclient</artifactId>
       <version>4.0.2</version>
     </dependency>
+    <dependency>
+      <groupId>https://github.com/openssl/openssl</groupId>
+      <artifactId>openssl</artifactId>
+      <version>2.3.4</version>
+    </dependency>
   </dependencies>
 </project>

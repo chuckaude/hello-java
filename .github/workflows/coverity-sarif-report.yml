@@ -18,7 +18,7 @@ jobs:
         distribution: temurin
         cache: maven
     - name: Coverity Full Scan
-      uses: blackduck-inc/black-duck-security-scan@v2.1.1
+      uses: blackduck-inc/black-duck-security-scan@v2
       with:
         coverity_url: ${{ vars.COVERITY_URL }}
         coverity_user: ${{ secrets.COV_USER }}

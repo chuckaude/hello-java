@@ -21,7 +21,7 @@ jobs:
         cache: maven
     - name: Coverity Full Scan
       if: ${{ github.event_name != 'pull_request' }}
-      uses: blackduck-inc/black-duck-security-scan@v2.1.1
+      uses: blackduck-inc/black-duck-security-scan@v2
       with:
         coverity_url: ${{ vars.COVERITY_URL }}
         coverity_user: ${{ secrets.COV_USER }}
@@ -33,7 +33,7 @@ jobs:
         # include_diagnostics: true
     - name: Coverity PR Scan
       if: ${{ github.event_name == 'pull_request' }}
-      uses: blackduck-inc/black-duck-security-scan@v2.1.1
+      uses: blackduck-inc/black-duck-security-scan@v2
       with:
         coverity_url: ${{ vars.COVERITY_URL }}
         coverity_user: ${{ secrets.COV_USER }}

@@ -25,7 +25,7 @@ jobs:
     - name: Maven Build
       run: mvn -B -DskipTests package
     - name: Black Duck SCA Scan
-      uses: blackduck-inc/black-duck-security-scan@v2.1.1
+      uses: blackduck-inc/black-duck-security-scan@v2
       env:
         DETECT_PROJECT_NAME: ${{ github.event.repository.name }}
       with:
@@ -39,7 +39,7 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         # include_diagnostics: true
     - name: Coverity SAST Scan
-      uses: blackduck-inc/black-duck-security-scan@v2.1.1
+      uses: blackduck-inc/black-duck-security-scan@v2
       with:
         coverity_url: ${{ vars.COVERITY_URL }}
         coverity_user: ${{ secrets.COV_USER }}

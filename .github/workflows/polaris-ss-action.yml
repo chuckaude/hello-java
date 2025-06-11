@@ -20,7 +20,7 @@ jobs:
         distribution: temurin
         cache: maven
     - name: Polaris Scan
-      uses: blackduck-inc/black-duck-security-scan@v2.1.1
+      uses: blackduck-inc/black-duck-security-scan@v2
       with:
         polaris_server_url: ${{ vars.POLARIS_SERVERURL }}
         polaris_access_token: ${{ secrets.POLARIS_ACCESSTOKEN }}

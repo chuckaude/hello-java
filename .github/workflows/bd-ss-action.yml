@@ -28,7 +28,7 @@ jobs:
       with:
         blackducksca_url: ${{ vars.BLACKDUCK_URL }}
         blackducksca_token: ${{ secrets.BLACKDUCK_API_TOKEN }}
-        blackducksca_scan_failure_severities: 'BLOCKER'
+        blackducksca_scan_failure_severities: BLOCKER
         blackducksca_fixpr_enabled: true
         blackducksca_prComment_enabled: true
         blackducksca_reports_sarif_create: true

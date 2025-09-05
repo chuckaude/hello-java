@@ -26,6 +26,8 @@ jobs:
         # coverity_project_name: ${{ github.event.repository.name }}
         # coverity_stream_name: ${{ github.event.repository.name }}-${{ github.ref_name }}
         # coverity_policy_view: 'Outstanding Issues'
+        coverity_build_command: mvn -B -DskipTests package
+        coverity_clean_command: mvn -B clean
         coverity_local: true
     - name: Coverity SARIF Report
       env:

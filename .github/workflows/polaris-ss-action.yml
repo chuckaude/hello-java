@@ -30,6 +30,8 @@ jobs:
         polaris_reports_sarif_create: true
         polaris_upload_sarif_report: true
         github_token: ${{ secrets.GITHUB_TOKEN }}
+        coverity_build_command: mvn -B -DskipTests package
+        coverity_clean_command: mvn -B clean
         # include_diagnostics: true
 #    - name: Save Logs
 #      if: always()

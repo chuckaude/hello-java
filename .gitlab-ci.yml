@@ -1,6 +1,6 @@
 include:
   - project: blackduck-inc/black-duck-security-scan
-    ref: v2.0.0
+    ref: v2
     file: templates/security_scan.yml
 
 stages:
@@ -46,15 +46,15 @@ bd-ss-template:
   variables:
     BRIDGE_BLACKDUCKSCA_URL: $BLACKDUCK_URL
     BRIDGE_BLACKDUCKSCA_TOKEN: $BLACKDUCK_API_TOKEN
-    BRIDGE_BLACKDUCKSCA_SCAN_FAILURE_SEVERITIES: 'BLOCKER'
-    BRIDGE_BLACKDUCKSCA_FIXPR_ENABLED: 'true'
-    BRIDGE_BLACKDUCKSCA_AUTOMATION_PRCOMMENT: 'true'
-    BRIDGE_BLACKDUCKSCA_REPORTS_SARIF_CREATE: 'true'
+    BRIDGE_BLACKDUCKSCA_SCAN_FAILURE_SEVERITIES: BLOCKER
+    BRIDGE_BLACKDUCKSCA_FIXPR_ENABLED: true
+    BRIDGE_BLACKDUCKSCA_AUTOMATION_PRCOMMENT: true
+    BRIDGE_BLACKDUCKSCA_REPORTS_SARIF_CREATE: true
     BRIDGE_GITLAB_USER_TOKEN: $GITLAB_USER_TOKEN
     DETECT_PROJECT_NAME: $CI_PROJECT_NAME
-    # INCLUDE_DIAGNOSTICS: 'true'
+    # INCLUDE_DIAGNOSTICS: true
   before_script:
-    - apt-get -qq update && apt-get install -y curl unzip
+    - apt-get -qq update && apt-get -qq install curl unzip
   extends: .run-black-duck-tools
   #artifacts:
   #  name: "bridge-logs"
@@ -72,25 +72,25 @@ bd-ss-template:
     BRIDGE_GITLAB_REPOSITORY_BRANCH_NAME: $CI_COMMIT_REF_NAME
     BRIDGE_GITLAB_USER_TOKEN: $GITLAB_USER_TOKEN
     DETECT_PROJECT_NAME: $CI_PROJECT_NAME
-    # INCLUDE_DIAGNOSTICS: 'true'
+    # INCLUDE_DIAGNOSTICS: true
   rules:
     - if: ($CI_COMMIT_REF_NAME =~ $SCAN_BRANCHES && $CI_PIPELINE_SOURCE != 'merge_request_event')
       variables:
-        BRIDGE_BLACKDUCKSCA_SCAN_FULL: 'true'
-        BRIDGE_BLACKDUCKSCA_SCAN_FAILURE_SEVERITIES: 'BLOCKER'
-        BRIDGE_BLACKDUCKSCA_FIXPR_ENABLED: 'true'
-        BRIDGE_BLACKDUCKSCA_REPORTS_SARIF_CREATE: 'true'
+        BRIDGE_BLACKDUCKSCA_SCAN_FULL: true
+        BRIDGE_BLACKDUCKSCA_SCAN_FAILURE_SEVERITIES: BLOCKER
+        BRIDGE_BLACKDUCKSCA_FIXPR_ENABLED: true
+        BRIDGE_BLACKDUCKSCA_REPORTS_SARIF_CREATE: true
         DETECT_PROJECT_VERSION_NAME: $CI_COMMIT_REF_NAME
         DETECT_CODE_LOCATION_NAME: $CI_PROJECT_NAME-$CI_COMMIT_REF_NAME
     - if: ($CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ $SCAN_BRANCHES && $CI_PIPELINE_SOURCE == 'merge_request_event')
       variables:
-        BRIDGE_BLACKDUCKSCA_SCAN_FULL: 'false'
-        BRIDGE_BLACKDUCKSCA_AUTOMATION_PRCOMMENT: 'true'
+        BRIDGE_BLACKDUCKSCA_SCAN_FULL: false
+        BRIDGE_BLACKDUCKSCA_AUTOMATION_PRCOMMENT: true
         BRIDGE_GITLAB_REPOSITORY_PULL_NUMBER: $CI_MERGE_REQUEST_IID
         DETECT_PROJECT_VERSION_NAME: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
         DETECT_CODE_LOCATION_NAME: $CI_PROJECT_NAME-$CI_MERGE_REQUEST_TARGET_BRANCH_NAME
   before_script:
-    - apt-get -qq update && apt-get install -y curl unzip
+    - apt-get -qq update && apt-get -qq install curl unzip
   script:
     - curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d /tmp bridge.zip && rm -f bridge.zip
     - /tmp/bridge-cli-bundle-linux64/bridge-cli --stage blackducksca
@@ -126,17 +126,19 @@ coverity-ss-template:
     BRIDGE_COVERITY_CONNECT_USER_NAME: $COV_USER
     BRIDGE_COVERITY_CONNECT_USER_PASSWORD: $COVERITY_PASSPHRASE
     BRIDGE_GITLAB_USER_TOKEN: $GITLAB_USER_TOKEN
+    BRIDGE_COVERITY_BUILD_COMMAND: mvn -B -DskipTests package
+    BRIDGE_COVERITY_CLEAN_COMMAND: mvn -B clean
     # BRIDGE_COVERITY_LOCAL: true
-    # INCLUDE_DIAGNOSTICS: 'true'
+    # INCLUDE_DIAGNOSTICS: true
   rules:
     - if: ($CI_COMMIT_REF_NAME =~ $SCAN_BRANCHES && $CI_PIPELINE_SOURCE != 'merge_request_event')
       variables:
         BRIDGE_COVERITY_CONNECT_POLICY_VIEW: 'Outstanding Issues'
     - if: ($CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ $SCAN_BRANCHES && $CI_PIPELINE_SOURCE == 'merge_request_event')
       variables:
-        BRIDGE_COVERITY_AUTOMATION_PRCOMMENT: 'true'
+        BRIDGE_COVERITY_AUTOMATION_PRCOMMENT: true
   before_script:
-    - apt-get -qq update && apt-get install -y curl file unzip
+    - apt-get -qq update && apt-get -qq install curl file unzip
   extends: .run-black-duck-tools
   #artifacts:
   #  name: "bridge-logs"
@@ -155,8 +157,10 @@ coverity-ss-template:
     BRIDGE_GITLAB_REPOSITORY_NAME: $CI_PROJECT_ID
     BRIDGE_GITLAB_REPOSITORY_BRANCH_NAME: $CI_COMMIT_REF_NAME
     BRIDGE_GITLAB_USER_TOKEN: $GITLAB_USER_TOKEN
+    BRIDGE_COVERITY_BUILD_COMMAND: mvn -B -DskipTests package
+    BRIDGE_COVERITY_CLEAN_COMMAND: mvn -B clean
     # BRIDGE_COVERITY_LOCAL: true
-    # INCLUDE_DIAGNOSTICS: 'true'
+    # INCLUDE_DIAGNOSTICS: true
   rules:
     - if: ($CI_COMMIT_REF_NAME =~ $SCAN_BRANCHES && $CI_PIPELINE_SOURCE != 'merge_request_event')
       variables:
@@ -165,10 +169,10 @@ coverity-ss-template:
     - if: ($CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ $SCAN_BRANCHES && $CI_PIPELINE_SOURCE == 'merge_request_event')
       variables:
         BRIDGE_COVERITY_CONNECT_STREAM_NAME: $CI_PROJECT_NAME-$CI_MERGE_REQUEST_TARGET_BRANCH_NAME
-        BRIDGE_COVERITY_AUTOMATION_PRCOMMENT: 'true'
+        BRIDGE_COVERITY_AUTOMATION_PRCOMMENT: true
         BRIDGE_GITLAB_REPOSITORY_PULL_NUMBER: $CI_MERGE_REQUEST_IID
   before_script:
-    - apt-get -qq update && apt-get install -y curl file unzip
+    - apt-get -qq update && apt-get -qq install curl file unzip
   script:
     - curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d /tmp bridge.zip && rm -f bridge.zip
     - /tmp/bridge-cli-bundle-linux64/bridge-cli --stage connect
@@ -187,7 +191,7 @@ coverity-ss-template:
     COVERITY_PROJECT: $CI_PROJECT_NAME
     COVERITY_STREAM: $CI_PROJECT_NAME-$CI_COMMIT_REF_NAME
   before_script:
-    - apt-get -qq update && apt-get install -y file
+    - apt-get -qq update && apt-get -qq install file
   script:
     - curl -fLsS $COVERITY_URL/api/v2/scans/downloads/$COVERITY_THIN_CLIENT | tar -C /tmp -xzf -
     - export COVERITY_CLI_CLOUD_ANALYSIS_ASYNC=false
@@ -209,7 +213,7 @@ coverity-ss-template:
     COVERITY_PROJECT: $CI_PROJECT_NAME
     COVERITY_STREAM: $CI_PROJECT_NAME-$CI_COMMIT_REF_NAME
   before_script:
-    - apt-get -qq update && apt-get install -y file
+    - apt-get -qq update && apt-get -qq install file
   script:
     - curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE $COVERITY_URL/downloadFile.htm?fn=$COVERITY_TOOLKIT.tar.gz | tar -C /tmp -xzf -
     - curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE -o /tmp/$COVERITY_TOOLKIT/bin/license.dat $COVERITY_URL/downloadFile.htm?fn=license.dat
@@ -276,7 +280,7 @@ coverity-ss-template:
   rules:
     - if: ($CI_COMMIT_REF_NAME =~ $SCAN_BRANCHES && $CI_PIPELINE_SOURCE != 'merge_request_event')
   before_script:
-    - apt-get -qq update && apt-get install -y curl file unzip
+    - apt-get -qq update && apt-get -qq install curl file unzip
   script:
     - curl -fLOsS $POLARIS_SERVER_URL/api/tools/polaris_cli-linux64.zip
     - unzip -d /tmp -jo polaris_cli-linux64.zip && rm -f polaris_cli-linux64.zip
@@ -296,14 +300,16 @@ polaris-ss-template:
   variables:
     BRIDGE_POLARIS_SERVERURL: $POLARIS_SERVERURL
     BRIDGE_POLARIS_ACCESSTOKEN: $POLARIS_ACCESSTOKEN
-    BRIDGE_POLARIS_ASSESSMENT_TYPES: 'SAST,SCA'
+    BRIDGE_POLARIS_ASSESSMENT_TYPES: SAST,SCA
     BRIDGE_POLARIS_APPLICATION_NAME: $CI_PROJECT_NAMESPACE-$CI_PROJECT_NAME
-    BRIDGE_POLARIS_PRCOMMENT_ENABLED: 'true'
-    BRIDGE_POLARIS_REPORTS_SARIF_CREATE: 'true'
+    BRIDGE_POLARIS_PRCOMMENT_ENABLED: true
+    BRIDGE_POLARIS_REPORTS_SARIF_CREATE: true
     BRIDGE_GITLAB_USER_TOKEN: $GITLAB_USER_TOKEN
-    # INCLUDE_DIAGNOSTICS: 'true'
+    BRIDGE_COVERITY_BUILD_COMMAND: mvn -B -DskipTests package
+    BRIDGE_COVERITY_CLEAN_COMMAND: mvn -B clean
+    # INCLUDE_DIAGNOSTICS: true
   before_script:
-    - apt-get -qq update && apt-get install -y curl file unzip
+    - apt-get -qq update && apt-get -qq install curl file unzip
   extends: .run-black-duck-tools
   #artifacts:
   #  name: "bridge-logs"
@@ -317,25 +323,27 @@ polaris-ss-template:
   variables:
     BRIDGE_POLARIS_SERVERURL: $POLARIS_SERVERURL
     BRIDGE_POLARIS_ACCESSTOKEN: $POLARIS_ACCESSTOKEN
-    BRIDGE_POLARIS_ASSESSMENT_TYPES: 'SAST,SCA'
+    BRIDGE_POLARIS_ASSESSMENT_TYPES: SAST,SCA
     BRIDGE_POLARIS_APPLICATION_NAME: $CI_PROJECT_NAMESPACE-$CI_PROJECT_NAME
     BRIDGE_POLARIS_PROJECT_NAME: $CI_PROJECT_NAME
     BRIDGE_POLARIS_BRANCH_NAME: $CI_COMMIT_REF_NAME
     BRIDGE_GITLAB_REPOSITORY_NAME: $CI_PROJECT_ID
     BRIDGE_GITLAB_REPOSITORY_BRANCH_NAME: $CI_COMMIT_REF_NAME
     BRIDGE_GITLAB_USER_TOKEN: $GITLAB_USER_TOKEN
-    # INCLUDE_DIAGNOSTICS: 'true'
+    BRIDGE_COVERITY_BUILD_COMMAND: mvn -B -DskipTests package
+    BRIDGE_COVERITY_CLEAN_COMMAND: mvn -B clean
+    # INCLUDE_DIAGNOSTICS: true
   rules:
     - if: ($CI_COMMIT_REF_NAME =~ $SCAN_BRANCHES && $CI_PIPELINE_SOURCE != 'merge_request_event')
       variables:
-        BRIDGE_POLARIS_REPORTS_SARIF_CREATE: 'true'
+        BRIDGE_POLARIS_REPORTS_SARIF_CREATE: true
     - if: ($CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ $SCAN_BRANCHES && $CI_PIPELINE_SOURCE == 'merge_request_event')
       variables:
         BRIDGE_POLARIS_BRANCH_PARENT_NAME: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
-        BRIDGE_POLARIS_PRCOMMENT_ENABLED: 'true'
+        BRIDGE_POLARIS_PRCOMMENT_ENABLED: true
         BRIDGE_GITLAB_REPOSITORY_PULL_NUMBER: $CI_MERGE_REQUEST_IID
   before_script:
-    - apt-get -qq update && apt-get install -y curl file unzip
+    - apt-get -qq update && apt-get -qq install curl file unzip
   script:
     - curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d /tmp bridge.zip && rm -f bridge.zip
     - /tmp/bridge-cli-bundle-linux64/bridge-cli --stage polaris
@@ -351,17 +359,19 @@ srm-ss-template:
   variables:
     BRIDGE_SRM_URL: $SRM_URL
     BRIDGE_SRM_APIKEY: $SRM_APIKEY
-    BRIDGE_SRM_ASSESSMENT_TYPES: 'SAST,SCA'
+    BRIDGE_SRM_ASSESSMENT_TYPES: SAST,SCA
     BRIDGE_SRM_PROJECT_NAME: $CI_PROJECT_NAME
     BRIDGE_SRM_BRANCH_NAME: $CI_COMMIT_REF_NAME
-    # INCLUDE_DIAGNOSTICS: 'true'
+    BRIDGE_COVERITY_BUILD_COMMAND: mvn -B -DskipTests package
+    BRIDGE_COVERITY_CLEAN_COMMAND: mvn -B clean
+    # INCLUDE_DIAGNOSTICS: true
   rules:
     - if: ($CI_COMMIT_REF_NAME =~ $SCAN_BRANCHES && $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH)
       variables:
         BRIDGE_SRM_BRANCH_PARENT: $CI_DEFAULT_BRANCH
     - if: $CI_COMMIT_REF_NAME =~ $SCAN_BRANCHES
   before_script:
-    - apt-get -qq update && apt-get install -y curl file unzip
+    - apt-get -qq update && apt-get -qq install curl file unzip
   extends: .run-black-duck-tools
   #artifacts:
   #  name: "bridge-logs"
@@ -375,17 +385,19 @@ srm-ss-template:
   variables:
     BRIDGE_SRM_URL: $SRM_URL
     BRIDGE_SRM_APIKEY: $SRM_APIKEY
-    BRIDGE_SRM_ASSESSMENT_TYPES: 'SAST,SCA'
+    BRIDGE_SRM_ASSESSMENT_TYPES: SAST,SCA
     BRIDGE_SRM_PROJECT_NAME: $CI_PROJECT_NAME
     BRIDGE_SRM_BRANCH_NAME: $CI_COMMIT_REF_NAME
-    # INCLUDE_DIAGNOSTICS: 'true'
+    BRIDGE_COVERITY_BUILD_COMMAND: mvn -B -DskipTests package
+    BRIDGE_COVERITY_CLEAN_COMMAND: mvn -B clean
+    # INCLUDE_DIAGNOSTICS: true
   rules:
     - if: ($CI_COMMIT_REF_NAME =~ $SCAN_BRANCHES && $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH)
       variables:
         BRIDGE_SRM_BRANCH_PARENT: $CI_DEFAULT_BRANCH
     - if: $CI_COMMIT_REF_NAME =~ $SCAN_BRANCHES
   before_script:
-    - apt-get -qq update && apt-get install -y curl file unzip
+    - apt-get -qq update && apt-get -qq install curl file unzip
   script:
     - curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d /tmp bridge.zip && rm -f bridge.zip
     - /tmp/bridge-cli-bundle-linux64/bridge-cli --stage srm

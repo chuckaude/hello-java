@@ -62,10 +62,3 @@ jobs:
         target-branch-name: ${{ github.ref_name }}
         source-and-binaries-glob: './**'
         wait-for-completion: true
-#    - name: Save Logs
-#      if: always()
-#      uses: actions/upload-artifact@v4
-#      with:
-#        name: bridge-logs
-#        path: ${{ github.workspace }}/.bridge
-#        include-hidden-files: true

@@ -35,10 +35,3 @@ jobs:
         blackducksca_upload_sarif_report: true
         github_token: ${{ secrets.GITHUB_TOKEN }}
         # include_diagnostics: true
-#    - name: Save Logs
-#      if: always()
-#      uses: actions/upload-artifact@v4
-#      with:
-#        name: bridge-logs
-#        path: ${{ github.workspace }}/.bridge
-#        include-hidden-files: true

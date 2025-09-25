@@ -44,10 +44,3 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         # coverity_local: true
         # include_diagnostics: true
-#    - name: Save Logs
-#      if: always()
-#      uses: actions/upload-artifact@v4
-#      with:
-#        name: bridge-logs
-#        path: ${{ github.workspace }}/.bridge
-#        include-hidden-files: true

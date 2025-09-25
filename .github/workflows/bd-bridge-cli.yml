@@ -16,7 +16,6 @@ jobs:
       BRIDGE_GITHUB_REPOSITORY_OWNER_NAME: ${{ github.repository_owner }}
       BRIDGE_GITHUB_REPOSITORY_NAME: ${{ github.event.repository.name }}
       BRIDGE_GITHUB_REPOSITORY_BRANCH_NAME: ${{ github.ref_name }}
-      # INCLUDE_DIAGNOSTICS: true
     steps:
     - name: Checkout Source
       uses: actions/checkout@v4
@@ -50,7 +49,7 @@ jobs:
       run: |
         curl -fLsS -o bridge.zip ${{ vars.BRIDGECLI_LINUX64 }} && unzip -qo -d ${{ runner.temp }} bridge.zip && rm -f bridge.zip
         ${{ runner.temp }}/bridge-cli-bundle-linux64/bridge-cli --stage blackducksca \
-            blackducksca.scan.full='false' \
+            blackducksca.scan.full=false \
             blackducksca.automation.prcomment=true \
             github.repository.pull.number=${{ github.event.number }}
 #    - name: Save Logs

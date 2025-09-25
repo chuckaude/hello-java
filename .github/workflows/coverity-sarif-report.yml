@@ -44,10 +44,3 @@ jobs:
       uses: github/codeql-action/upload-sarif@v3
       with:
         sarif_file: results.sarif
-#    - name: Save Logs
-#      if: always()
-#      uses: actions/upload-artifact@v4
-#      with:
-#        name: bridge-logs
-#        path: ${{ github.workspace }}/.bridge
-#        include-hidden-files: true

@@ -33,10 +33,3 @@ jobs:
         coverity_build_command: mvn -B -DskipTests package
         coverity_clean_command: mvn -B clean
         # include_diagnostics: true
-#    - name: Save Logs
-#      if: always()
-#      uses: actions/upload-artifact@v4
-#      with:
-#        name: bridge-logs
-#        path: ${{ github.workspace }}/.bridge
-#        include-hidden-files: true

@@ -16,7 +16,6 @@ jobs:
       BRIDGE_SRM_BRANCH_PARENT: ${{ github.ref_name != github.event.repository.default_branch && github.event.repository.default_branch || '' }}
       BRIDGE_COVERITY_BUILD_COMMAND: mvn -B -DskipTests package
       BRIDGE_COVERITY_CLEAN_COMMAND: mvn -B clean
-      # INCLUDE_DIAGNOSTICS: true
     steps:
     - name: Checkout Source
       uses: actions/checkout@v4

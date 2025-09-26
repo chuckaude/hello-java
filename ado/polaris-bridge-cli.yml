@@ -28,7 +28,8 @@ steps:
     BRIDGE_POLARIS_PROJECT_NAME: $(Build.Repository.Name)
     BRIDGE_POLARIS_BRANCH_NAME: $(Build.SourceBranchName)
     BRIDGE_POLARIS_REPORTS_SARIF_CREATE: true
-    # INCLUDE_DIAGNOSTICS: 'true'
+    BRIDGE_COVERITY_BUILD_COMMAND: mvn -B -DskipTests package
+    BRIDGE_COVERITY_CLEAN_COMMAND: mvn -B clean
   displayName: 'Polaris Full Scan'
   condition: not(eq(variables['Build.Reason'], 'PullRequest'))
 - bash: |
@@ -53,7 +54,8 @@ steps:
     BRIDGE_AZURE_PROJECT_NAME: $(Build.Repository.Name)
     # BRIDGE_AZURE_REPOSITORY_BRANCH_NAME: $(System.PullRequest.SourceBranchName)
     BRIDGE_AZURE_REPOSITORY_PULL_NUMBER: $(System.PullRequest.PullRequestId)
-    # INCLUDE_DIAGNOSTICS: 'true'
+    BRIDGE_COVERITY_BUILD_COMMAND: mvn -B -DskipTests package
+    BRIDGE_COVERITY_CLEAN_COMMAND: mvn -B clean
   displayName: 'Polaris PR Scan'
   condition: eq(variables['Build.Reason'], 'PullRequest')
 - task: ArchiveFiles@2

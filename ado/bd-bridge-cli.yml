@@ -5,7 +5,7 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 variables:
-  - group: poc222.blackduck.synopsys.com
+  - group: sca316.poc.blackduck.com
 steps:
 - task: JavaToolInstaller@0
   displayName: 'Install JDK'
@@ -36,7 +36,6 @@ steps:
     DETECT_PROJECT_NAME: $(Build.Repository.Name)
     DETECT_PROJECT_VERSION_NAME: $(Build.SourceBranchName)
     DETECT_CODE_LOCATION_NAME: $(Build.Repository.Name)-$(Build.SourceBranchName)
-    # INCLUDE_DIAGNOSTICS: 'true'
   displayName: 'Black Duck Full Scan'
   condition: not(eq(variables['Build.Reason'], 'PullRequest'))
 - bash: |
@@ -57,7 +56,6 @@ steps:
     DETECT_PROJECT_NAME: $(Build.Repository.Name)
     DETECT_PROJECT_VERSION_NAME: $(System.PullRequest.targetBranchName)
     DETECT_CODE_LOCATION_NAME: $(Build.Repository.Name)-$(System.PullRequest.targetBranchName)
-    # INCLUDE_DIAGNOSTICS: 'true'
   displayName: 'Black Duck PR Scan'
   condition: eq(variables['Build.Reason'], 'PullRequest')
 - task: ArchiveFiles@2

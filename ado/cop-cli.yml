@@ -1,7 +1,7 @@
 pool:
   vmImage: ubuntu-latest
 variables:
-  - group: sipse.polaris.synopsys.com
+  - group: sipse.cop.blackduck.com
 steps:
 - task: JavaToolInstaller@0
   displayName: 'Install JDK'

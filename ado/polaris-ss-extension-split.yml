@@ -44,18 +44,3 @@ steps:
     polaris_prcomment_enabled: true
     azure_token: $(System.AccessToken)
     # include_diagnostics: true
-- task: ArchiveFiles@2
-  displayName: 'Copy Log Files'
-  condition: succeededOrFailed()
-  enabled: false
-  inputs:
-    rootFolderOrFile: .bridge
-    includeRootFolder: false
-    archiveFile: '$(Build.ArtifactStagingDirectory)/bridge-logs.zip'
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Log Files'
-  condition: succeededOrFailed()
-  enabled: false
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'logs'

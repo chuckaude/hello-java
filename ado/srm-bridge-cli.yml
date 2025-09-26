@@ -5,7 +5,7 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 variables:
-  - group: poc222.srm.synopsys.com
+  - group: srm316.poc.blackduck.com
 steps:
 - task: JavaToolInstaller@0
   displayName: 'Install JDK'
@@ -26,7 +26,8 @@ steps:
     BRIDGE_SRM_ASSESSMENT_TYPES: 'SAST,SCA'
     BRIDGE_SRM_PROJECT_NAME: $(Build.Repository.Name)
     BRIDGE_SRM_BRANCH_NAME: $(Build.SourceBranchName)
-    # INCLUDE_DIAGNOSTICS: 'true'
+    BRIDGE_COVERITY_BUILD_COMMAND: mvn -B -DskipTests package
+    BRIDGE_COVERITY_CLEAN_COMMAND: mvn -B clean
   displayName: 'SRM Scan'
 - task: ArchiveFiles@2
   displayName: 'Copy Log Files'

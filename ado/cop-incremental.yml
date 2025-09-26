@@ -3,7 +3,7 @@
 pool:
   vmImage: ubuntu-latest
 variables:
-  - group: sipse.polaris.synopsys.com
+  - group: sipse.cop.blackduck.com
 steps:
 - task: JavaToolInstaller@0
   displayName: 'Install JDK'
@@ -19,7 +19,7 @@ steps:
   displayName: 'Coverity on Polaris Full Scan'
   condition: and(in(variables['Build.SourceBranchName'],'main','stage','release'),not(eq(variables['Build.Reason'],'PullRequest')))
   inputs:
-    polarisService: 'sipse.polaris.synopsys.com'
+    polarisService: 'sipse.cop.blackduck.com'
     polarisCommand: '--co project.name=chuckaude-$(Build.Repository.Name) analyze -w'
     # Note: waitForeIssues will fail the pipeline if ANY issues are detected, not very practical, parse JSON or use API instead
     waitForIssues: false
@@ -29,7 +29,7 @@ steps:
   enabled: false
   condition: eq(variables['Build.Reason'],'PullRequest')
   inputs:
-    polarisService: 'sipse.polaris.synopsys.com'
+    polarisService: 'sipse.cop.blackduck.com'
     polarisCommand: '--co project.name=chuckaude-$(Build.Repository.Name) analyze -w --incremental $CHANGE_SET_FILE_PATH'
     # Note: waitForeIssues will fail the pipeline if ANY issues are detected, not very practical, parse JSON or use API instead
     waitForIssues: false

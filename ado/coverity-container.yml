@@ -1,16 +1,16 @@
 pool:
   vmImage: ubuntu-latest
 container:
-  image: coverity-linux64-2024.12.0
+  image: coverity-linux64-2025.9.0
   endpoint: acr-chuckaude
 variables:
-- group: poc222.coverity.synopsys.com
+- group: cnc.chuckaude.com
 - name: COVERITY_TOOL_HOME
-  value: /opt/coverity/analysis/2024.12.0
+  value: /opt/coverity/analysis/2025.9.0
 steps:
 - task: synopsys-coverity@1
   inputs:
-    coverityService: 'poc222.coverity.synopsys.com'
+    coverityService: 'cnc.chuckaude.com'
     projectName: '$(Build.Repository.Name)'
     streamName: '$(Build.Repository.Name)-$(Build.SourceBranchName)'
     checkIssues: true

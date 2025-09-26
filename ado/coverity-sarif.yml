@@ -5,9 +5,9 @@
 pool:
   name: private-linux
 variables:
-  - group: poc222.coverity.synopsys.com
+  - group: cnc.chuckaude.com
   - name: COVERITY_TOOL_HOME
-    value: /opt/coverity/analysis/2024.12.0
+    value: /opt/coverity/analysis/2025.9.0
 workspace:
   clean: all
 steps:

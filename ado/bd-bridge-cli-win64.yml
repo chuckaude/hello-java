@@ -5,7 +5,7 @@ trigger:
 pool:
   vmImage: windows-latest
 variables:
-  - group: poc222.blackduck.synopsys.com
+  - group: sca316.poc.blackduck.com
 steps:
 - task: JavaToolInstaller@0
   displayName: 'Install JDK'
@@ -26,7 +26,6 @@ steps:
     BRIDGE_BLACKDUCKSCA_URL: $(BLACKDUCK_URL)
     BRIDGE_BLACKDUCKSCA_TOKEN: $(BLACKDUCK_API_TOKEN)
     # BRIDGE_DETECT_ARGS: --spring.config.location=""
-    # INCLUDE_DIAGNOSTICS: 'true'
   displayName: 'Black Duck SCA Scan'
   condition: not(eq(variables['Build.Reason'], 'PullRequest'))
 - task: ArchiveFiles@2

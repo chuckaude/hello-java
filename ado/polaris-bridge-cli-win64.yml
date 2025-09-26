@@ -30,7 +30,6 @@ steps:
     BRIDGE_POLARIS_PROJECT_NAME: $(Build.Repository.Name)
     BRIDGE_POLARIS_BRANCH_NAME: $(Build.SourceBranchName)
     BRIDGE_POLARIS_REPORTS_SARIF_CREATE: true
-    # INCLUDE_DIAGNOSTICS: 'true'
   displayName: 'Polaris Full Scan'
   condition: not(eq(variables['Build.Reason'], 'PullRequest'))
 - task: ArchiveFiles@2

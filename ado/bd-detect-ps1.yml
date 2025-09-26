@@ -3,7 +3,7 @@
 pool:
   vmImage: windows-latest
 variables:
-  - group: poc222.blackduck.synopsys.com
+  - group: sca316.poc.blackduck.com
 steps:
 - task: JavaToolInstaller@0
   displayName: 'Install JDK'

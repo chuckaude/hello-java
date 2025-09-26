@@ -17,7 +17,7 @@ steps:
 - task: BlackduckCoverityOnPolaris@2
   displayName: 'Coverity on Polaris Scan'
   inputs:
-    polarisService: 'sipse.polaris.synopsys.com'
+    polarisService: 'sipse.cop.blackduck.com'
     polarisCommand: '--co project.name=chuckaude-$(Build.Repository.Name) analyze -w'
     # Note: waitForeIssues will fail the pipeline if ANY issues are detected, not very practical
     waitForIssues: false

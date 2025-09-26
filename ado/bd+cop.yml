@@ -23,12 +23,12 @@ steps:
 - task: BlackDuckDetectTask@10
   displayName: 'Black Duck SCA Scan'
   inputs:
-    BlackDuckScaService: poc222.blackduck.synopsys.com
+    BlackDuckScaService: sca316.poc.blackduck.com
     DetectArguments: '--detect.policy.check.fail.on.severities=BLOCKER'
 - task: BlackduckCoverityOnPolaris@2
   displayName: 'Coverity on Polaris Scan'
   inputs:
-    polarisService: 'sipse.polaris.synopsys.com'
+    polarisService: 'sipse.cop.blackduck.com'
     polarisCommand: '--co project.name=$(Build.Repository.Name) analyze -w'
 - task: CopyFiles@2
   displayName: 'Copy Log Files'

@@ -29,8 +29,6 @@ jobs:
         coverity_project_name: ${{ github.event.repository.name }}
         coverity_stream_name: ${{ github.event.repository.name }}-${{ github.ref_name }}
         coverity_policy_view: 'Outstanding Issues'
-        # coverity_local: true
-        # include_diagnostics: true
     - name: Coverity PR Scan
       if: ${{ github.event_name == 'pull_request' }}
       uses: blackduck-inc/black-duck-security-scan@v2
@@ -42,5 +40,3 @@ jobs:
         coverity_stream_name: ${{ github.event.repository.name }}-${{ github.base_ref }}
         coverity_prComment_enabled: true
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        # coverity_local: true
-        # include_diagnostics: true

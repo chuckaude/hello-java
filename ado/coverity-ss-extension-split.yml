@@ -28,8 +28,6 @@ steps:
     coverity_project_name: $(Build.Repository.Name)
     coverity_stream_name: $(Build.Repository.Name)-$(Build.SourceBranchName)
     coverity_policy_view: 'Outstanding Issues'
-    # coverity_local: true
-    # include_diagnostics: true
 - task: BlackDuckSecurityScan@2
   displayName: 'Coverity PR Scan'
   condition: eq(variables['Build.Reason'], 'PullRequest')
@@ -41,5 +39,3 @@ steps:
     coverity_stream_name: $(Build.Repository.Name)-$(System.PullRequest.targetBranchName)
     coverity_prcomment_enabled: true
     azure_token: $(System.AccessToken)
-    # coverity_local: true
-    # include_diagnostics: true

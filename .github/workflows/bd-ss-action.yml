@@ -34,4 +34,4 @@ jobs:
         blackducksca_reports_sarif_create: true
         blackducksca_upload_sarif_report: true
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        # include_diagnostics: true
+        include_diagnostics: false

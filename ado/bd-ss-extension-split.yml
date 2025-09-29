@@ -33,7 +33,6 @@ steps:
     blackducksca_fixpr_enabled: true
     blackducksca_reports_sarif_create: true
     azure_token: $(System.AccessToken)
-    # include_diagnostics: true
 - task: BlackDuckSecurityScan@2
   displayName: 'Black Duck PR Scan'
   condition: eq(variables['Build.Reason'], 'PullRequest')
@@ -47,4 +46,3 @@ steps:
     blackducksca_scan_full: false
     blackducksca_prcomment_enabled: true
     azure_token: $(System.AccessToken)
-    # include_diagnostics: true

@@ -30,5 +30,5 @@ steps:
     blackducksca_prcomment_enabled: true
     blackducksca_reports_sarif_create: true
     azure_token: $(System.AccessToken)
+    include_diagnostics: false
     mark_build_status: 'SucceededWithIssues'
-    # include_diagnostics: true

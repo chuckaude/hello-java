@@ -31,9 +31,9 @@ steps:
     coverity_passphrase: $(COVERITY_PASSPHRASE)
     coverity_policy_view: $(COVERITY_VIEW)
     coverity_prcomment_enabled: true
-    azure_token: $(System.AccessToken)
-    mark_build_status: 'SucceededWithIssues'
     coverity_build_command: mvn -B -DskipTests package
     coverity_clean_command: mvn -B clean
     # coverity_local: true
-    # include_diagnostics: true
+    azure_token: $(System.AccessToken)
+    include_diagnostics: false
+    mark_build_status: 'SucceededWithIssues'

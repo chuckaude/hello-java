@@ -29,7 +29,6 @@ steps:
     polaris_project_name: $(Build.Repository.Name)
     polaris_branch_name: $(Build.SourceBranchName)
     polaris_reports_sarif_create: true
-    # include_diagnostics: true
 - task: BlackDuckSecurityScan@2
   displayName: 'Polaris PR Scan'
   condition: eq(variables['Build.Reason'], 'PullRequest')
@@ -43,4 +42,3 @@ steps:
     polaris_branch_parent_name: $(System.PullRequest.targetBranchName)
     polaris_prcomment_enabled: true
     azure_token: $(System.AccessToken)
-    # include_diagnostics: true

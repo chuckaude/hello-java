@@ -26,4 +26,5 @@ steps:
     srm_assessment_types: 'SAST,SCA'
     coverity_build_command: mvn -B -DskipTests package
     coverity_clean_command: mvn -B clean
-    # include_diagnostics: true
+    include_diagnostics: false
+    mark_build_status: 'SucceededWithIssues'

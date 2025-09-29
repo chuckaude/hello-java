@@ -37,7 +37,6 @@ jobs:
         blackducksca_reports_sarif_create: true
         blackducksca_upload_sarif_report: true
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        # include_diagnostics: true
     - name: Black Duck PR Scan
       if: ${{ github.event_name == 'pull_request' }}
       uses: blackduck-inc/black-duck-security-scan@v2
@@ -51,4 +50,3 @@ jobs:
         blackducksca_scan_full: false
         blackducksca_prComment_enabled: true
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        # include_diagnostics: true

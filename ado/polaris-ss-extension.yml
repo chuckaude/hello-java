@@ -27,8 +27,8 @@ steps:
     polaris_application_name: chuckaude-$(Build.Repository.Name)
     polaris_prcomment_enabled: true
     polaris_reports_sarif_create: true
-    azure_token: $(System.AccessToken)
-    mark_build_status: 'SucceededWithIssues'
     coverity_build_command: mvn -B -DskipTests package
     coverity_clean_command: mvn -B clean
-    # include_diagnostics: true
+    azure_token: $(System.AccessToken)
+    include_diagnostics: false
+    mark_build_status: 'SucceededWithIssues'

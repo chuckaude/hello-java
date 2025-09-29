@@ -52,7 +52,7 @@ bd-ss-template:
     BRIDGE_BLACKDUCKSCA_REPORTS_SARIF_CREATE: true
     BRIDGE_GITLAB_USER_TOKEN: $GITLAB_USER_TOKEN
     DETECT_PROJECT_NAME: $CI_PROJECT_NAME
-    # INCLUDE_DIAGNOSTICS: true
+    INCLUDE_DIAGNOSTICS: false
   before_script:
     - apt-get -qq update && apt-get -qq install curl unzip
   extends: .run-black-duck-tools
@@ -72,7 +72,6 @@ bd-ss-template:
     BRIDGE_GITLAB_REPOSITORY_BRANCH_NAME: $CI_COMMIT_REF_NAME
     BRIDGE_GITLAB_USER_TOKEN: $GITLAB_USER_TOKEN
     DETECT_PROJECT_NAME: $CI_PROJECT_NAME
-    # INCLUDE_DIAGNOSTICS: true
   rules:
     - if: ($CI_COMMIT_REF_NAME =~ $SCAN_BRANCHES && $CI_PIPELINE_SOURCE != 'merge_request_event')
       variables:
@@ -129,7 +128,7 @@ coverity-ss-template:
     BRIDGE_COVERITY_BUILD_COMMAND: mvn -B -DskipTests package
     BRIDGE_COVERITY_CLEAN_COMMAND: mvn -B clean
     # BRIDGE_COVERITY_LOCAL: true
-    # INCLUDE_DIAGNOSTICS: true
+    INCLUDE_DIAGNOSTICS: false
   rules:
     - if: ($CI_COMMIT_REF_NAME =~ $SCAN_BRANCHES && $CI_PIPELINE_SOURCE != 'merge_request_event')
       variables:
@@ -154,13 +153,12 @@ coverity-ss-template:
     BRIDGE_COVERITY_CONNECT_USER_NAME: $COV_USER
     BRIDGE_COVERITY_CONNECT_USER_PASSWORD: $COVERITY_PASSPHRASE
     BRIDGE_COVERITY_CONNECT_PROJECT_NAME: $CI_PROJECT_NAME
-    BRIDGE_GITLAB_REPOSITORY_NAME: $CI_PROJECT_ID
-    BRIDGE_GITLAB_REPOSITORY_BRANCH_NAME: $CI_COMMIT_REF_NAME
-    BRIDGE_GITLAB_USER_TOKEN: $GITLAB_USER_TOKEN
     BRIDGE_COVERITY_BUILD_COMMAND: mvn -B -DskipTests package
     BRIDGE_COVERITY_CLEAN_COMMAND: mvn -B clean
     # BRIDGE_COVERITY_LOCAL: true
-    # INCLUDE_DIAGNOSTICS: true
+    BRIDGE_GITLAB_REPOSITORY_NAME: $CI_PROJECT_ID
+    BRIDGE_GITLAB_REPOSITORY_BRANCH_NAME: $CI_COMMIT_REF_NAME
+    BRIDGE_GITLAB_USER_TOKEN: $GITLAB_USER_TOKEN
   rules:
     - if: ($CI_COMMIT_REF_NAME =~ $SCAN_BRANCHES && $CI_PIPELINE_SOURCE != 'merge_request_event')
       variables:
@@ -304,10 +302,10 @@ polaris-ss-template:
     BRIDGE_POLARIS_APPLICATION_NAME: $CI_PROJECT_NAMESPACE-$CI_PROJECT_NAME
     BRIDGE_POLARIS_PRCOMMENT_ENABLED: true
     BRIDGE_POLARIS_REPORTS_SARIF_CREATE: true
-    BRIDGE_GITLAB_USER_TOKEN: $GITLAB_USER_TOKEN
     BRIDGE_COVERITY_BUILD_COMMAND: mvn -B -DskipTests package
     BRIDGE_COVERITY_CLEAN_COMMAND: mvn -B clean
-    # INCLUDE_DIAGNOSTICS: true
+    BRIDGE_GITLAB_USER_TOKEN: $GITLAB_USER_TOKEN
+    INCLUDE_DIAGNOSTICS: false
   before_script:
     - apt-get -qq update && apt-get -qq install curl file unzip
   extends: .run-black-duck-tools
@@ -332,7 +330,6 @@ polaris-ss-template:
     BRIDGE_GITLAB_USER_TOKEN: $GITLAB_USER_TOKEN
     BRIDGE_COVERITY_BUILD_COMMAND: mvn -B -DskipTests package
     BRIDGE_COVERITY_CLEAN_COMMAND: mvn -B clean
-    # INCLUDE_DIAGNOSTICS: true
   rules:
     - if: ($CI_COMMIT_REF_NAME =~ $SCAN_BRANCHES && $CI_PIPELINE_SOURCE != 'merge_request_event')
       variables:
@@ -364,7 +361,7 @@ srm-ss-template:
     BRIDGE_SRM_BRANCH_NAME: $CI_COMMIT_REF_NAME
     BRIDGE_COVERITY_BUILD_COMMAND: mvn -B -DskipTests package
     BRIDGE_COVERITY_CLEAN_COMMAND: mvn -B clean
-    # INCLUDE_DIAGNOSTICS: true
+    INCLUDE_DIAGNOSTICS: false
   rules:
     - if: ($CI_COMMIT_REF_NAME =~ $SCAN_BRANCHES && $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH)
       variables:
@@ -390,7 +387,6 @@ srm-ss-template:
     BRIDGE_SRM_BRANCH_NAME: $CI_COMMIT_REF_NAME
     BRIDGE_COVERITY_BUILD_COMMAND: mvn -B -DskipTests package
     BRIDGE_COVERITY_CLEAN_COMMAND: mvn -B clean
-    # INCLUDE_DIAGNOSTICS: true
   rules:
     - if: ($CI_COMMIT_REF_NAME =~ $SCAN_BRANCHES && $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH)
       variables:

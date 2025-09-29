@@ -14,6 +14,8 @@ pipeline {
         BRIDGE_POLARIS_PROJECT_NAME = "${env.REPO_NAME}"
         BRIDGE_POLARIS_BRANCH_NAME = "$BRANCH_NAME"
         BRIDGE_POLARIS_ASSESSMENT_TYPES = 'SAST,SCA'
+        BRIDGE_COVERITY_BUILD_COMMAND = 'mvn -B -DskipTests package'
+        BRIDGE_COVERITY_CLEAN_COMMAND = 'mvn -B clean'
         GITHUB_TOKEN = credentials('github-pat')
     }
     tools {

@@ -12,6 +12,9 @@ pipeline {
         COVERITY_CREDENTIALS = credentials('coverity-committer')
         BRIDGE_COVERITY_CONNECT_USER_NAME = "${env.COVERITY_CREDENTIALS_USR}"
         BRIDGE_COVERITY_CONNECT_USER_PASSWORD = "${env.COVERITY_CREDENTIALS_PSW}"
+        BRIDGE_COVERITY_BUILD_COMMAND = 'mvn -B -DskipTests package'
+        BRIDGE_COVERITY_CLEAN_COMMAND = 'mvn -B clean'
+        # BRIDGE_COVERITY_LOCAL = true
         GITHUB_TOKEN = credentials('github-pat')
     }
     tools {

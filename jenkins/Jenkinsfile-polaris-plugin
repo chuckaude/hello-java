@@ -32,16 +32,16 @@ pipeline {
                     polaris_project_name: "$REPO_NAME",
                     polaris_prComment_enabled: true,
                     polaris_reports_sarif_create: true,
-                    mark_build_status: 'UNSTABLE',
+                    coverity_build_command: 'mvn -B -DskipTests package',
+                    coverity_clean_command: 'mvn -B clean',
                     github_token: "$GITHUB_TOKEN",
-                    include_diagnostics: false
+                    include_diagnostics: false,
+                    mark_build_status: 'UNSTABLE'
             }
         }
     }
     post {
         always {
-            archiveArtifacts allowEmptyArchive: true, artifacts: '.bridge/bridge.log, .bridge/*/idir/build-log.txt'
-            //zip archive: true, dir: '.bridge', zipFile: 'bridge-logs.zip'
             cleanWs()
         }
     }

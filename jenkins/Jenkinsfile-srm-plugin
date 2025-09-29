@@ -29,14 +29,16 @@ pipeline {
                 security_scan product: 'srm',
                     srm_assessment_types: 'SAST,SCA',
                     srm_project_name: "$REPO_NAME",
-                    srm_branch_name: "$BRANCH_NAME"
+                    srm_branch_name: "$BRANCH_NAME",
+                    coverity_build_command: 'mvn -B -DskipTests package',
+                    coverity_clean_command: 'mvn -B clean',
+                    include_diagnostics: false,
+                    mark_build_status: 'UNSTABLE'
             }
         }
     }
     post {
         always {
-            archiveArtifacts allowEmptyArchive: true, artifacts: '.bridge/bridge.log, .bridge/*/idir/build-log.txt'
-            //zip archive: true, dir: '.bridge', zipFile: 'bridge-logs.zip'
             cleanWs()
         }
     }

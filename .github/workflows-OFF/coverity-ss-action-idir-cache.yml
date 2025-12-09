@@ -1,0 +1,48 @@
+# example workflow for Coverity scans using the Black Duck Security Scan Action
+# https://github.com/marketplace/actions/black-duck-security-scan
+# with Coverity idir caching
+# https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows
+name: coverity-ss-action
+on:
+  push:
+    branches: [ main, master, develop, stage, release ]
+  pull_request:
+    branches: [ main, master, develop, stage, release ]
+  workflow_dispatch:
+jobs:
+  coverity:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Source
+      uses: actions/checkout@v6
+    - name: Setup Java JDK
+      uses: actions/setup-java@v5
+      with:
+        java-version: 21
+        distribution: temurin
+        cache: maven
+    - name: Restore Coverity iDir
+      uses: actions/cache/restore@v4
+      with:
+        path: .bridge/**/idir
+        key: coverity-idir-${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}
+        restore-keys: coverity-idir-${{ runner.os }}-${{ runner.arch }}-
+    - name: Coverity Scan
+      uses: blackduck-inc/black-duck-security-scan@v2
+      with:
+        coverity_url: ${{ vars.COVERITY_URL }}
+        coverity_user: ${{ secrets.COV_USER }}
+        coverity_passphrase: ${{ secrets.COVERITY_PASSPHRASE }}
+        coverity_policy_view: ${{ github.event_name != 'pull_request' && 'Outstanding Issues' || '' }}
+        coverity_prComment_enabled: true
+        coverity_build_command: mvn -B -DskipTests package
+        coverity_clean_command: mvn -B clean
+        # coverity_local: true
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        include_diagnostics: false
+    - name: Save Coverity iDir
+      if: always()
+      uses: actions/cache/save@v4
+      with:
+        path: .bridge/**/idir
+        key: coverity-idir-${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}

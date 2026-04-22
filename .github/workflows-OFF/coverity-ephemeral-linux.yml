@@ -20,7 +20,7 @@ jobs:
     - name: Setup Java JDK
       uses: actions/setup-java@v5
       with:
-        java-version: 21
+        java-version: 25
         distribution: temurin
         cache: maven
     # designate the Coverity toolkit as something to cache, for more details see:

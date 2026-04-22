@@ -62,7 +62,7 @@ jobs:
           --ignore-uncapturable-inputs true --json-output-v10 issues.json --exit1-if-defects true ${{ steps.changeset.outputs.added_modified }}
 #    - name: Save Logs
 #      if: always()
-#      uses: actions/upload-artifact@v4
+#      uses: actions/upload-artifact@v7
 #      with:
 #        name: coverity-logs
 #        path: ${{ github.workspace }}/idir

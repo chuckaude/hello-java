@@ -34,7 +34,7 @@ jobs:
     # designate the Coverity idir as something to cache, for more details see:
     # https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows
     - name: Cache Coverity iDir
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       id: cache-coverity
       with:
         path: idir

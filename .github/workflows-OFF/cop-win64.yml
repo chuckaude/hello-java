@@ -27,7 +27,7 @@ jobs:
         ${{ runner.temp }}/*/bin/polaris.exe --co project.name=chuckaude-${{ github.event.repository.name }} analyze -w
 #    - name: Save Logs
 #      if: always()
-#      uses: actions/upload-artifact@v4
+#      uses: actions/upload-artifact@v7
 #      with:
 #        name: polaris-cli-logs
 #        path: ${{ github.workspace }}/.blackduck

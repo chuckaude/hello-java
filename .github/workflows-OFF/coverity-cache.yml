@@ -33,7 +33,7 @@ jobs:
     # https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows
     - name: Cache Coverity Toolkit
       id: cache-coverity
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: ${{ runner.temp }}/${{ env.TOOLKIT }}
         key: ${{ env.TOOLKIT }}

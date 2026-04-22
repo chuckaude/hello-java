@@ -31,19 +31,19 @@ jobs:
         polaris_config_overrides: --co project.name=chuckaude-${{ github.event.repository.name }}
         polaris_sarif: true
     - name: Upload SARIF Report
-      uses: github/codeql-action/upload-sarif@v3
+      uses: github/codeql-action/upload-sarif@v4
       with:
         sarif_file: polaris-scan-results.sarif.json
       continue-on-error: true
     - name: Archive SARIF Report
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: polaris-SARIF-report
         path: ${{ github.workspace }}/polaris-scan-results.sarif.json
       continue-on-error: true
 #    - name: Save Logs
 #      if: always()
-#      uses: actions/upload-artifact@v4
+#      uses: actions/upload-artifact@v7
 #      with:
 #        name: polaris-cli-logs
 #        path: ${{ github.workspace }}/.blackduck

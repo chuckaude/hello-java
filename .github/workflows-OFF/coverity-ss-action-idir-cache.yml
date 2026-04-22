@@ -22,7 +22,7 @@ jobs:
         distribution: temurin
         cache: maven
     - name: Restore Coverity iDir
-      uses: actions/cache/restore@v4
+      uses: actions/cache/restore@v5
       with:
         path: .bridge/**/idir
         key: coverity-idir-${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}
@@ -42,7 +42,7 @@ jobs:
         include_diagnostics: false
     - name: Save Coverity iDir
       if: always()
-      uses: actions/cache/save@v4
+      uses: actions/cache/save@v5
       with:
         path: .bridge/**/idir
         key: coverity-idir-${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}

@@ -31,7 +31,7 @@ jobs:
         ${{ runner.temp }}/bridge-cli-bundle-linux64/bridge-cli --stage srm
 #    - name: Save Logs
 #      if: always()
-#      uses: actions/upload-artifact@v4
+#      uses: actions/upload-artifact@v7
 #      with:
 #        name: bridge-logs
 #        path: ${{ github.workspace }}/.bridge

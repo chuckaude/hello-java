@@ -41,6 +41,6 @@ jobs:
         $COVERITY_TOOL_HOME/node/bin/node $COVERITY_TOOL_HOME/SARIF/cov-format-sarif-for-github.js --inputFile issues.json --outputFile results.sarif \
           --githubUrl ${{ github.server_url }} --repoName ${{ github.repository }} --checkoutPath ${{ github.repository }} ${{ github.workspace }} ${{ github.sha }}
     - name: Upload SARIF Report
-      uses: github/codeql-action/upload-sarif@v3
+      uses: github/codeql-action/upload-sarif@v4
       with:
         sarif_file: results.sarif

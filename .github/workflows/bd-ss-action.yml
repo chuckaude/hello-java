@@ -12,9 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Source
-      uses: actions/checkout@v6
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
     - name: Setup Java JDK
-      uses: actions/setup-java@v5
+      uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
       with:
         java-version: 25
         distribution: temurin
@@ -22,7 +22,7 @@ jobs:
     - name: Maven Build
       run: mvn -B -DskipTests package
     - name: Black Duck SCA Scan
-      uses: blackduck-inc/black-duck-security-scan@v2
+      uses: blackduck-inc/black-duck-security-scan@152247222aa9cd38124acd5c0cf60f4db71adc3f # v2.11.0
       env:
         DETECT_PROJECT_NAME: ${{ github.event.repository.name }}
       with:

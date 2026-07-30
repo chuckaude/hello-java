@@ -6,12 +6,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Source
-      uses: actions/checkout@v6
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
     - name: Download SIGMA
       run: curl -fLsS -o ${{ runner.temp }}/sigma ${{ vars.SIGMA_DOWNLOAD_URL }} && chmod +x ${{ runner.temp }}/sigma
     - name: SIGMA analysis
       run: ${{ runner.temp }}/sigma analyze --format github
     - name: Upload SARIF file
-      uses: github/codeql-action/upload-sarif@v4
+      uses: github/codeql-action/upload-sarif@f205ea1c3313d32999d8d6a48b4f6530d4437b38 # v4.37.4
       with:
         sarif_file: sigma-results.json

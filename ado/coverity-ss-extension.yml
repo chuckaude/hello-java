@@ -13,10 +13,10 @@ variables:
     ${{ else }}:
       value: 'Outstanding Issues'
 steps:
-- task: JavaToolInstaller@0
+- task: JavaToolInstaller@1
   displayName: 'Install JDK'
   inputs:
-    versionSpec: 21
+    versionSpec: 25
     jdkArchitectureOption: x64
     jdkSourceOption: PreInstalled
 - task: Maven@4

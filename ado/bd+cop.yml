@@ -10,20 +10,20 @@ variables:
   DETECT_PROJECT_VERSION_NAME: $(Build.SourceBranchName)
   DETECT_CODE_LOCATION_NAME: $(Build.Repository.Name)-$(Build.SourceBranchName)
 steps:
-- task: JavaToolInstaller@0
+- task: JavaToolInstaller@1
   displayName: 'Install JDK'
   inputs:
-    versionSpec: 21
+    versionSpec: 25
     jdkArchitectureOption: x64
     jdkSourceOption: PreInstalled
 - task: Maven@4
   displayName: 'Maven Build'
   inputs:
     options: '-B -DskipTests'
-- task: BlackDuckDetectTask@10
+- task: BlackDuckDetectTask@11
   displayName: 'Black Duck SCA Scan'
   inputs:
-    BlackDuckScaService: sca316.poc.blackduck.com
+    BlackDuckScaService: sca.field-test.blackduck.com
     DetectArguments: '--detect.policy.check.fail.on.severities=BLOCKER'
 - task: BlackduckCoverityOnPolaris@2
   displayName: 'Coverity on Polaris Scan'

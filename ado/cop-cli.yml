@@ -9,10 +9,6 @@ steps:
     versionSpec: 25
     jdkArchitectureOption: x64
     jdkSourceOption: PreInstalled
-- task: Maven@4
-  displayName: 'Maven Build'
-  inputs:
-    options: '-B -DskipTests'
 - bash: |
     curl -fLOsS $(POLARIS_SERVER_URL)/api/tools/polaris_cli-linux64.zip
     unzip -d $(Agent.TempDirectory) -jo polaris_cli-linux64.zip && rm -f polaris_cli-linux64.zip

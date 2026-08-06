@@ -7,14 +7,10 @@ pool:
 variables:
   - group: cnc.chuckaude.com
   - name: COVERITY_TOOL_HOME
-    value: /opt/coverity/analysis/2025.9.0
+    value: /opt/coverity/analysis/2026.6.0
 workspace:
   clean: all
 steps:
-- task: Maven@4
-  displayName: 'Maven Build'
-  inputs:
-    options: '-B -DskipTests'
 - task: BlackDuckSecurityScan@2
   displayName: 'Coverity Scan'
   inputs:

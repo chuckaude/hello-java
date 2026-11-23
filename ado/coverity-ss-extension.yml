@@ -6,7 +6,7 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 variables:
-  - group: cnc.chuckaude.com
+  - group: blackduck
   - name: COVERITY_VIEW
     ${{ if eq(variables['Build.Reason'], 'PullRequest') }}:
       value: ''

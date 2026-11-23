@@ -5,7 +5,7 @@ trigger:
 pool:
   vmImage: windows-latest
 variables:
-  - group: poc.polaris.blackduck.com
+  - group: blackduck
 steps:
 - task: JavaToolInstaller@1
   displayName: 'Install JDK'

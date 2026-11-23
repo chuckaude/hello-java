@@ -5,7 +5,7 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 variables:
-  - group: srm.field-test.blackduck.com
+  - group: blackduck
 steps:
 - task: JavaToolInstaller@1
   displayName: 'Install JDK'

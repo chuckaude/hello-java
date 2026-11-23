@@ -4,7 +4,7 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 variables:
-- group: cnc.chuckaude.com
+- group: blackduck
 - name: COVERITY_TOOLKIT
   value: cov-analysis-linux64-2025.9.0
 - name: COVERITY_TOOL_HOME

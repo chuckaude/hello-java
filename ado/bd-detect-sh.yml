@@ -3,7 +3,7 @@
 pool:
   vmImage: ubuntu-latest
 variables:
-  - group: sca.field-test.blackduck.com
+  - group: blackduck
 steps:
 - task: JavaToolInstaller@1
   displayName: 'Install JDK'

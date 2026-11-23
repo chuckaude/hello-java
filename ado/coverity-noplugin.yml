@@ -3,7 +3,7 @@ pool:
 workspace:
   clean: all
 variables:
-- group: cnc.chuckaude.com
+- group: blackduck
 - name: COVERITY_TOOL_HOME
   value: c:/tools/coverity/analysis/2025.9.0
 steps:
